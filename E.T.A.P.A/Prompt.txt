@@ -1,0 +1,47 @@
+Directriz Principal: Construir un Dashboard Administrativo Web centralizado para una clínica de salud mental. Su función es visualizar y gestionar datos que ya residen en Supabase (pacientes, citas, fichas de empleados, métricas de WhatsApp) e incrustar herramientas operativas. Importante: La lógica de ingesta de datos y reservas ocurre externamente (vía n8n); este proyecto se limita estrictamente a la interfaz de usuario, la consulta de datos (lectura/escritura en DB) y el widget de chat.
+
+Integraciones:
+
+Supabase: Base de datos (PostgreSQL) y Autenticación de usuarios del dashboard.
+
+Cal.com: Embed (iFrame) para visualizar calendarios y realizar reservas manuales desde el panel.
+
+Webhook (n8n): Únicamente para conectar el widget de Chatbot (asistente interno) situado en la esquina inferior derecha.
+
+Fuente de la Verdad: Supabase.
+
+El sistema asume que los datos de citas, pacientes y logs de WhatsApp son volcados allí por procesos externos.
+
+El Dashboard actúa como una "ventana" interactiva sobre estos datos.
+
+Carga Útil (Payload): Un Panel de Control Web (Dashboard) funcional con 4 secciones clave:
+
+Vista Operativa: Calendarios de Cal.com incrustados.
+
+Vista de Inteligencia: Gráficos filtrables (por fecha/profesional) mostrando:
+
+Evolución de citas (Total vs Realizadas).
+
+Rendimiento por empleado.
+
+Volumen de interacciones diarias de WhatsApp (dato leído de DB).
+
+Directorio: Fichas visuales de empleados y listado de pacientes.
+
+Asistente IA: Chatbot flotante conectado vía Webhook que responde preguntas sobre el estado de la clínica.
+
+Reglas de Comportamiento:
+
+Estética Corporativa: Uso estricto de la paleta de colores de la clínica.
+
+Jerarquía de Datos: El dashboard debe permitir filtrar métricas por rangos de tiempo personalizados (semanal, mensual) y por ID de empleado.
+
+Chatbot: La interfaz del chat debe enviar el prompt del usuario al Webhook de n8n y renderizar la respuesta (streaming o texto) limpiamente. No procesa lógica, solo pasa mensajes.
+
+Seguridad: El acceso al dashboard debe estar protegido (Login).
+
+¿Qué cambia con esto?
+
+Foco: Antigravity no intentará escribir scripts para validar si "el paciente es nuevo o recurrente". Sabe que eso es problema de n8n.
+
+Database: Antigravity entenderá que debe ayudarte a diseñar las tablas (CREATE TABLE...) para que n8n tenga dónde escribir, y para que el Dashboard tenga de dónde leer.

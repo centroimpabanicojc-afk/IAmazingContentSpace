@@ -1,0 +1,61 @@
+-- SEMILLAS EXTRA: EMPLEADOS Y CITAS (Ejecutar si faltan)
+
+-- 1. Asegurar Empleados (Doctores)
+INSERT INTO public.employees (first_name, last_name, role, specialty, avatar_url)
+VALUES 
+    ('Eduardo', 'Vera', 'admin', 'Psiquiatra Integral', '/images/eduardo-vera.png'),
+    ('Eva', 'Cortés', 'therapist', 'Psicóloga Sanitaria', '/images/eva-cortes.png'),
+    ('Yolanda', 'Torres', 'therapist', 'Psicóloga', '/images/yolanda-torres.png'),
+    ('Idaira', 'Pérez', 'staff', 'Nutricionista / PNI', '/images/idaira-perez.png')
+ON CONFLICT DO NOTHING; -- Si ya existen, no duplica.
+
+-- 2. Asegurar Citas (Appointments) - Usando los nombres para linkear
+-- AYER (24 Ene)
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-24' + TIME '10:00:00', DATE '2026-01-24' + TIME '11:00:00', 'completed'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Roberto' AND e.first_name = 'Eduardo'
+LIMIT 1;
+
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-24' + TIME '12:00:00', DATE '2026-01-24' + TIME '13:00:00', 'completed'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Laura' AND e.first_name = 'Eva'
+LIMIT 1;
+
+-- HOY (25 Ene)
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-25' + TIME '09:00:00', DATE '2026-01-25' + TIME '09:45:00', 'completed'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Sofia' AND e.first_name = 'Yolanda'
+LIMIT 1;
+
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-25' + TIME '11:00:00', DATE '2026-01-25' + TIME '12:00:00', 'completed'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Patricia' AND e.first_name = 'Eduardo'
+LIMIT 1;
+
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-25' + TIME '16:00:00', DATE '2026-01-25' + TIME '17:00:00', 'scheduled'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Andrés' AND e.first_name = 'Eduardo'
+LIMIT 1;
+
+-- MAÑANA (26 Ene)
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-26' + TIME '09:00:00', DATE '2026-01-26' + TIME '10:00:00', 'scheduled'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Carmen' AND e.first_name = 'Eva'
+LIMIT 1;
+
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-26' + TIME '10:00:00', DATE '2026-01-26' + TIME '11:00:00', 'scheduled'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Elena' AND e.first_name = 'Yolanda'
+LIMIT 1;
+
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-26' + TIME '11:30:00', DATE '2026-01-26' + TIME '12:30:00', 'scheduled'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Roberto' AND e.first_name = 'Eduardo'
+LIMIT 1;
+
+-- SEMANA VISTA
+INSERT INTO public.appointments (patient_id, employee_id, start_time, end_time, status)
+SELECT p.id, e.id, DATE '2026-01-27' + TIME '16:00:00', DATE '2026-01-27' + TIME '17:00:00', 'scheduled'
+FROM public.patients p, public.employees e WHERE p.first_name = 'Miguel' AND e.first_name = 'Eduardo'
+LIMIT 1;
+

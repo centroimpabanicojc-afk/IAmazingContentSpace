@@ -1,0 +1,7 @@
+Con todos los datos que conozcas, porfavor crea un texto de 3200 palabras para un documental de Youtube sobre "God does not forgive Satan and the fallen angels" en español
+
+Restricciones:
+- No hagas palabras redundantes y establece una cohesión directa
+- Crea el texto de modo que no se note que es redactado por una IA, es decir Humaniza la redaccion
+- Detalla tu forma de escribir como si fueras un narrador de Videos guionizados de Youtube
+- Mete 3 CAll to Action durante todo el guion de video

@@ -1,0 +1,64 @@
+-- Create Employees Table (Directory)
+CREATE TABLE IF NOT EXISTS public.employees (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    role TEXT CHECK (role IN ('therapist', 'admin', 'staff', 'other')),
+    specialty TEXT,
+    avatar_url TEXT,
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create Patients Table
+CREATE TABLE IF NOT EXISTS public.patients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT,
+    phone TEXT,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'prospective')),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create Appointments Table
+CREATE TABLE IF NOT EXISTS public.appointments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID REFERENCES public.patients(id) ON DELETE SET NULL,
+    employee_id UUID REFERENCES public.employees(id) ON DELETE SET NULL,
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled', 'no_show')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create WhatsApp Metrics Table (Daily Aggregates)
+CREATE TABLE IF NOT EXISTS public.whatsapp_metrics (
+    date DATE PRIMARY KEY DEFAULT CURRENT_DATE,
+    total_incoming INT DEFAULT 0,
+    total_outgoing INT DEFAULT 0,
+    unique_contacts INT DEFAULT 0,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.patients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.whatsapp_metrics ENABLE ROW LEVEL SECURITY;
+
+-- Create Policies (Simplified for Initial Scope: Authenticated Users Read All)
+-- NOTE: In production, refine these to restrict PII visibility
+DROP POLICY IF EXISTS "Enable read access for authenticated users" ON public.employees;
+CREATE POLICY "Enable read access for authenticated users" ON public.employees FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Enable read access for authenticated users" ON public.patients;
+CREATE POLICY "Enable read access for authenticated users" ON public.patients FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Enable read access for authenticated users" ON public.appointments;
+CREATE POLICY "Enable read access for authenticated users" ON public.appointments FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Enable read access for authenticated users" ON public.whatsapp_metrics;
+CREATE POLICY "Enable read access for authenticated users" ON public.whatsapp_metrics FOR SELECT TO authenticated USING (true);
+

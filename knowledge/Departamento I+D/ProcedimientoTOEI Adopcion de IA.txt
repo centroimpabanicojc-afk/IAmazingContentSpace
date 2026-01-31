@@ -1,0 +1,11 @@
+(Diagrama)
+Preferred Networks: 国内最高峰のAI技術力 (Máxima capacidad tecnológica de IA en Japón), 独自AIモデル・専用ハードウェアの構築 (Construcción de modelos de IA propios y hardware dedicado), 大企業との連携実績 (Historial de colaboración con grandes empresas).
+AI技術 × アニメーション制作技術 (Tecnología IA × Tecnología de Producción de Animación)
+Toei Animation (No explícito, pero implícito): アニメ制作会社最大手 (Mayor productora de animación), 豊富なデータ・在籍クリエイター (Abundantes datos y creadores internos), 潤沢なキャッシュフロー (Abundante flujo de caja).
+アニメーション制作現場の様々な工程にAIを活用 (Utilizar la IA en diversos procesos del sitio de producción de animación)
+絵コンテ ※1 (Storyboard): [活用例] 簡易LOのAI生成、コンテ撮素材AI生成 ([Ejemplos de uso] Generación de LO (Layout) simple por IA, Generación de material de filmación de storyboard por IA)
+彩色・色指定 ※1 (Coloreado/Especificación de Color): [活用例] AI色指定、色パカAI自動修正 ([Ejemplos de uso] Especificación de color por IA, Corrección automática de "color parpadeante" por IA)
+動画 ※1 (Animación/In-betweens): [活用例] 動画線AI自動修正、動画中割AI生成 ([Ejemplos de uso] Corrección automática de líneas de animación por IA, Generación de in-betweens por IA)
+背景 ※2 (Fondos): [活用例] 写真からの背景AI生成 ([Ejemplo de uso] Generación de fondos por IA a partir de fotografías)
+※1「絵コンテ」「彩色・色指定」「動画」の工程は今後AIによる作業の効率化が期待される製作領域であり、上記掲載の「絵コンテ」「彩色・色指定」「動画」の工程において、弊社では現在AI技術を用いた製作物はございません。 (※1 Los procesos de "Storyboard", "Coloreado/Especificación de Color" y "Animación/In-betweens" son áreas de producción donde se espera que la IA mejore la eficiencia del trabajo en el futuro. En los procesos de "Storyboard", "Coloreado/Especificación de Color" y "Animación/In-betweens" mencionados anteriormente, nuestra empresa actualmente no utiliza tecnología de IA en sus producciones.)
+※2「背景」の画像は、プリファードネットワークス社と当社が2021年にリリースを行なった“Scenify(シーニファイ)”の活用事例となります。 (※2 La imagen de "Fondos" es un ejemplo de uso de "Scenify", lanzado por Preferred Networks y nuestra empresa en 2021.)

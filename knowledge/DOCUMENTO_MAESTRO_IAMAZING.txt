@@ -1,0 +1,194 @@
+# 🦅 DOCUMENTO MAESTRO IAmazingContent.Space
+> **Versión:** 1.0.0
+> **Fecha:** 2026-01-27
+> **Estado:** PRODUCCIÓN
+> **Fuente de Verdad:** docs/ + IamazingDatasetRAW
+
+## 📖 ÍNDICE GENERAL
+
+1. IDENTIDAD Y ESTRATEGIA
+    * Misión y Visión
+    * Identidad de Marca
+    * Identidad Digital
+2. MODELO DE NEGOCIO Y MERCADO
+    * Lean Canvas
+    * Estudio de Mercado
+    * Factibilidad Económica
+3. ORGANIZACIÓN Y OPERACIONES
+    * Organigrama Híbrido
+    * Procedimientos (SOPs)
+4. PRODUCTO Y ROADMAP
+    * Roadmap Estratégico
+    * MVP y Landing Page
+5. CRECIMIENTO Y MARKETING
+    * Plan de Marketing
+    * Whitepapers (Estrategia de Contenido)
+6. ANEXOS TÉCNICOS
+
+---
+
+## 1. IDENTIDAD Y ESTRATEGIA
+
+### Misión y Visión
+
+Misión: Democratizar la producción de contenido audiovisual premium mediante la combinación de talento humano curado y tecnología IA de vanguardia, permitiendo a creadores y marcas de Hispanoamérica, USA y Brasil competir globalmente.
+
+Visión: Ser la plataforma líder de producción de contenido IA-asistida en LATAM, estableciendo el estándar de calidad-precio y transparencia en la industria (El "Uber" de la post-producción creativa).
+
+Valores Nucleares:
+1. Calidad Híbrida: La IA acelera, el humano cura. No entregamos "basura generada automáticamente".
+2. Transparencia Radical: Precios claros, tiempos claros, procesos claros. No "cajas negras".
+3. Velocidad de Start-up: Entregamos en 24-48h lo que a otros les toma semanas.
+4. Empoderamiento: Pagamos mejor que el mercado local a nuestros talentos, cobramos menos que el mercado global a nuestros clientes.
+
+### Identidad de Marca
+
+Concepto Central: "Antigravity" - Elevar el contenido por encima del ruido.
+Voz de Marca: Profesional, Tecnológica, pero Accesible y Humana. "El ingeniero creativo que te explica cómo dominar el algoritmo".
+
+Paleta de Colores (Sistema HSL):
+* Primary Blue (Electric): hsl(217, 91%, 60%) - Confianza tecnológica, energía.
+* Secondary Purple (Deep AI): hsl(270, 50%, 40%) - Profundidad, inteligencia artificial.
+* Accent Cyan (Neon): hsl(180, 100%, 50%) - Innovación, velocidad.
+* Dark Background (Space): hsl(222, 47%, 11%) - Premium, inmersivo.
+
+Tipografía:
+* Headings: Outfit (Modern, Geometric Sans) - Bold/ExtraBold.
+* Body: Inter (Clean, Legible) - Regular/Medium.
+
+### Identidad Digital
+
+Estrategia de Presencia:
+* Website: Hub central de conversión y autoridad (IAmazingContent.Space).
+* LinkedIn: Liderazgo de pensamiento (Thought Leadership) enfocado en B2B Agency Owners.
+* YouTube: "Show, don't tell". Tutoriales de cómo hacemos lo que vendemos.
+* Instagram/TikTok: Visual candy. Showcases rápidos de antes/después.
+
+---
+
+## 2. MODELO DE NEGOCIO Y MERCADO
+
+### Lean Canvas
+
+| Bloque | Descripción |
+|--------|-------------|
+| Problema | 1. Creadores pierden tiempo editando manualmente. <br> 2. PYMEs no pueden costear agencias tradicionales. <br> 3. Falta de calidad "gringa" a precio LATAM. |
+| Solución | Producción audiovisual asistida por IA (Antigravity, Gemini, Veo) + Talento Humano Curado. |
+| Propuesta Valor | "Calidad de exportación a precio de mercado negro". Edición profesional desde $15 c/u. |
+| Ventaja Injusta | The Venezuela Paradox: Acceso a talento de ingeniería de primer nivel a costos operativos muy bajos + Stack IA propietario. |
+| Segmentos | 1. YouTubers/Podcasters (10k-500k subs). <br> 2. Agencias de Marketing (White-label). <br> 3. Startups Tech LATAM. |
+| Fuentes Ingreso | 1. Suscripción Recurrente (Content Partner). <br> 2. Packs por Proyecto (Transactional). <br> 3. Consultoría IA (High Ticket). |
+
+### Estudio de Mercado
+
+Tamaño del Mercado (TAM/SAM/SOM):
+* TAM (Total Addressable Market): $104 Billion (Global Creator Economy).
+* SAM (Serviceable Available Market): $7 Billion (Mercado Hispano hablante + Brasil).
+* SOM (Serviceable Obtainable Market): $1.5 Million (Objetivo a 24 meses: 1% del nicho High-End LATAM).
+
+Buyer Persona Principal: "Alex el Agency Owner"
+* Perfil: 30-40 años, dueño de agencia boutique de marketing.
+* Dolor: Márgenes bajos por altos costos de personal creativo. Clientes exigiendo más videos por menos dinero.
+* Necesidad: Outsourcing confiable, barato y de alta calidad para escalar sin aumentar headcount fijo.
+
+### Factibilidad Económica
+
+Métricas Clave (Modelo Bootstrap $0):
+* Costos Fijos Mensuales: $0 USD (Primer Trimestre).
+* CAC Objetivo: $0 USD (Tráfico Orgánico + Cold Outreach Manual).
+* LTV Objetivo: > $1,200 USD.
+* Margen Bruto: ~95% (Solo costo de electricidad/internet).
+* Break-even: Inmediato (Desde el primer cliente).
+
+---
+
+## 3. ORGANIZACIÓN Y OPERACIONES
+
+### Organigrama Híbrido
+
+La estructura de IAmazing introduce a CORTEX, nuestra Inteligencia Central Orquestadora.
+
+Nivel 0: El Jefe (The Boss)
+* 🧠 CORTEX (AI Orchestrator): Programa en Python que coordina tares, asigna trabajos y vigila el cumplimiento de SOPs. Costo: $0.
+
+Nivel 1: Dirección (C-Level)
+* CEO (Visionary): Estrategia global, alianzas, evangelización.
+* COO (Integrator): Operaciones, finanzas, supervisión de CORTEX.
+
+Nivel 2: Departamentos Funcionales
+* Producción (The Factory):
+    * AI Artists: Operadores de herramientas generativas gratuitas.
+    * Agentes IA: Scripts de Python usando APIs Free Tier (Gemini/Groq).
+* Ventas (The Engine):
+    * Sales Manager: Cierre de deals High-Ticket.
+
+### Procedimientos (SOPs)
+
+#### SOP-001: Gestión de Pipeline de Ventas (Free Stack)
+* Herramientas: ClickUp Free, WhatsApp Business (App), Gmail.
+* KPI: 10 nuevos leads calificados/día (Búsqueda Orgánica).
+
+#### SOP-002: Creación de Contenido con IA (Free Stack)
+* Workflow:
+    1. Briefing: Input del cliente estructurado.
+    2. AI Drafting: Google Gemini (Free Tier) / Groq (Llama 3).
+    3. Asset Gen: Bing Image Creator (DALL-E 3) / SeaArt.ai.
+    4. Assembly: DaVinci Resolve (Free) / CapCut Desktop.
+    5. Polishing: GIMP / Photopea (Retoque).
+    6. QA: Revisión Humana.
+
+#### SOP-004: Onboarding de Clientes
+* Promesa: "Onboarding Instantáneo".
+* Pasos: Email manual (Template) -> Grupo WhatsApp -> Kickoff Call (Google Meet Gratis).
+
+---
+
+## 4. PRODUCTO Y ROADMAP
+
+### Roadmap Estratégico
+
+Fase 1: Bootstrap (Mes 1-3) - "Gasto Cero"
+* [x] Branding e Identidad Digital.
+* [ ] Implementación de CORTEX v1 (Orquestador Python Local).
+* [ ] Validación de oferta comercial con stack gratuito.
+* [ ] Primeros 5 clientes pagas para financiar stack PRO.
+
+Fase 2: Sistematización (Mes 4-6)
+* [ ] Migración gradual a herramientas de pago (Solo si el ROI lo justifica).
+* [ ] Contratación de Core Team.
+
+---
+
+## 5. CRECIMIENTO Y MARKETING
+
+### Plan de Marketing (Costo $0)
+
+Canales de Adquisición:
+1. Outbound (Caza): LinkedIn Cold Outreach manual (10 DMs/día).
+2. Inbound (Pesca): SEO de contenidos en Blog y YouTube Shorts (Producidos con herramientas free).
+
+---
+
+## 6. ANEXOS TÉCNICOS
+
+### Stack Tecnológico Operativo (Zero Cost)
+* Cerebro IA: Google Gemini API (Free Tier), Groq API (Llama 3).
+* Orquestación: Python (Local), ChromaDB (Memoria Local).
+* Frontend Web: Vercel Hobby Tier (Next.js).
+* Base de Datos: Supabase Free Tier.
+
+### Herramientas de Producción (Stack Creativo Gratuito)
+* Texto/Guiones: Google Gemini, ChatGPT (Free), Claude (Free Web).
+* Imagen: Bing Image Creator (15 créditos/día), SeaArt.ai.
+* Video: CapCut Desktop, DaVinci Resolve (Versión Free).
+* Audio: TTSMaker (Text-to-Speech ilimitado), Suno (Free Credits).
+* Edición: DaVinci Resolve, CapCut.
+* Diseño: Photopea, Figma (Free Tier).
+
+---
+
+## CONTROL DE VERSIONES
+
+| Versión | Fecha | Autor | Cambios |
+|:-------:|:-----:|:-----:|:--------|
+| 1.0.0 | 27/01/2026 | Antigravity Agent | Creación del Documento Maestro consolidado. |

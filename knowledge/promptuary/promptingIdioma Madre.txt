@@ -1,0 +1,5 @@
+RAW text:
+
+Task: 
+Do the comprehensive transcription exactly INTO ENGLISH the following text with exactly the same words, only change and/or convert all the numbers written in figures (such as ages, times, distances, dates and any other kind of expression that is not words) to their written form in words in ENGLISH, (for example, “ten post meridiem” instead of “10:00 pm” or the number "88" for "eighty eight", "1880" for "one thousand eight hundred eighty") and correct spelling, format the text. REMOVE WHAT SAYS "MUSIC, MUSICA, [Music], también quita todo otro caracter/letra extraño que no de con las condiciones de una redacción comprehensiva. Elimina las despedidas despues de cada historia de existir alguna, es decir que siempre todas concluyan con el cuento y sin propagandas, completa los sitios donde hay "[_]" con palabras que le den contexto al texto.
+

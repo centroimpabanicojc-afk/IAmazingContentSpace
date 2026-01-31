@@ -1,0 +1,24 @@
+# Local Environment
+.agent/
+.gemini/
+.DS_Store
+Thumbs.db
+
+# Sensitive Configuration (Contains API Keys)
+.env
+dashboard_etapa/.env
+dashboard_etapa/ui/config.js
+
+# Documentation
+lessons_learned.md
+DEV_LOG.md
+ROADMAP.md
+Walkthrough_*.md
+
+# Tools & Scripts
+tools/*.ps1
+architecture/*.sql
+
+# Temp files
+*.tmp
+*.log
