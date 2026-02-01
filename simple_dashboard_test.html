@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>TEST BASICO - SOLO DATOS</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background: white;
+            color: black;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .section {
+            border: 2px solid black;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>PRUEBA DE VISUALIZACIÓN DE DATOS RAW</h1>
+    <p>Esta pantalla NO tiene estilos complejos ni lógica de pestañas.</p>
+
+    <div class="section">
+        <h2>1. DATA: EQUIPO (Hardcoded)</h2>
+        <p>Si no ves la tabla de abajo, tu navegador no está ejecutando Javascript básico.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Password</th>
+                </tr>
+            </thead>
+            <tbody id="table-team">
+                <!-- Se llena con JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>2. DATA: METRICAS (Hardcoded)</h2>
+        <div id="metrics-container">
+            <!-- Se llena con JS -->
+        </div>
+    </div>
+
+    <script>
+        // DATOS "QUEMADOS" (Hardcoded) - NO dependen de internet ni de base de datos
+        const TEAM_DATA = [
+            { name: 'Marco', role: 'Project Manager', pass: '123123' },
+            { name: 'Pedro', role: 'Editor Senior', pass: '123123' },
+            { name: 'TestUser', role: 'Tester', pass: '123123' }
+        ];
+
+        const METRICS_DATA = {
+            revenue: 15400,
+            projects: 12,
+            efficiency: "98%"
+        };
+
+        // Función simple de renderizado
+        function render() {
+            try {
+                console.log("Iniciando render...");
+
+                // 1. Render Equipo
+                const tbody = document.getElementById('table-team');
+                let html = "";
+                TEAM_DATA.forEach(u => {
+                    html += `<tr>
+                        <td>${u.name}</td>
+                        <td>${u.role}</td>
+                        <td><strong>${u.pass}</strong></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+
+                // 2. Render Métricas
+                const mDiv = document.getElementById('metrics-container');
+                mDiv.innerHTML = `
+                    <ul>
+                        <li><strong>Revenue Total:</strong> $${METRICS_DATA.revenue}</li>
+                        <li><strong>Proyectos Activos:</strong> ${METRICS_DATA.projects}</li>
+                        <li><strong>Eficiencia:</strong> ${METRICS_DATA.efficiency}</li>
+                    </ul>
+                `;
+
+                console.log("Render completado.");
+            } catch (e) {
+                alert("ERROR CRITICO EN JS: " + e.message);
+            }
+        }
+
+        // Ejecutar inmediatamente
+        render();
+    </script>
+</body>
+
+</html>
