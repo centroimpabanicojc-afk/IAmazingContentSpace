@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAmazing Control (Standalone Mode)</title>
+    <style>
+        /* 🎨 INTERNAL CSS ENGINE (Zero Tailwind Dependency) */
+        :root {
+            --bg-deep: #050507;
+            --bg-card: #1e1e24;
+            /* Solid fallback */
+            --bg-card-glass: rgba(30, 30, 36, 0.95);
+            --accent-primary: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-light: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Layout */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1), transparent 40%);
+        }
+
+        /* Components */
+        .card {
+            background: var(--bg-card-glass);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-cyan));
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-emerald);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Typography */
+        h1 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+
+        h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: var(--accent-cyan);
+        }
+
+        h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        /* Tables & Lists */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-purple {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-primary);
+        }
+
+        .badge-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-emerald);
+        }
+
+        /* Hidden inputs */
+        input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-light);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .text-big {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 30px; height: 30px; background: var(--accent-primary); border-radius: 8px;"></div>
+            <span style="font-weight: bold; font-size: 18px;">IAmazing</span>
+        </div>
+
+        <nav>
+            <a href="#" onclick="show('dashboard')" class="nav-item active" id="nav-dashboard">Panel Maestro</a>
+            <a href="#" onclick="show('analytics')" class="nav-item" id="nav-analytics">Métricas & KPI</a>
+            <a href="#" onclick="show('team')" class="nav-item" id="nav-team">Equipo & Accesos</a>
+        </nav>
+
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-light);">
+            <p style="font-size: 12px;">Usuario: <strong>Admin (Local)</strong></p>
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="main-content">
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard">
+            <header class="flex-between" style="margin-bottom: 30px;">
+                <div>
+                    <h1>Control de Operaciones 🕹️</h1>
+                    <p>Vista general del estado de la agencia.</p>
+                </div>
+                <button class="btn btn-primary" onclick="alert('Funcionalidad Demo')">+ Nuevo Proyecto</button>
+            </header>
+
+            <div class="grid-4">
+                <div class="card">
+                    <h3>Revenue (Mes)</h3>
+                    <div class="text-big" style="color: var(--accent-emerald);">$12,450</div>
+                </div>
+                <div class="card">
+                    <h3>Proyectos Activos</h3>
+                    <div class="text-big" style="color: var(--accent-cyan);">8</div>
+                </div>
+                <div class="card">
+                    <h3>Eficiencia</h3>
+                    <div class="text-big" style="color: var(--accent-primary);">94%</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 30px;">Proyectos Recientes</h2>
+            <div class="card" style="padding: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Proyecto</th>
+                            <th>Estado</th>
+                            <th>Responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TechFlow</td>
+                            <td>Video Largo YouTube</td>
+                            <td><span class="badge badge-purple">Producción</span></td>
+                            <td>Pedro (Editor)</td>
+                        </tr>
+                        <tr>
+                            <td>YogaSarah</td>
+                            <td>Pack Reels x10</td>
+                            <td><span class="badge badge-green">Completado</span></td>
+                            <td>Yara (Designer)</td>
+                        </tr>
+                        <tr>
+                            <td>UrbanEats</td>
+                            <td>Review Comida</td>
+                            <td><span class="badge badge-purple">Briefing</span></td>
+                            <td>Marco (PM)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ANALYTICS VIEW -->
+        <div id="view-analytics" class="hidden">
+            <header style="margin-bottom: 30px;">
+                <h1>Analítica de Rendimiento 📊</h1>
+                <p>Datos financieros simulados (Modo Offline).</p>
+            </header>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Progresión de Revenue</h2>
+                    <div
+                        style="height: 200px; display: flex; align-items: flex-end; justify-content: space-around; padding-bottom: 20px; border-bottom: 1px solid var(--border-light);">
+                        <!-- SVG Bars Simulation -->
+                        <div style="width: 30px; height: 40%; background: var(--accent-emerald); opacity: 0.5;"></div>
+                        <div style="width: 30px; height: 60%; background: var(--accent-emerald); opacity: 0.7;"></div>
+                        <div style="width: 30px; height: 50%; background: var(--accent-emerald); opacity: 0.6;"></div>
+                        <div style="width: 30px; height: 90%; background: var(--accent-emerald);"></div>
+                    </div>
+                    <p style="text-align: center; margin-top: 10px; font-size: 12px;">Últimos 4 meses</p>
+                </div>
+                <div class="card">
+                    <h3>Distribución por Cliente</h3>
+                    <table style="margin-top: 10px;">
+                        <tr>
+                            <td style="border:none;">TechFlow Agency</td>
+                            <td style="border:none; text-align: right;">$5,200</td>
+                        </tr>
+                        <tr>
+                            <td style="border:none;">YogaWithSarah</td>
+                            <td style="border:none; text-align: right;">$3,150</td>
+                        </tr>
+                        <tr>
+                            <td style="border:none;">CryptoKing</td>
+                            <td style="border:none; text-align: right;">$1,800</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEAM VIEW -->
+        <div id="view-team" class="hidden">
+            <header style="margin-bottom: 30px;">
+                <h1>Gestión de Equipo 👥</h1>
+                <p>Gestión de accesos y contraseñas.</p>
+            </header>
+
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Miembro</th>
+                            <th>Rol</th>
+                            <th>Contraseña Actual</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="team-list">
+                        <!-- JS Filling -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 🚀 ZERO-DEPENDENCY JAVASCRIPT
+
+        // Data
+        const TEAM = [
+            { name: 'Marco', role: 'Project Manager', pass: '123123' },
+            { name: 'Pedro', role: 'Editor Senior', pass: '123123' },
+            { name: 'Yara', role: 'Designer', pass: '123123' },
+            { name: 'Antigravity', role: 'AI Agent', pass: '123123' }
+        ];
+
+        function init() {
+            // Render Team
+            const list = document.getElementById('team-list');
+            list.innerHTML = TEAM.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong></td>
+                    <td><span class="badge badge-purple">${m.role}</span></td>
+                    <td>
+                        <input type="text" value="${m.pass}" onchange="alert('Contraseña actualizada en local')" style="width: 80px; text-align: center;">
+                    </td>
+                    <td><button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">Guardar</button></td>
+                </tr>
+            `).join('');
+
+            console.log("Dashboard Standalone Loaded");
+        }
+
+        // Navigation Logic
+        window.show = function (viewId) {
+            // Hide all
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-analytics').classList.add('hidden');
+            document.getElementById('view-team').classList.add('hidden');
+
+            // Show selected
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+
+            // Update Nav
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + viewId).classList.add('active');
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+
+</html>
