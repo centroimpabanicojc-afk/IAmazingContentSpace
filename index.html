@@ -741,9 +741,21 @@
 
         async function loadDashboard() {
             if (!currentUser) return;
-            const isManager = ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
-            const { data: projects } = await sb.from('projects').select('*, clients(name, whatsapp), team_members(first_name)');
-            const { data: payments } = await sb.from('project_payments').select('*');
+            const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+            let projects = [], payments = [];
+
+            try {
+                const resProjects = await sb.from('projects').select('*, clients(name, whatsapp), team_members(first_name)');
+                if (resProjects.error) throw resProjects.error;
+                projects = resProjects.data;
+
+                const resPayments = await sb.from('project_payments').select('*');
+                if (resPayments.error) throw resPayments.error;
+                payments = resPayments.data;
+            } catch (e) {
+                console.error("Dashboard Load Error:", e);
+                renderToast("Error cargando datos: " + e.message, "error");
+            }
 
             if (isManager) renderTeamMgmt();
 
