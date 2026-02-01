@@ -9,11 +9,19 @@ Thumbs.db
 dashboard_etapa/.env
 dashboard_etapa/ui/config.js
 
-# Documentation
-lessons_learned.md
-DEV_LOG.md
-ROADMAP.md
-Walkthrough_*.md
+# Documentation (Included for GitHub)
+# lessons_learned.md
+# DEV_LOG.md
+# ROADMAP.md
+# Walkthrough_*.md
+
+# Internal Business Data (EXCLUDED)
+knowledge/
+business/
+brand/
+marketing/
+product/
+organization/
 
 # Tools & Scripts
 tools/*.ps1
