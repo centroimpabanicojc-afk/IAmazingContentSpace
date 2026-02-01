@@ -712,12 +712,13 @@
             document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
             document.getElementById('user-display-name').textContent = currentUser.first_name;
             document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
-            const isManager = ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
-            document.getElementById('nav-dashboard').style.display = isManager ? 'flex' : 'none';
-            document.getElementById('nav-payments').style.display = isManager ? 'flex' : 'none';
-            document.getElementById('nav-analytics').style.display = isManager ? 'flex' : 'none';
-            document.getElementById('nav-team-mgmt').style.display = isManager ? 'flex' : 'none';
-            if (!isManager && !document.getElementById('view-dashboard').classList.contains('hidden')) showView('my-desk');
+            // ⚠️ TEST MODE: Enable Manager Views for ALL
+            const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+            document.getElementById('nav-dashboard').style.display = 'flex';
+            document.getElementById('nav-payments').style.display = 'flex';
+            document.getElementById('nav-analytics').style.display = 'flex';
+            document.getElementById('nav-team-mgmt').style.display = 'flex';
+            if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) showView('my-desk');
             document.getElementById('personal-notes').value = localStorage.getItem(`notes_${currentUser.id}`) || "";
         }
 
