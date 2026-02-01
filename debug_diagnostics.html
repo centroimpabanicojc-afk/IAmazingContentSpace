@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAmazing Diagnostics V2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: monospace;
+        }
+
+        .status-ok {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .status-err {
+            color: #f87171;
+            font-weight: bold;
+        }
+
+        .status-warn {
+            color: #facc15;
+            font-weight: bold;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            rounded: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="p-8 max-w-4xl mx-auto">
+    <h1 class="text-2xl mb-6 border-b border-white/20 pb-4">🛠️ IAmazing Diagnostics V2</h1>
+
+    <div id="log" class="space-y-4"></div>
+
+    <script>
+        function log(step, status, details) {
+            const el = document.createElement('div');
+            el.className = "box";
+            el.innerHTML = `
+                <div class="flex justify-between mb-2">
+                    <span class="font-bold text-lg">${step}</span>
+                    <span class="${status === 'OK' ? 'status-ok' : (status === 'WARN' ? 'status-warn' : 'status-err')}">[ ${status} ]</span>
+                </div>
+                <pre class="text-sm text-slate-400 overflow-x-auto whitespace-pre-wrap">${details}</pre>
+            `;
+            document.getElementById('log').appendChild(el);
+        }
+
+        // 1. Global Error Handler
+        window.onerror = function (msg, url, line) {
+            log("CRITICAL ERROR", "FAIL", `Global Error at line ${line}:\n${msg}`);
+            return false;
+        };
+
+        async function runDiagnostics() {
+            // 2. Library Check
+            if (typeof supabase === 'undefined') {
+                log("0. Library Load", "FAIL", "Supabase JS library NOT loaded.\nPossible causes:\n- No internet connection\n- CDN (jsdelivr) blocked by firewall/antivirus");
+                return;
+            } else {
+                log("0. Library Load", "OK", "Supabase JS loaded successfully.");
+            }
+
+            const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
+            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
+
+            try {
+                const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    db: { schema: 'public' },
+                    auth: { persistSession: false } // Disable persistence to avoid localstorage issues
+                });
+                log("1. Client Init", "OK", "Client initialized.");
+
+                // 3. Network / Connection Test
+                log("2. Connection Test", "...", "Pinging Database...");
+
+                // Set a timeout promise
+                const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out (5s)")), 5000));
+
+                const testQuery = sb.from('team_members').select('count', { count: 'exact', head: true });
+
+                // Race between query and timeout
+                const { error } = await Promise.race([testQuery, timeout]);
+
+                if (error) {
+                    log("2. Connection Test", "FAIL", `Error connecting to Supabase:\n${error.message}\n${JSON.stringify(error, null, 2)}`);
+                } else {
+                    log("2. Connection Test", "OK", "Successfully connected to DB.");
+                }
+
+                // 4. Data Check (Only if connected)
+                if (!error) {
+                    const { data: users, error: errUsers } = await sb.from('team_members').select('*').limit(3);
+                    if (errUsers) {
+                        log("3. Fetch Users", "FAIL", errUsers.message);
+                    } else if (users.length === 0) {
+                        log("3. Fetch Users", "WARN", "Connection OK but Table is EMPTY. (Need to run SQL Seeds)");
+                    } else {
+                        log("3. Fetch Users", "OK", `Found ${users.length} users.\nSample: ${users[0].first_name}`);
+                    }
+                }
+
+            } catch (e) {
+                log("EXCEPTION", "FAIL", e.message);
+            }
+        }
+
+        runDiagnostics();
+    </script>
+</body>
+
+</html>
