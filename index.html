@@ -1129,51 +1129,33 @@
             }, 600);
         }
 
-        // 🎨 ANALYTICS RAW MODE (No Charts, Just Data)
+        // ☢️ NUCLEAR DEBUG OPTION
         function renderAnalytics() {
-            console.log("Rendering Analytics (RAW Mode)...");
+            console.log("☢️ NUCLEAR RENDER ANALYTICS");
+            const view = document.getElementById('view-analytics');
+            if (view) {
+                view.classList.remove('hidden');
+                view.style.display = 'block';
+                view.style.backgroundColor = '#0000FF'; // BLUE
+                view.style.color = '#FFFFFF';
+                view.style.minHeight = '100vh';
+                view.style.padding = '50px';
 
-            // 1. Calculations
-            const totalRev = paymentsData.reduce((acc, p) => acc + parseFloat(p.amount), 0);
-
-            // Safe display
-            const elRev = document.getElementById('stat-revenue');
-            if (elRev) elRev.textContent = `$${totalRev.toLocaleString()}`;
-
-            const elLead = document.getElementById('stat-lead-time');
-            if (elLead) elLead.textContent = projectsData.length > 0 ? "3.2 días" : "Sin datos";
-
-            const elApp = document.getElementById('stat-approval');
-            if (elApp) elApp.textContent = "94%";
-
-            // 2. Render Revenue Table
-            const revTable = document.getElementById('raw-revenue-table');
-            if (revTable) {
-                // Mock Monthly Data for display
-                const months = ['Enero', 'Febrero', 'Marzo', 'Abril'];
-                const values = [5200, 3100, 8400, 4500];
-
-                revTable.innerHTML = `
-                    <table style="width: 100%; border: 1px solid #333; margin-top: 10px; color: #ddd;">
-                        <tr style="background: #333;"><th style="padding: 5px;">Mes</th><th style="padding: 5px;">Facturación</th></tr>
-                        ${months.map((m, i) => `<tr><td style="padding: 5px; border: 1px solid #444;">${m}</td><td style="padding: 5px; border: 1px solid #444;">$${values[i]}</td></tr>`).join('')}
-                    </table>
+                // Force content
+                view.innerHTML = `
+                    <h1 style="font-size: 50px; font-weight: bold; color: white;">SI VES ESTO, FUNCIONA</h1>
+                    <p>Modo Debug Nuclear Activado</p>
+                    <hr style="margin: 20px 0; border: 1px solid white;">
+                    <h3>Datos Disponibles:</h3>
+                    <ul style="font-size: 20px;">
+                        <li>Proyectos: ${projectsData.length}</li>
+                        <li>Pagos: ${paymentsData.length}</li>
+                        <li>Usuarios: ${teamData.length}</li>
+                    </ul>
                 `;
-            }
-
-            // 3. Render Efficiency Table
-            const effTable = document.getElementById('raw-efficiency-table');
-            if (effTable) {
-                const clients = ['TechFlow', 'YogaSarah', 'UrbanEats'];
-                const counts = [12, 8, 5];
-
-                revTable.innerHTML += `
-                    <h3 style="margin-top:20px">Efficiency</h3>
-                    <table style="width: 100%; border: 1px solid #333; margin-top: 10px; color: #ddd;">
-                        <tr style="background: #333;"><th style="padding: 5px;">Cliente</th><th style="padding: 5px;">Videos</th></tr>
-                        ${clients.map((c, i) => `<tr><td style="padding: 5px; border: 1px solid #444;">${c}</td><td style="padding: 5px; border: 1px solid #444;">${counts[i]}</td></tr>`).join('')}
-                    </table>
-                `;
+            } else {
+                console.error("View Analytics container NOT FOUND");
+                alert("CRITICAL: view-analytics div is missing!");
             }
         }
 
