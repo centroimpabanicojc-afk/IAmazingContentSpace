@@ -1,0 +1,35 @@
+name: Connectivity Check
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  check-db:
+    name: Verify Supabase Connection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test Connection
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Skipping test: Secrets not configured in GitHub."
+            exit 0
+          fi
+          
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$SUPABASE_URL/rest/v1/team_members?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+            
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "Successfully connected to Supabase!"
+          else
+            echo "Failed to connect. HTTP Status: $RESPONSE"
+            exit 1
+          fi
