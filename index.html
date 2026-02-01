@@ -619,6 +619,8 @@
 
         let teamData = [];
         let clientsData = [];
+        let projectsData = []; // GLOBAL STORE
+        let paymentsData = []; // GLOBAL STORE
         let currentUser = null;
         let chartInstances = {};
 
@@ -778,8 +780,8 @@
         async function loadDashboard() {
             if (!currentUser) return;
             const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
-            let projects = [], payments = [];
 
+            // USE GLOBALS
             try {
                 // Check connection first
                 const { error: ping } = await sb.from('team_members').select('count').limit(1);
@@ -787,22 +789,30 @@
 
                 const resProjects = await sb.from('projects').select('*, clients(name, whatsapp), team_members(first_name)');
                 if (resProjects.error) throw resProjects.error;
-                projects = resProjects.data;
+                projectsData = resProjects.data || [];
 
                 const resPayments = await sb.from('project_payments').select('*');
                 if (resPayments.error) throw resPayments.error;
-                payments = resPayments.data;
+                paymentsData = resPayments.data || [];
             } catch (e) {
                 console.error("Dashboard Load Error - Switching to Mock:", e);
                 const mocks = await loadMockData();
-                projects = mocks.projects;
-                payments = mocks.payments;
+                projectsData = mocks.projects;
+                paymentsData = mocks.payments;
+
                 // Force Mock Team if needed
-                if (teamData.length === 0) teamData = [
-                    { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
-                    { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
-                ];
+                if (teamData.length === 0) {
+                    teamData = [
+                        { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
+                        { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
+                    ];
+                    updateUserUI(); // Update UI if team changed
+                }
             }
+
+            // Assign to local variable for legacy code compatibility below if needed
+            const projects = projectsData;
+            const payments = paymentsData;
 
             if (isManager) renderTeamMgmt();
 
@@ -1114,8 +1124,9 @@
         }
 
         async function renderAnalytics() {
-            const { data: projects } = await sb.from('projects').select('*, clients(name)');
-            const { data: payments } = await sb.from('project_payments').select('*');
+            // USE GLOBAL DATA - DO NOT FETCH AGAIN
+            const projects = projectsData;
+            const payments = paymentsData;
 
             // 1. Stat Cards
             const completed = projects.filter(p => p.status === 'completed');
