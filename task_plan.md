@@ -17,12 +17,13 @@
 - [x] Integración: Conectar Cortex UI con el endpoint unificado `/api/agent`.
 
 ## Fase 4: Pulido [P]
-- [ ] Refinamiento de UI/UX: Añadir efectos de escritura y feedback visual en Cortex.
-- [ ] Mejoras Estéticas: Implementar transiciones suaves entre vistas y pulido de tarjetas Kanban.
-- [ ] Optimización: Carga silenciosa de datos y manejo de errores premium.
+- [x] Refinamiento de UI/UX: Añadir efectos de escritura (typing effect) y feedback visual en Cortex.
+- [x] Mejoras Estéticas: Implementar transiciones suaves entre vistas y pulido de tarjetas Kanban.
+- [x] Optimización: Carga silenciosa de datos y manejo de errores premium.
 
 ## Fase 5: Automatización y Despliegue [A]
 - [x] Configuración inicial: Crear `requirements.txt` y `vercel.json`.
-- [ ] Evaluación: Decidir entre Vercel (Híbrido) o Railway para los agentes (por el timeout de 10s).
-- [ ] Disparadores: Configurar Webhooks de Supabase para automatización proactiva.
-- [ ] Entrega: Manual de uso y despliegue final.
+- [x] Despliegue Híbrido: Configuración de Vercel (Frontend) y Railway (Backend).
+- [/] Disparadores: Configurar Webhooks de Supabase para automatización proactiva (Cerebro Reactivo).
+- [ ] Audio: Integrar respuesta de voz (TTS) en Cortex AI.
+- [ ] Entrega: Manual de uso y cierre de proyecto.
