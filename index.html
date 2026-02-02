@@ -1247,9 +1247,11 @@
 
         window.formatMarkdown = (text) => {
             return text
+                .replace(/^# (.*)/gm, '<h1 class="text-xl font-bold text-white mb-4 mt-2 border-b border-white/10 pb-2">$1</h1>')
+                .replace(/^## (.*)/gm, '<h2 class="text-lg font-bold text-violet-300 mb-3 mt-4">$2</h2>')
                 .replace(/\*\*(.*?)\*\*/g, '<b class="text-violet-400">$1</b>')
                 .replace(/\n/g, '<br>')
-                .replace(/^[-*] (.*)/gm, '<div class="flex gap-2 mb-1"><span class="text-violet-500">•</span><span>$1</span></div>');
+                .replace(/^[-*] (.*)/gm, '<div class="flex gap-2 mb-1 pl-2"><span class="text-violet-500">•</span><span>$1</span></div>');
         }
 
         window.speakResponse = async (text, btn) => {
