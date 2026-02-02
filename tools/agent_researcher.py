@@ -1,24 +1,28 @@
 import os
 import json
 from crewai import Agent, Task, Crew, Process, LLM
-from dotenv import load_dotenv
+from langchain_community.tools import DuckDuckGoSearchRun
 
 load_dotenv()
+
+# Inicializar herramienta de búsqueda gratuita
+search_tool = DuckDuckGoSearchRun()
 
 # Usar el objeto LLM nativo de CrewAI configurado para Groq
 my_llm = LLM(
     model="groq/llama-3.3-70b-versatile",
     api_key=os.getenv("GROQ_API_KEY"),
-    temperature=0.7 # Alta creatividad para investigación y tendencias
+    temperature=0.7 
 )
 
 # 1. Definir el Agente de I+D (Researcher)
 research_agent = Agent(
     role='IA Researcher & Trend Hunter',
-    goal='Escanear el estado del arte en IA y encontrar las mejores herramientas gratuitas para la agencia',
-    backstory='Eres un entusiasta de la tecnología que vive en los foros de Reddit, repositorios de GitHub y publicaciones de ArXiv. Tu misión es que la agencia siempre use lo más nuevo al menor costo.',
+    goal='Escanear internet en busca del estado del arte en IA y encontrar herramientas gratuitas para la agencia',
+    backstory='Eres un entusiasta de la tecnología que vive en internet. Tu misión es que la agencia siempre use lo más nuevo al menor costo. Usas herramientas de búsqueda para validar tus hallazgos.',
     verbose=True,
     allow_delegation=False,
+    tools=[search_tool],
     llm=my_llm
 )
 
