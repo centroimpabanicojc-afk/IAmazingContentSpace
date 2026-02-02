@@ -1274,24 +1274,32 @@
                 if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
                 if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
 
-                const response = await fetch(`${BACKEND_API_URL}/api/agent`, {
+                // Limpiar la URL de posibles barras finales
+                const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+
+                const response = await fetch(`${cleanBaseUrl}/api/agent`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         agent_type: agentType,
                         query: query,
-                        topic: query, // Para el investigador
-                        client: dashboardData.clients?.[0]?.name || 'Prospecto',
+                        topic: query,
+                        client: currentUser?.first_name || 'Prospecto',
                         niche: 'Contenido Digital',
                         title: 'Video Solicitado',
                         idea: query,
-                        projects: dashboardData.projects
+                        projects: projectsData
                     })
                 });
 
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `Error del servidor (${response.status})`);
+                }
+
                 const data = await response.json();
                 const prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
-                const finalResponse = data.result || data.message || "No recibí una respuesta clara.";
+                const finalResponse = data.result || "No recibí una respuesta clara.";
 
                 logActivity(prefix, 'Respuesta generada', 'success');
 
@@ -1311,8 +1319,12 @@
 
             } catch (e) {
                 console.error("Cortex Error:", e);
-                logActivity('Error', 'Servidor no responde', 'warning');
-                botBox.textContent = "⚠️ Error de conexión: Asegúrate de que server.py esté corriendo localmente.";
+                logActivity('Error', e.message, 'warning');
+                if (e.message.includes('fetch') || e.message.includes('NetworkError')) {
+                    botBox.textContent = "⚠️ Error de conexión: No se pudo contactar con el servidor. Revisa la URL en Ajustes.";
+                } else {
+                    botBox.textContent = `⚠️ Error en Cortex: ${e.message}. Asegúrate de haber configurado las API Keys en Railway.`;
+                }
             }
             chat.scrollTop = chat.scrollHeight;
         };
