@@ -23,7 +23,7 @@ manager = Agent(
     llm=my_llm
 )
 
-def run_manager_action_plan(projects_json):
+def run_manager(projects_json):
     """Genera un plan de acción estratégico basado en los proyectos actuales."""
     
     task_description = f"""
@@ -57,4 +57,4 @@ if __name__ == "__main__":
         {"id": "1", "client": "TechFlow", "priority": 5, "status": "production", "service": "Video Long"},
         {"id": "2", "client": "YogaSarah", "priority": 3, "status": "briefing", "service": "Reel"}
     ]
-    print(run_manager_action_plan(json.dumps(mock_projects)))
+    print(run_manager(json.dumps(mock_projects)))

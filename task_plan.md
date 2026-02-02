@@ -22,6 +22,8 @@
 - [ ] Mejoras Estéticas: Implementar transiciones suaves entre vistas y pulido de tarjetas Kanban.
 - [ ] Optimización: Carga silenciosa de datos y manejo de errores premium.
 
-## Fase 5: Automatización [A]
-- [ ] Disparadores (Triggers) de n8n.
-- [ ] Despliegue final.
+## Fase 5: Automatización y Despliegue [A]
+- [x] Configuración inicial: Crear `requirements.txt` y `vercel.json`.
+- [ ] Evaluación: Decidir entre Vercel (Híbrido) o Railway para los agentes (por el timeout de 10s).
+- [ ] Disparadores: Configurar Webhooks de Supabase para automatización proactiva.
+- [ ] Entrega: Manual de uso y despliegue final.
