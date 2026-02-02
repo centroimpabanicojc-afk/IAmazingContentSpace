@@ -432,51 +432,54 @@
                         </div>
                     </div>
                 </div>
-                <!-- View: Analytics (Premium Mode) -->
-                <div id="view-analytics" class="hidden space-y-8">
-                    <header class="mb-8">
-                        <h1 class="text-3xl font-bold text-white mb-1">Métricas de Rendimiento 📊</h1>
-                        <p class="text-slate-400">Análisis operativo en tiempo real.</p>
-                    </header>
+            </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="glass p-6 rounded-3xl border border-white/10">
-                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Revenue Total</p>
-                            <h2 class="text-3xl font-bold text-emerald-400" id="stat-revenue">$0.00</h2>
-                        </div>
-                        <div class="glass p-6 rounded-3xl border border-white/10">
-                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Entregas Mes</p>
-                            <h2 class="text-3xl font-bold text-violet-400" id="stat-deliveries">0</h2>
-                        </div>
-                        <div class="glass p-6 rounded-3xl border border-white/10">
-                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Tasa Aprobación
-                            </p>
-                            <h2 class="text-3xl font-bold text-cyan-400" id="stat-approval">0%</h2>
+            <!-- View: Analytics (Premium Mode) -->
+            <div id="view-analytics" class="hidden space-y-8">
+                <header class="mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-1">Métricas de Rendimiento 📊</h1>
+                    <p class="text-slate-400">Análisis operativo en tiempo real.</p>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass p-6 rounded-3xl border border-white/10 text-center">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Revenue Total</p>
+                        <h2 class="text-3xl font-bold text-emerald-400" id="stat-revenue">$0.00</h2>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border border-white/10 text-center">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Entregas Mes</p>
+                        <h2 class="text-3xl font-bold text-violet-400" id="stat-deliveries">0</h2>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border border-white/10 text-center">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Tasa Aprobación</p>
+                        <h2 class="text-3xl font-bold text-cyan-400" id="stat-approval">94%</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass p-8 rounded-[40px] border border-white/10">
+                        <h3 class="text-lg font-bold mb-6 text-white text-center">Ingresos Mensuales</h3>
+                        <div class="h-64">
+                            <canvas id="chart-revenue"></canvas>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="glass p-8 rounded-[40px] border border-white/10">
-                            <h3 class="text-lg font-bold mb-6 text-white">Ingresos Mensuales</h3>
-                            <div class="h-64">
-                                <canvas id="chart-revenue"></canvas>
-                            </div>
-                        </div>
-                        <div class="glass p-8 rounded-[40px] border border-white/10">
-                            <h3 class="text-lg font-bold mb-6 text-white">Eficiencia por Cliente</h3>
-                            <div class="h-64">
-                                <canvas id="chart-efficiency"></canvas>
-                            </div>
+                    <div class="glass p-8 rounded-[40px] border border-white/10">
+                        <h3 class="text-lg font-bold mb-6 text-white text-center">Eficiencia por Cliente</h3>
+                        <div class="h-64">
+                            <canvas id="chart-efficiency"></canvas>
                         </div>
                     </div>
                 </div>
-                <!-- View: Team Mgmt (Admin) -->
-                <div id="view-team-mgmt" class="hidden">
-                    <header class="mb-8">
-                        <h1 class="text-3xl font-bold text-white mb-1">Gestión de Equipo 👥</h1>
-                        <p class="text-slate-400">Control de accesos y perfiles.</p>
-                    </header>
-                    <div class="glass p-6 rounded-3xl border border-white/10">
+            </div>
+
+            <!-- View: Team Mgmt (Admin) -->
+            <div id="view-team-mgmt" class="hidden">
+                <header class="mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-1" id="team-title-check">Gestión de Equipo 👥</h1>
+                    <p class="text-slate-400">Control de accesos y perfiles.</p>
+                </header>
+                <div class="glass p-6 rounded-3xl border border-white/10 overflow-hidden">
+                    <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="text-slate-500 border-b border-white/5">
                                 <tr>
@@ -486,10 +489,13 @@
                                     <th class="py-3 px-2">Acción</th>
                                 </tr>
                             </thead>
-                            <tbody id="team-mgmt-body" class="text-slate-300"></tbody>
+                            <tbody id="team-mgmt-body" class="text-slate-300">
+                                <!-- Se llena dinámicamente -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
+            </div>
         </main>
     </div>
 
