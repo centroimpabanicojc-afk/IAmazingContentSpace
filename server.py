@@ -9,6 +9,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from tools.agent_manager import run_manager
 from tools.agent_sales import generate_sales_pitch
 from tools.agent_production import generate_production_brief
+from tools.agent_researcher import run_research
+from tools.voice_engine import generate_voice
+import asyncio
 
 app = Flask(__name__)
 CORS(app)
@@ -50,11 +53,46 @@ def run_agent():
             result = generate_production_brief(title, idea)
             return jsonify({"status": "success", "result": str(result)})
             
+        elif agent_type == 'research':
+            topic = data.get('topic', 'IA en Marketing 2026')
+            result = run_research(topic)
+            return jsonify({"status": "success", "result": str(result)})
+            
         else:
             return jsonify({"status": "error", "message": "Tipo de agente no reconocido"}), 400
             
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+# 🎤 Endpoint de Voz (Fase 5: Producción Proactiva)
+@app.route('/api/voice', methods=['POST'])
+def run_voice():
+    data = request.json
+    text = data.get('text', '')
+    if not text: return jsonify({"status": "error", "message": "Falta el texto"}), 400
+    
+    try:
+        filename = f"assets/audio/voice_{os.urandom(4).hex()}.mp3"
+        asyncio.run(generate_voice(text, filename))
+        return jsonify({"status": "success", "url": filename})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# ⚡ NUEVO: Webhook para Automatización Proactiva (Fase 5)
+@app.route('/api/webhook', methods=['POST'])
+def supabase_webhook():
+    """Recibe notificaciones de cambios en la DB para disparar agentes."""
+    payload = request.json
+    print(f"DEBUG: Webhook recibido: {payload}")
+    
+    # Lógica de disparo automático:
+    # Si se crea un proyecto (INSERT), llamar al Agente Manager para priorizar.
+    if payload.get('type') == 'INSERT' and payload.get('table') == 'projects':
+        project = payload.get('record', {})
+        run_manager([project]) # El manager analiza el nuevo proyecto
+        return jsonify({"status": "success", "message": "Agente Manager disparado"}), 200
+        
+    return jsonify({"status": "ignored", "message": "Evento no procesado"}), 200
 
 if __name__ == '__main__':
     # Usar el puerto 5000

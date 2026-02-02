@@ -468,21 +468,52 @@
             </div>
 
             <!-- View: Cortex AI -->
-            <div id="view-cortex" class="hidden h-full flex flex-col">
-                <header class="mb-4">
-                    <h1 class="text-3xl font-bold text-white mb-1">Cortex Brain 🧠</h1>
-                    <p class="text-slate-400">Inteligencia operativa.</p>
+            <div id="view-cortex" class="hidden h-full flex flex-col gap-6">
+                <header class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white mb-1">Cortex Brain 🧠</h1>
+                        <p class="text-slate-400">Inteligencia operativa híbrida.</p>
+                    </div>
+                    <div id="server-status-badge"
+                        class="glass px-4 py-2 rounded-full border border-emerald-500/20 flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Servidor
+                            Activo</span>
+                    </div>
                 </header>
-                <div class="flex-1 glass rounded-3xl border border-white/10 flex flex-col overflow-hidden mb-8">
-                    <div id="cortex-chat" class="flex-1 p-6 overflow-y-auto flex flex-col gap-4"></div>
-                    <div class="p-4 bg-white/5 border-t border-white/10">
-                        <div class="flex gap-3">
-                            <input type="text" id="cortex-input" placeholder="Pregúntame algo..."
-                                class="flex-1 rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white focus:border-violet-500 outline-none"
-                                onkeypress="if(event.key === 'Enter') sendCortex()">
-                            <button onclick="sendCortex()"
-                                class="p-3 bg-violet-600 hover:bg-violet-500 rounded-xl transition-colors"><i
-                                    data-lucide="send" class="w-5 h-5 text-white"></i></button>
+
+                <div class="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden mb-8">
+                    <!-- Chat Area -->
+                    <div class="flex-1 glass rounded-3xl border border-white/10 flex flex-col overflow-hidden">
+                        <div id="cortex-chat" class="flex-1 p-6 overflow-y-auto flex flex-col gap-4"></div>
+                        <div class="p-4 bg-white/5 border-t border-white/10">
+                            <div class="flex gap-3">
+                                <input type="text" id="cortex-input" placeholder="Pregúntame algo..."
+                                    class="flex-1 rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white focus:border-violet-500 outline-none"
+                                    onkeypress="if(event.key === 'Enter') sendCortex()">
+                                <button onclick="sendCortex()"
+                                    class="p-3 bg-violet-600 hover:bg-violet-500 rounded-xl transition-colors"><i
+                                        data-lucide="send" class="w-5 h-5 text-white"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Feed (Right Side) -->
+                    <div class="hidden lg:flex w-80 flex-col gap-4">
+                        <div class="glass p-6 rounded-3xl border border-white/10 flex-1 flex flex-col overflow-hidden">
+                            <h3
+                                class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i data-lucide="activity" class="w-3 h-3"></i> Registro de Actividad
+                            </h3>
+                            <div id="cortex-activity" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                                <!-- Actividad detectada -->
+                                <div class="text-[10px] text-slate-500 italic p-4 text-center">Escuchando eventos de
+                                    agentes...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1181,6 +1212,24 @@
             document.getElementById('settings-modal').classList.remove('hidden');
         }
 
+        window.logActivity = (agent, action, type = 'info') => {
+            const feed = document.getElementById('cortex-activity');
+            if (!feed) return;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const colors = { info: 'text-cyan-400', success: 'text-emerald-400', warning: 'text-amber-400' };
+            const div = document.createElement('div');
+            div.className = "p-3 bg-white/5 rounded-2xl border border-white/5 animate-fade-in mb-3";
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[9px] font-bold uppercase ${colors[type]} tracking-widest">${agent}</span>
+                    <span class="text-[8px] text-slate-500">${time}</span>
+                </div>
+                <p class="text-[10px] text-slate-300 leading-tight">${action}</p>
+            `;
+            feed.prepend(div);
+            if (feed.children.length > 8) feed.lastElementChild.remove();
+        }
+
         window.sendCortex = async () => {
             const input = document.getElementById('cortex-input');
             const chat = document.getElementById('cortex-chat');
@@ -1189,63 +1238,49 @@
 
             // User message UI
             const userBox = document.createElement('div');
-            userBox.className = "self-end bg-violet-600/10 p-4 rounded-3xl text-white text-sm border border-violet-500/20 max-w-[80%]";
+            userBox.className = "self-end bg-violet-600/20 text-violet-100 p-4 rounded-3xl rounded-tr-none text-sm max-w-[80%] border border-violet-500/20";
             userBox.textContent = query;
             chat.appendChild(userBox);
             input.value = '';
             chat.scrollTop = chat.scrollHeight;
 
+            logActivity('Cortex', 'Procesando consulta...', 'info');
+
             // Bot placeholder UI
             const botBox = document.createElement('div');
             botBox.className = "self-start bg-white/5 p-4 rounded-3xl text-slate-300 text-sm border border-white/5 max-w-[80%] whitespace-pre-wrap";
-            botBox.innerHTML = `<span class="italic animate-pulse">Cortex está pensando...</span>`;
+            botBox.innerHTML = `<span class="italic animate-pulse">Pensando...</span>`;
             chat.appendChild(botBox);
 
-            const q = query.toLowerCase();
-
             try {
-                let finalResponse = "";
-                let prefix = "";
+                let agentType = 'manager';
+                const q = query.toLowerCase();
+                if (q.includes('guion') || q.includes('idea') || q.includes('produccion')) agentType = 'production';
+                if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
+                if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
 
-                // INTENT 1: AI Agents (Backend Python)
-                if (q.includes('brief') || q.includes('guion') || q.includes('instruccion') || q.includes('producción')) {
-                    const res = await fetch('http://localhost:5000/api/agent', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ agent_type: 'production', title: 'Video Solicitado', idea: query })
-                    });
-                    const data = await res.json();
-                    prefix = "🤖 AGENTE PRODUCCIÓN";
-                    finalResponse = data.result;
-                }
-                else if (q.includes('propuesta') || q.includes('vender') || q.includes('estrategia') || q.includes('tendencia')) {
-                    const res = await fetch('http://localhost:5000/api/agent', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ agent_type: 'sales', client: 'Prospecto', niche: 'Contenido Digital', status: query })
-                    });
-                    const data = await res.json();
-                    prefix = "💰 AGENTE VENTAS";
-                    finalResponse = data.result;
-                }
-                // INTENT 2: Quick Data Queries (Local/Supabase)
-                else {
-                    prefix = "🧠 CORTEX";
-                    let resp = `Hola ${currentUser.first_name}. No detecté una orden de producción o ventas, pero aquí tienes lo último:\n\n`;
+                const response = await fetch('http://localhost:5000/api/agent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        agent_type: agentType,
+                        query: query,
+                        topic: query, // Para el investigador
+                        client: dashboardData.clients?.[0]?.name || 'Prospecto',
+                        niche: 'Contenido Digital',
+                        title: 'Video Solicitado',
+                        idea: query,
+                        projects: dashboardData.projects
+                    })
+                });
 
-                    if (q.includes('tarea') || q.includes('pendiente') || q.includes('revisa')) {
-                        const myTasks = projectsData.filter(p => (p.assigned_to === currentUser.id || !p.assigned_to) && p.status !== 'completed');
-                        resp += `Tienes ${myTasks.length} tareas activas esperando atención.`;
-                    } else if (q.includes('pago') || q.includes('balance') || q.includes('plata')) {
-                        const bal = paymentsData?.reduce((acc, p) => acc + parseFloat(p.amount), 0) || 0;
-                        resp += `El balance total registrado es de $${bal.toFixed(2)}.`;
-                    } else {
-                        resp += "¿Quieres que genere un brief de producción, una propuesta de ventas o analice métricas?";
-                    }
-                    finalResponse = resp;
-                }
+                const data = await response.json();
+                const prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
+                const finalResponse = data.result || data.message || "No recibí una respuesta clara.";
 
-                // Smooth Typing Effect
+                logActivity(prefix, 'Respuesta generada', 'success');
+
+                // Typing Effect
                 botBox.innerHTML = `<span class="text-xs font-bold text-violet-400 uppercase tracking-widest">${prefix}</span><br><div class="typing-container"></div>`;
                 const container = botBox.querySelector('.typing-container');
                 let i = 0;
@@ -1260,11 +1295,12 @@
                 type();
 
             } catch (e) {
-                console.error("Cortex API Error:", e);
-                botBox.textContent = "⚠️ Error de conexión: Asegúrate de que server.py esté corriendo.";
+                console.error("Cortex Error:", e);
+                logActivity('Error', 'Servidor no responde', 'warning');
+                botBox.textContent = "⚠️ Error de conexión: Asegúrate de que server.py esté corriendo localmente.";
             }
             chat.scrollTop = chat.scrollHeight;
-        }
+        };
 
         // 📊 RENDER ANALYTICS (PREMIUM)
         function renderAnalytics() {

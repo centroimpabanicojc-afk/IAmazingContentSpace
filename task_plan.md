@@ -10,11 +10,10 @@
 - [x] Instalar `crewai`, `langchain-groq`, `edge-tts`, `flask`
 - [x] Script de prueba: `tools/test_handshake.py`
 
-## Fase 3: Arquitectura [A]
-- [x] **Capa 1 (SOPs):** Crear `architecture/sop_manager.md`.
-- [x] **Capa 2 (Navegación):** Reparar Dashboard (`index.html` con assets locales).
-- [x] **Capa 3 (Herramientas):** Desarrollar `tools/agent_manager.py` (Manager v1 funcional).
-- [x] Desarrollo: Crear Agente de Ventas y Agente de Producción.
+## Fase 3: Arquitectura (Integración) [A]
+- [x] Unificación de Agentes: CrewAI + Flask API.
+- [x] Agentes Implementados: Manager, Ventas, Producción y **I+D (Researcher)**.
+- [x] Herramientas: Integración de **Edge-TTS** para generación de voz.
 - [x] Integración: Conectar Cortex UI con el endpoint unificado `/api/agent`.
 
 ## Fase 4: Pulido [P]

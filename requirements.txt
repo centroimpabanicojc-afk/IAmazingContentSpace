@@ -6,3 +6,5 @@ python-dotenv
 edge-tts
 litellm
 playwright
+supabase
+moviepy
