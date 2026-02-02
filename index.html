@@ -1268,38 +1268,53 @@
             chat.appendChild(botBox);
 
             try {
-                let agentType = 'manager';
                 const q = query.toLowerCase();
-                if (q.includes('guion') || q.includes('idea') || q.includes('produccion')) agentType = 'production';
-                if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
-                if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
+                let agentType = 'manager';
+                let finalResponse = "";
+                let prefix = "";
 
-                // Limpiar la URL de posibles barras finales
-                const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+                // 🧠 FILTRO DE INTENCIÓN (Fase 5: Inteligencia Selectiva)
+                if (q === 'hola' || q === 'buenos dias' || q === 'buenas tardes' || q === 'que tal') {
+                    prefix = "🧠 Cortex";
+                    finalResponse = `¡Hola ${currentUser?.first_name || ''}! Soy Cortex. Estoy monitoreando tus proyectos en tiempo real. 
 
-                const response = await fetch(`${cleanBaseUrl}/api/agent`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        agent_type: agentType,
-                        query: query,
-                        topic: query,
-                        client: currentUser?.first_name || 'Prospecto',
-                        niche: 'Contenido Digital',
-                        title: 'Video Solicitado',
-                        idea: query,
-                        projects: projectsData
-                    })
-                });
+¿En qué puedo ayudarte hoy? Puedes pedirme:
+- Un **resumen** de prioridades.
+- **Ventas**: Ideas para nuevos clientes.
+- **Producción**: Guiones o ideas para videos.
+- **Investigación**: Tendencias de IA actuales.`;
+                    agentType = 'chat';
+                } else {
+                    if (q.includes('guion') || q.includes('idea') || q.includes('produccion')) agentType = 'production';
+                    if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
+                    if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `Error del servidor (${response.status})`);
+                    const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+
+                    const response = await fetch(`${cleanBaseUrl}/api/agent`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            agent_type: agentType,
+                            query: query,
+                            topic: query,
+                            client: currentUser?.first_name || 'Prospecto',
+                            niche: 'Contenido Digital',
+                            title: 'Video Solicitado',
+                            idea: query,
+                            projects: projectsData
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `Error del servidor (${response.status})`);
+                    }
+
+                    const data = await response.json();
+                    prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
+                    finalResponse = data.result || "No recibí una respuesta clara.";
                 }
-
-                const data = await response.json();
-                const prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
-                const finalResponse = data.result || "No recibí una respuesta clara.";
 
                 logActivity(prefix, 'Respuesta generada', 'success');
 
