@@ -43,19 +43,29 @@ manager = Agent(
 )
 
 def run_manager(projects_json):
-    """Genera un plan de acción estratégico basado en los proyectos actuales."""
+    """Genera un plan de acción estratégico basado en los proyectos y el ADN del equipo."""
+    
+    # Descargar ADN del equipo para personalización
+    team_res = supabase.table("team_members").select("*").execute()
+    team_dna = json.dumps(team_res.data) if team_res.data else "[]"
     
     task_description = f"""
     Analiza la lista de proyectos: {projects_json}
+    DATOS DEL EQUIPO (ADN): {team_dna}
     
     Tus responsabilidades:
     1. Si un proyecto no tiene prioridad o es errónea, usa 'update_project_db' para corregirla (Priority 1: Urgent, 5: Low).
     2. Identifica los 3 más urgentes para el reporte humano.
-    3. Si Pedro está sobrecargado (>3 tareas), intenta reasignar una tarea a otro miembro usando la herramienta (opcional si hay alguien libre).
+    3. REVISIÓN DE ADN: Para cada tarea activa, mira quién es el responsable y su perfil ('personality_traits'). 
+       - Si el trabajador prefiere feedback "Directo", sé conciso.
+       - Si prefiere "Detallado", menciona puntos técnicos específicos.
+    4. GESTIÓN DE TALENTO: Si ves a alguien en 'pending_approval', lee su 'interview_summary' y dile a Marco si te parece un buen perfil para el equipo o qué precaución tomar.
     
     REPORTE PARA EL HUMANO:
-    - Identifica los proyectos como "Cliente | Servicio" (No uses IDs en el texto final).
-    - Resume qué cambios hiciste en la base de datos de forma proactiva.
+    - Identifica los proyectos como "Cliente | Servicio".
+    - Incluye una sección: "💡 Consejos de Gestión Humana (Basado en ADN)".
+    - Mención especial si hay nuevos talentos esperando aprobación.
+    - Resume qué cambios hiciste en la base de datos.
     """
     
     planning_task = Task(

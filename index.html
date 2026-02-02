@@ -768,438 +768,483 @@
                 <button type="submit" class="w-full py-3 bg-violet-600 rounded-xl font-bold">Registrar Cliente</button>
             </form>
         </div>
-    </div>
+        <div id="member-profile-modal"
+            class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-[110] p-4">
+            <div class="glass w-full max-w-lg p-8 rounded-[40px] border border-white/10 text-white relative">
+                <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-4 mb-8">
+                    <div id="prof-avatar"
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center text-3xl font-bold">
+                        ?</div>
+                    <div>
+                        <h2 id="prof-name" class="text-2xl font-bold">Nombre del Miembro</h2>
+                        <p id="prof-role" class="text-sm text-slate-400 uppercase tracking-widest">Rol</p>
+                    </div>
+                </div>
 
-    <script>
-        const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xs font-bold text-violet-400 uppercase mb-2 flex items-center gap-2">
+                            <i data-lucide="brain" class="w-3 h-3"></i> ADN Psicológico (Análisis IA)
+                        </h3>
+                        <div id="prof-summary"
+                            class="bg-white/5 p-4 rounded-2xl text-sm leading-relaxed italic text-slate-300">
+                            Cargando resumen de entrevista...
+                        </div>
+                    </div>
 
-        // 🛡️ DATA SHIELD: Initialize with data so it is NEVER empty
-        let teamData = [
-            { id: 't1', first_name: 'Marco', role: 'pm', password: '123' },
-            { id: 't2', first_name: 'Pedro', role: 'editor_sr', password: '123' },
-            { id: 't3', first_name: 'Yara', role: 'designer', password: '123' }
-        ];
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Rasgos Clave</h3>
+                            <div id="prof-traits" class="flex flex-wrap gap-2"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Preferencia de Feedback</h3>
+                            <div id="prof-feedback"
+                                class="text-xs font-medium text-cyan-400 bg-cyan-400/10 px-3 py-1.5 rounded-lg border border-cyan-400/20 inline-block">
+                                -</div>
+                        </div>
+                    </div>
+                </div>
 
-        let projectsData = [
-            { id: 'p1', client_id: 'c1', service_type: 'Video Largo', status: 'production', priority: 5, clients: { name: 'TechFlow' }, team_members: { first_name: 'Pedro' }, assigned_to: 't2', deadline: new Date(Date.now() + 86400000).toISOString() },
-            { id: 'p2', client_id: 'c2', service_type: 'Reel Instagram', status: 'briefing', priority: 3, clients: { name: 'YogaSarah' }, checklist: [] },
-            { id: 'p3', client_id: 'c3', service_type: 'Pack Mensual', status: 'completed', priority: 1, clients: { name: 'UrbanEats' }, checklist: [], delivered_at: new Date().toISOString() }
-        ];
+                <div class="mt-8 pt-6 border-t border-white/5 flex justify-end gap-3" id="prof-actions">
+                    <!-- Botón de aprobar si es necesario -->
+                </div>
+            </div>
+        </div>
 
-        let paymentsData = [
-            { id: 'pay1', amount: 450.00, status: 'paid', editor_id: 't2', created_at: new Date().toISOString() }
-        ];
+        <script>
+            const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
+            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
 
-        let clientsData = [{ id: 'c1', name: 'TechFlow' }, { id: 'c2', name: 'YogaSarah' }];
-        let currentUser = null;
-        let chartInstances = {};
+            // 🛡️ DATA SHIELD: Initialize with data so it is NEVER empty
+            let teamData = [
+                { id: 't1', first_name: 'Marco', role: 'pm', password: '123' },
+                { id: 't2', first_name: 'Pedro', role: 'editor_sr', password: '123' },
+                { id: 't3', first_name: 'Yara', role: 'designer', password: '123' }
+            ];
 
-        // 🛡️ LIBRARY SHIELD: Mock loaded libraries if they fail (Network fallback)
-        const safeLucide = { createIcons: () => console.log("Icons fallback") };
-        const safeSupabase = { createClient: () => ({ from: () => ({ select: () => ({ data: [], error: null }), update: () => ({ error: null }), insert: () => ({ error: null }) }), channel: () => ({ on: () => ({ subscribe: () => { } }) }) }) };
+            let projectsData = [
+                { id: 'p1', client_id: 'c1', service_type: 'Video Largo', status: 'production', priority: 5, clients: { name: 'TechFlow' }, team_members: { first_name: 'Pedro' }, assigned_to: 't2', deadline: new Date(Date.now() + 86400000).toISOString() },
+                { id: 'p2', client_id: 'c2', service_type: 'Reel Instagram', status: 'briefing', priority: 3, clients: { name: 'YogaSarah' }, checklist: [] },
+                { id: 'p3', client_id: 'c3', service_type: 'Pack Mensual', status: 'completed', priority: 1, clients: { name: 'UrbanEats' }, checklist: [], delivered_at: new Date().toISOString() }
+            ];
 
-        // Use real libs if available, otherwise mocks
-        const _lucide = (typeof lucide !== 'undefined') ? lucide : safeLucide;
-        const _supabase = (typeof supabase !== 'undefined') ? supabase : safeSupabase;
+            let paymentsData = [
+                { id: 'pay1', amount: 450.00, status: 'paid', editor_id: 't2', created_at: new Date().toISOString() }
+            ];
 
-        const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
-        let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "http://localhost:5000";
+            let clientsData = [{ id: 'c1', name: 'TechFlow' }, { id: 'c2', name: 'YogaSarah' }];
+            let currentUser = null;
+            let chartInstances = {};
 
-        // 🛡️ FALLBACK: Load Mock Data if DB fails
-        async function loadMockData() {
-            console.warn("Falling back to MOCK DATA Mode");
-            renderToast("⚠️ Modo Offline / Demo Activado", "warning");
+            // 🛡️ LIBRARY SHIELD: Mock loaded libraries if they fail (Network fallback)
+            const safeLucide = { createIcons: () => console.log("Icons fallback") };
+            const safeSupabase = { createClient: () => ({ from: () => ({ select: () => ({ data: [], error: null }), update: () => ({ error: null }), insert: () => ({ error: null }) }), channel: () => ({ on: () => ({ subscribe: () => { } }) }) }) };
 
-            // Simular carga de Team
-            // teamData is already initialized with mock data, no need to re-assign here unless specific mock is desired
-            // teamData = [
-            //     { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
-            //     { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
-            // ];
+            // Use real libs if available, otherwise mocks
+            const _lucide = (typeof lucide !== 'undefined') ? lucide : safeLucide;
+            const _supabase = (typeof supabase !== 'undefined') ? supabase : safeSupabase;
 
-            // Simular carga de Projects
-            return {
-                projects: projectsData, // Use the pre-initialized mock data
-                payments: paymentsData  // Use the pre-initialized mock data
-            };
-        }
+            const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
+            let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "http://localhost:5000";
 
-        async function init() {
-            try {
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            } catch (e) { console.warn("Icons failed to load"); }
+            // 🛡️ FALLBACK: Load Mock Data if DB fails
+            async function loadMockData() {
+                console.warn("Falling back to MOCK DATA Mode");
+                renderToast("⚠️ Modo Offline / Demo Activado", "warning");
 
-            // Try to load real data, but if it fails, we ALREADY have the mock data above
-            await loadConstants(); // Will update teamData/clientsData if connection works
-            checkSession();
-            await loadDashboard(); // Will update projectsData if connection works
+                // Simular carga de Team
+                // teamData is already initialized with mock data, no need to re-assign here unless specific mock is desired
+                // teamData = [
+                //     { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
+                //     { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
+                // ];
 
-            // Force Render immediately with whatever data we have
-            renderTeamMgmt();
-
-            // Force Render immediately with whatever data we have
-            renderTeamMgmt();
-
-            // 🔄 SILENT BACKGROUND SYNC (Fase 4: Pulido)
-            setInterval(() => {
-                loadDashboard().then(() => console.log("Silent Sync Complete"));
-            }, 30000);
-
-            sb.channel('any').on('postgres_changes', { event: '*', schema: 'public' }, () => loadDashboard()).subscribe();
-            initSortable();
-            renderToast("IAmazing Ready", "success");
-        }
-
-        function initSortable() {
-            const cols = ['col-briefing', 'col-production', 'col-qc', 'col-completed'];
-            cols.forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                new Sortable(el, {
-                    group: 'kanban',
-                    animation: 150,
-                    ghostClass: 'sortable-ghost',
-                    onEnd: async (evt) => {
-                        const pid = evt.item.dataset.id;
-                        const newStatus = evt.to.id.replace('col-', '');
-                        if (newStatus !== evt.from.id.replace('col-', '')) {
-                            const success = await updateStatus(pid, newStatus);
-                            if (!success) loadDashboard(); // Revertir visualmente si falla
-                        }
-                    }
-                });
-            });
-        }
-
-        function checkSession() {
-            const uid = localStorage.getItem('iamazing_user_id');
-            if (uid && teamData.find(m => m.id === uid)) {
-                currentUser = teamData.find(m => m.id === uid);
-                updateUserUI();
+                // Simular carga de Projects
+                return {
+                    projects: projectsData, // Use the pre-initialized mock data
+                    payments: paymentsData  // Use the pre-initialized mock data
+                };
             }
-            if (!currentUser) openLogin(); else updateUserUI();
-        }
 
-        function showLoginStep(step) {
-            ['login-initial', 'login-member', 'login-register'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById(`login-${step}`).classList.remove('hidden');
-            if (step === 'member') {
-                const list = document.getElementById('login-user-list');
-                list.innerHTML = teamData.filter(m => m.status === 'active').map(m => `
+            async function init() {
+                try {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                } catch (e) { console.warn("Icons failed to load"); }
+
+                // Try to load real data, but if it fails, we ALREADY have the mock data above
+                await loadConstants(); // Will update teamData/clientsData if connection works
+                checkSession();
+                await loadDashboard(); // Will update projectsData if connection works
+
+                // Force Render immediately with whatever data we have
+                renderTeamMgmt();
+
+                // Force Render immediately with whatever data we have
+                renderTeamMgmt();
+
+                // 🔄 SILENT BACKGROUND SYNC (Fase 4: Pulido)
+                setInterval(() => {
+                    loadDashboard().then(() => console.log("Silent Sync Complete"));
+                }, 30000);
+
+                sb.channel('any').on('postgres_changes', { event: '*', schema: 'public' }, () => loadDashboard()).subscribe();
+                initSortable();
+                renderToast("IAmazing Ready", "success");
+            }
+
+            function initSortable() {
+                const cols = ['col-briefing', 'col-production', 'col-qc', 'col-completed'];
+                cols.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    new Sortable(el, {
+                        group: 'kanban',
+                        animation: 150,
+                        ghostClass: 'sortable-ghost',
+                        onEnd: async (evt) => {
+                            const pid = evt.item.dataset.id;
+                            const newStatus = evt.to.id.replace('col-', '');
+                            if (newStatus !== evt.from.id.replace('col-', '')) {
+                                const success = await updateStatus(pid, newStatus);
+                                if (!success) loadDashboard(); // Revertir visualmente si falla
+                            }
+                        }
+                    });
+                });
+            }
+
+            function checkSession() {
+                const uid = localStorage.getItem('iamazing_user_id');
+                if (uid && teamData.find(m => m.id === uid)) {
+                    currentUser = teamData.find(m => m.id === uid);
+                    updateUserUI();
+                }
+                if (!currentUser) openLogin(); else updateUserUI();
+            }
+
+            function showLoginStep(step) {
+                ['login-initial', 'login-member', 'login-register'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                document.getElementById(`login-${step}`).classList.remove('hidden');
+                if (step === 'member') {
+                    const list = document.getElementById('login-user-list');
+                    list.innerHTML = teamData.filter(m => m.status === 'active').map(m => `
                     <button onclick="selectUserForLogin('${m.id}')" class="w-full flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-left">
                         <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-violet-400">${m.first_name[0]}</div>
                         <div><p class="text-sm font-bold text-white">${m.first_name}</p><p class="text-[10px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div>
                     </button>
                 `).join('');
+                }
+                lucide.createIcons();
             }
-            lucide.createIcons();
-        }
 
-        function openLogin() {
-            showLoginStep('initial');
-            document.getElementById('login-modal').classList.remove('hidden');
-        }
-
-        let selectedUserTemp = null;
-        window.selectUserForLogin = (uid) => {
-            selectedUserTemp = teamData.find(m => m.id === uid);
-            document.getElementById('member-password-area').classList.remove('hidden');
-            document.getElementById('login-password').focus();
-        };
-
-        // --- SISTEMA DE ONBOARDING ---
-        let onboardingEmployee = null;
-        let interviewLog = [];
-
-        async function startOnboarding() {
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const role = document.getElementById('reg-role').value;
-
-            if (!name || !email) return renderToast("Completa tus datos", "warning");
-
-            renderToast("Registrando perfil...", "info");
-
-            try {
-                // 1. Crear usuario en tabla team_members (status pending)
-                const { data, error } = await sb.from('team_members').insert({
-                    first_name: name,
-                    last_name: '',
-                    email: email,
-                    role: role,
-                    status: 'pending_approval' // El usuario propone pending_approval
-                }).select().single();
-
-                if (error) throw error;
-                onboardingEmployee = data;
-
-                // 2. Cambiar UI a modo Entrevista
-                document.getElementById('login-modal').classList.add('hidden');
-                showView('onboarding');
-
-                // 3. IA inicia entrevista
-                const welcomeMsg = `Hola **${name}**, qué gusto saludarte. Soy Cortex, la IA de gestión de IAmazing. Marco me ha pedido que te haga una breve entrevista para conocerte mejor y preparar tu espacio de trabajo. \n\nPara empezar: **¿Cuál es tu mayor fortaleza en el área de ${role}?**`;
-                appendOnboardingChat('bot', welcomeMsg);
-                interviewLog.push({ role: 'bot', content: welcomeMsg });
-
-            } catch (e) {
-                console.error(e);
-                renderToast("Error al registrar: " + e.message, "error");
+            function openLogin() {
+                showLoginStep('initial');
+                document.getElementById('login-modal').classList.remove('hidden');
             }
-        }
 
-        function appendOnboardingChat(role, text) {
-            const chat = document.getElementById('onboarding-chat');
-            const div = document.createElement('div');
-            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`;
-            div.innerHTML = `
+            let selectedUserTemp = null;
+            window.selectUserForLogin = (uid) => {
+                selectedUserTemp = teamData.find(m => m.id === uid);
+                document.getElementById('member-password-area').classList.remove('hidden');
+                document.getElementById('login-password').focus();
+            };
+
+            // --- SISTEMA DE ONBOARDING ---
+            let onboardingEmployee = null;
+            let interviewLog = [];
+
+            async function startOnboarding() {
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const role = document.getElementById('reg-role').value;
+
+                if (!name || !email) return renderToast("Completa tus datos", "warning");
+
+                renderToast("Registrando perfil...", "info");
+
+                try {
+                    // 1. Crear usuario en tabla team_members (status pending)
+                    const { data, error } = await sb.from('team_members').insert({
+                        first_name: name,
+                        last_name: '',
+                        email: email,
+                        role: role,
+                        status: 'pending_approval' // El usuario propone pending_approval
+                    }).select().single();
+
+                    if (error) throw error;
+                    onboardingEmployee = data;
+
+                    // 2. Cambiar UI a modo Entrevista
+                    document.getElementById('login-modal').classList.add('hidden');
+                    showView('onboarding');
+
+                    // 3. IA inicia entrevista
+                    const welcomeMsg = `Hola **${name}**, qué gusto saludarte. Soy Cortex, la IA de gestión de IAmazing. Marco me ha pedido que te haga una breve entrevista para conocerte mejor y preparar tu espacio de trabajo. \n\nPara empezar: **¿Cuál es tu mayor fortaleza en el área de ${role}?**`;
+                    appendOnboardingChat('bot', welcomeMsg);
+                    interviewLog.push({ role: 'bot', content: welcomeMsg });
+
+                } catch (e) {
+                    console.error(e);
+                    renderToast("Error al registrar: " + e.message, "error");
+                }
+            }
+
+            function appendOnboardingChat(role, text) {
+                const chat = document.getElementById('onboarding-chat');
+                const div = document.createElement('div');
+                div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`;
+                div.innerHTML = `
                 <div class="${role === 'user' ? 'bg-violet-600' : 'bg-white/5 border border-white/10'} p-4 rounded-3xl max-w-[80%] shadow-lg">
                     <p class="text-xs font-bold mb-1 opacity-50">${role === 'user' ? 'Tú' : 'Cortex'}</p>
                     <div class="text-sm leading-relaxed">${formatMarkdown(text)}</div>
                 </div>
             `;
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
-        }
+                chat.appendChild(div);
+                chat.scrollTop = chat.scrollHeight;
+            }
 
-        async function sendOnboardingMessage() {
-            const input = document.getElementById('onboarding-input');
-            const text = input.value.trim();
-            if (!text) return;
+            async function sendOnboardingMessage() {
+                const input = document.getElementById('onboarding-input');
+                const text = input.value.trim();
+                if (!text) return;
 
-            input.value = '';
-            appendOnboardingChat('user', text);
-            interviewLog.push({ role: 'user', content: text });
+                input.value = '';
+                appendOnboardingChat('user', text);
+                interviewLog.push({ role: 'user', content: text });
 
-            // Si es la 4ta interacción, cerramos entrevista (simplificado para demo)
-            if (interviewLog.length >= 6) {
-                const finalMsg = "¡Muchas gracias! Ya tengo suficiente información para Marco. El sistema analizará tu perfil y recibirás una notificación cuando tu acceso sea activado. ¡Hasta pronto!";
-                appendOnboardingChat('bot', finalMsg);
+                // Si es la 4ta interacción, cerramos entrevista (simplificado para demo)
+                if (interviewLog.length >= 6) {
+                    const finalMsg = "¡Muchas gracias! Ya tengo suficiente información para Marco. El sistema analizará tu perfil y recibirás una notificación cuando tu acceso sea activado. ¡Hasta pronto!";
+                    appendOnboardingChat('bot', finalMsg);
 
-                // Enviar al servidor para análisis
-                const transcript = interviewLog.map(m => `${m.role}: ${m.content}`).join('\n');
-                fetch(`${BACKEND_API_URL}/api/onboarding/finish`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ employee_id: onboardingEmployee.id, transcript: transcript })
-                });
+                    // Enviar al servidor para análisis
+                    const transcript = interviewLog.map(m => `${m.role}: ${m.content}`).join('\n');
+                    fetch(`${BACKEND_API_URL}/api/onboarding/finish`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ employee_id: onboardingEmployee.id, transcript: transcript })
+                    });
 
+                    setTimeout(() => {
+                        renderToast("Entrevista enviada", "success");
+                        location.reload(); // Volver al inicio
+                    }, 4000);
+                    return;
+                }
+
+                // Simular respuesta inteligente (aquí se podría llamar a un mini-endpoint de chat)
                 setTimeout(() => {
-                    renderToast("Entrevista enviada", "success");
-                    location.reload(); // Volver al inicio
-                }, 4000);
-                return;
+                    const questions = [
+                        "Interesante. ¿Cómo prefieres que te den feedback sobre tu trabajo?",
+                        "¡Entendido! Una última cosa: ¿Cuál es el proyecto del que más te enorgulleces?",
+                        "Perfecto. Con esto tengo lo que necesito para presentarte a Marco."
+                    ];
+                    const nextQ = questions[Math.floor(interviewLog.length / 2) - 1] || "Cuéntame más sobre eso.";
+                    appendOnboardingChat('bot', nextQ);
+                    interviewLog.push({ role: 'bot', content: nextQ });
+                }, 1000);
             }
 
-            // Simular respuesta inteligente (aquí se podría llamar a un mini-endpoint de chat)
-            setTimeout(() => {
-                const questions = [
-                    "Interesante. ¿Cómo prefieres que te den feedback sobre tu trabajo?",
-                    "¡Entendido! Una última cosa: ¿Cuál es el proyecto del que más te enorgulleces?",
-                    "Perfecto. Con esto tengo lo que necesito para presentarte a Marco."
-                ];
-                const nextQ = questions[Math.floor(interviewLog.length / 2) - 1] || "Cuéntame más sobre eso.";
-                appendOnboardingChat('bot', nextQ);
-                interviewLog.push({ role: 'bot', content: nextQ });
-            }, 1000);
-        }
-
-        window.attemptLogin = async () => {
-            const pass = document.getElementById('login-password').value;
-            if (pass === selectedUserTemp.password) {
-                localStorage.setItem('iamazing_user_id', selectedUserTemp.id);
-                currentUser = selectedUserTemp;
-                document.getElementById('login-modal').classList.add('hidden');
-                updateUserUI();
-                renderToast(`Hola ${currentUser.first_name}`, "success");
-                loadDashboard();
-            } else {
-                renderToast("Contraseña incorrecta", "error");
+            window.attemptLogin = async () => {
+                const pass = document.getElementById('login-password').value;
+                if (pass === selectedUserTemp.password) {
+                    localStorage.setItem('iamazing_user_id', selectedUserTemp.id);
+                    currentUser = selectedUserTemp;
+                    document.getElementById('login-modal').classList.add('hidden');
+                    updateUserUI();
+                    renderToast(`Hola ${currentUser.first_name}`, "success");
+                    loadDashboard();
+                } else {
+                    renderToast("Contraseña incorrecta", "error");
+                }
             }
-        }
 
-        function updateUserUI() {
-            if (!currentUser) return;
-            document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
-            document.getElementById('user-display-name').textContent = currentUser.first_name;
-            document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
-            // ⚠️ TEST MODE: Enable Manager Views for ALL
-            const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
-            document.getElementById('nav-dashboard').style.display = 'flex';
-            document.getElementById('nav-payments').style.display = 'flex';
-            document.getElementById('nav-analytics').style.display = 'flex';
-            document.getElementById('nav-team-mgmt').style.display = 'flex';
-            if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) showView('my-desk');
-            document.getElementById('personal-notes').value = localStorage.getItem(`notes_${currentUser.id}`) || "";
-        }
-
-        function savePersonalNotes() {
-            if (currentUser) localStorage.setItem(`notes_${currentUser.id}`, document.getElementById('personal-notes').value);
-        }
-
-        async function loadConstants() {
-            try {
-                const { data: team, error: errTeam } = await sb.from('team_members').select('*');
-                if (errTeam) throw errTeam;
-
-                const { data: clients, error: errClients } = await sb.from('clients').select('*');
-                if (errClients) throw errClients;
-
-                teamData = team || []; clientsData = clients || [];
-            } catch (e) {
-                console.warn("LoadConstants Failed - Using Mock");
-                teamData = [
-                    { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
-                    { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
-                ];
-                clientsData = [{ id: 'c1', name: 'Demo Client' }];
+            function updateUserUI() {
+                if (!currentUser) return;
+                document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
+                document.getElementById('user-display-name').textContent = currentUser.first_name;
+                document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
+                // ⚠️ TEST MODE: Enable Manager Views for ALL
+                const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+                document.getElementById('nav-dashboard').style.display = 'flex';
+                document.getElementById('nav-payments').style.display = 'flex';
+                document.getElementById('nav-analytics').style.display = 'flex';
+                document.getElementById('nav-team-mgmt').style.display = 'flex';
+                if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) showView('my-desk');
+                document.getElementById('personal-notes').value = localStorage.getItem(`notes_${currentUser.id}`) || "";
             }
-            const populate = (id, options) => { if (document.getElementById(id)) document.getElementById(id).innerHTML = options; };
-            const clientOpts = clientsData.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            populate('form-client', clientOpts);
-            populate('filter-client', '<option value="">Todos</option>' + clientOpts);
-            const editorOpts = teamData.filter(m => m.role.includes('editor')).map(m => `<option value="${m.id}">${m.first_name}</option>`).join('');
-            populate('edit-assign', '<option value="">Desasignar</option>' + editorOpts);
-            populate('pay-editor', editorOpts);
-        }
 
-        async function loadDashboard() {
-            if (!currentUser) return;
-            const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+            function savePersonalNotes() {
+                if (currentUser) localStorage.setItem(`notes_${currentUser.id}`, document.getElementById('personal-notes').value);
+            }
 
-            // USE GLOBALS
-            try {
-                // Check connection first
-                const { error: ping } = await sb.from('team_members').select('count').limit(1);
-                if (ping) throw new Error("Connection Timeout");
+            async function loadConstants() {
+                try {
+                    const { data: team, error: errTeam } = await sb.from('team_members').select('*');
+                    if (errTeam) throw errTeam;
 
-                const resProjects = await sb.from('projects').select('*, clients(name, whatsapp), team_members(first_name)');
-                if (resProjects.error) throw resProjects.error;
-                projectsData = resProjects.data || [];
+                    const { data: clients, error: errClients } = await sb.from('clients').select('*');
+                    if (errClients) throw errClients;
 
-                const resPayments = await sb.from('project_payments').select('*');
-                if (resPayments.error) throw resPayments.error;
-                paymentsData = resPayments.data || [];
-            } catch (e) {
-                console.error("Dashboard Load Error - Switching to Mock:", e);
-                const mocks = await loadMockData();
-                projectsData = mocks.projects;
-                paymentsData = mocks.payments;
-
-                // Force Mock Team if needed
-                if (teamData.length === 0) {
+                    teamData = team || []; clientsData = clients || [];
+                } catch (e) {
+                    console.warn("LoadConstants Failed - Using Mock");
                     teamData = [
                         { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
                         { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
                     ];
-                    updateUserUI(); // Update UI if team changed
+                    clientsData = [{ id: 'c1', name: 'Demo Client' }];
                 }
+                const populate = (id, options) => { if (document.getElementById(id)) document.getElementById(id).innerHTML = options; };
+                const clientOpts = clientsData.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                populate('form-client', clientOpts);
+                populate('filter-client', '<option value="">Todos</option>' + clientOpts);
+                const editorOpts = teamData.filter(m => m.role.includes('editor')).map(m => `<option value="${m.id}">${m.first_name}</option>`).join('');
+                populate('edit-assign', '<option value="">Desasignar</option>' + editorOpts);
+                populate('pay-editor', editorOpts);
             }
 
-            // Assign to local variable for legacy code compatibility below if needed
-            const projects = projectsData;
-            const payments = paymentsData;
+            async function loadDashboard() {
+                if (!currentUser) return;
+                const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
 
-            if (isManager) renderTeamMgmt();
+                // USE GLOBALS
+                try {
+                    // Check connection first
+                    const { error: ping } = await sb.from('team_members').select('count').limit(1);
+                    if (ping) throw new Error("Connection Timeout");
 
-            // MEJORA 3: Auto-Prioridad
-            const now = new Date();
-            projects?.forEach(p => {
-                if (p.deadline) {
-                    const diff = (new Date(p.deadline) - now) / (1000 * 3600);
-                    if (diff < 24 && diff > 0 && p.status !== 'completed') p.is_expiring = true;
+                    const resProjects = await sb.from('projects').select('*, clients(name, whatsapp), team_members(first_name)');
+                    if (resProjects.error) throw resProjects.error;
+                    projectsData = resProjects.data || [];
+
+                    const resPayments = await sb.from('project_payments').select('*');
+                    if (resPayments.error) throw resPayments.error;
+                    paymentsData = resPayments.data || [];
+                } catch (e) {
+                    console.error("Dashboard Load Error - Switching to Mock:", e);
+                    const mocks = await loadMockData();
+                    projectsData = mocks.projects;
+                    paymentsData = mocks.payments;
+
+                    // Force Mock Team if needed
+                    if (teamData.length === 0) {
+                        teamData = [
+                            { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
+                            { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
+                        ];
+                        updateUserUI(); // Update UI if team changed
+                    }
                 }
-            });
 
-            const searchTerm = document.getElementById('search-project').value.toLowerCase();
-            const filterClient = document.getElementById('filter-client').value;
+                // Assign to local variable for legacy code compatibility below if needed
+                const projects = projectsData;
+                const payments = paymentsData;
 
-            // Render Kanban (Manager)
-            const cols = { briefing: 'col-briefing', production: 'col-production', qc: 'col-qc', completed: 'col-completed' };
-            Object.values(cols).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+                if (isManager) renderTeamMgmt();
 
-            projects?.filter(p => (!filterClient || p.client_id === filterClient) && (p.clients.name.toLowerCase().includes(searchTerm) || p.service_type.toLowerCase().includes(searchTerm)))
-                .sort((a, b) => (b.is_expiring ? 10 : b.priority) - (a.is_expiring ? 10 : a.priority))
-                .forEach(p => {
-                    const col = document.getElementById(cols[p.status]);
-                    if (col) col.appendChild(createCard(p, false, isManager));
+                // MEJORA 3: Auto-Prioridad
+                const now = new Date();
+                projects?.forEach(p => {
+                    if (p.deadline) {
+                        const diff = (new Date(p.deadline) - now) / (1000 * 3600);
+                        if (diff < 24 && diff > 0 && p.status !== 'completed') p.is_expiring = true;
+                    }
                 });
 
-            // Empty State Placeholder
-            Object.values(cols).forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.children.length === 0) {
-                    el.innerHTML = `
+                const searchTerm = document.getElementById('search-project').value.toLowerCase();
+                const filterClient = document.getElementById('filter-client').value;
+
+                // Render Kanban (Manager)
+                const cols = { briefing: 'col-briefing', production: 'col-production', qc: 'col-qc', completed: 'col-completed' };
+                Object.values(cols).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+
+                projects?.filter(p => (!filterClient || p.client_id === filterClient) && (p.clients.name.toLowerCase().includes(searchTerm) || p.service_type.toLowerCase().includes(searchTerm)))
+                    .sort((a, b) => (b.is_expiring ? 10 : b.priority) - (a.is_expiring ? 10 : a.priority))
+                    .forEach(p => {
+                        const col = document.getElementById(cols[p.status]);
+                        if (col) col.appendChild(createCard(p, false, isManager));
+                    });
+
+                // Empty State Placeholder
+                Object.values(cols).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && el.children.length === 0) {
+                        el.innerHTML = `
                         <div class="flex flex-col items-center justify-center py-12 opacity-20 border-2 border-dashed border-white/10 rounded-[32px]">
                             <i data-lucide="inbox" class="w-8 h-8 mb-2"></i>
                             <p class="text-[10px] font-bold uppercase tracking-widest">Sin Tareas</p>
                         </div>
                     `;
+                    }
+                });
+
+                // MEJORA 1: Pull System (Personal Desk)
+                const myWork = projects?.filter(p => p.assigned_to === currentUser.id && p.status !== 'completed');
+                const pool = projects?.filter(p => !p.assigned_to && p.status === 'briefing');
+
+                const myGrid = document.getElementById('my-projects-grid');
+                if (myGrid) {
+                    myGrid.innerHTML = '';
+                    myWork.forEach(p => myGrid.appendChild(createCard(p, false, isManager)));
+                    document.getElementById('my-active-tasks').textContent = myWork.length;
                 }
-            });
 
-            // MEJORA 1: Pull System (Personal Desk)
-            const myWork = projects?.filter(p => p.assigned_to === currentUser.id && p.status !== 'completed');
-            const pool = projects?.filter(p => !p.assigned_to && p.status === 'briefing');
+                const poolSection = document.getElementById('task-pool-section');
+                const poolGrid = document.getElementById('unassigned-projects-grid');
+                if (pool?.length > 0) {
+                    poolSection.classList.remove('hidden');
+                    poolGrid.innerHTML = '';
+                    pool.forEach(p => poolGrid.appendChild(createCard(p, true, isManager)));
+                } else poolSection.classList.add('hidden');
 
-            const myGrid = document.getElementById('my-projects-grid');
-            if (myGrid) {
-                myGrid.innerHTML = '';
-                myWork.forEach(p => myGrid.appendChild(createCard(p, false, isManager)));
-                document.getElementById('my-active-tasks').textContent = myWork.length;
+                const myBal = payments?.filter(p => p.editor_id === currentUser.id).reduce((acc, p) => acc + parseFloat(p.amount), 0) || 0;
+                if (document.getElementById('my-personal-balance')) document.getElementById('my-personal-balance').textContent = `$${myBal.toFixed(2)}`;
+
+                // Team Grid & Payments Info
+                const teamGrid = document.getElementById('team-grid');
+                if (teamGrid) {
+                    teamGrid.innerHTML = teamData.map(m => `<div class="glass px-4 py-3 rounded-2xl flex items-center gap-3 border border-white/5"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10">${m.first_name[0]}</div><div><p class="text-[11px] font-bold text-white">${m.first_name}</p><p class="text-[9px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div></div>`).join('');
+                }
+                await loadPaymentsDetails();
+                lucide.createIcons();
             }
 
-            const poolSection = document.getElementById('task-pool-section');
-            const poolGrid = document.getElementById('unassigned-projects-grid');
-            if (pool?.length > 0) {
-                poolSection.classList.remove('hidden');
-                poolGrid.innerHTML = '';
-                pool.forEach(p => poolGrid.appendChild(createCard(p, true, isManager)));
-            } else poolSection.classList.add('hidden');
+            async function loadPaymentsDetails() {
+                const { data: pms } = await sb.from('project_payments').select('*, team_members(first_name)');
+                const hist = document.getElementById('payments-history');
+                if (hist) hist.innerHTML = pms?.map(p => `<tr class="border-b border-white/5"><td class="py-3 px-2 text-[11px]">${new Date(p.created_at).toLocaleDateString()}</td><td class="py-3 px-2 text-[11px] font-bold">${p.team_members?.first_name}</td><td class="py-3 px-2 text-[11px] text-emerald-400">$${p.amount}</td><td class="py-3 px-2 text-[9px] uppercase font-bold text-emerald-500">${p.status}</td></tr>`).join('') || '';
 
-            const myBal = payments?.filter(p => p.editor_id === currentUser.id).reduce((acc, p) => acc + parseFloat(p.amount), 0) || 0;
-            if (document.getElementById('my-personal-balance')) document.getElementById('my-personal-balance').textContent = `$${myBal.toFixed(2)}`;
-
-            // Team Grid & Payments Info
-            const teamGrid = document.getElementById('team-grid');
-            if (teamGrid) {
-                teamGrid.innerHTML = teamData.map(m => `<div class="glass px-4 py-3 rounded-2xl flex items-center gap-3 border border-white/5"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10">${m.first_name[0]}</div><div><p class="text-[11px] font-bold text-white">${m.first_name}</p><p class="text-[9px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div></div>`).join('');
+                const balList = document.getElementById('balances-list');
+                if (balList) {
+                    const totals = {};
+                    teamData.filter(m => m.role.includes('editor')).forEach(m => totals[m.id] = { name: m.first_name, sum: 0 });
+                    pms?.forEach(p => { if (totals[p.editor_id]) totals[p.editor_id].sum += parseFloat(p.amount); });
+                    balList.innerHTML = Object.values(totals).map(b => `<div class="flex justify-between items-center p-3 bg-white/5 rounded-xl"><span class="text-sm font-medium">${b.name}</span><span class="text-sm font-bold text-emerald-400">$${b.sum.toFixed(2)}</span></div>`).join('');
+                }
             }
-            await loadPaymentsDetails();
-            lucide.createIcons();
-        }
 
-        async function loadPaymentsDetails() {
-            const { data: pms } = await sb.from('project_payments').select('*, team_members(first_name)');
-            const hist = document.getElementById('payments-history');
-            if (hist) hist.innerHTML = pms?.map(p => `<tr class="border-b border-white/5"><td class="py-3 px-2 text-[11px]">${new Date(p.created_at).toLocaleDateString()}</td><td class="py-3 px-2 text-[11px] font-bold">${p.team_members?.first_name}</td><td class="py-3 px-2 text-[11px] text-emerald-400">$${p.amount}</td><td class="py-3 px-2 text-[9px] uppercase font-bold text-emerald-500">${p.status}</td></tr>`).join('') || '';
+            function createCard(p, isPool = false, isManager = false) {
+                const div = document.createElement('div');
+                const colors = {
+                    1: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+                    3: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
+                    5: "bg-rose-500/20 text-rose-400 border-rose-500/30"
+                };
+                const urgentClass = p.is_expiring ? 'border-rose-500 bg-rose-500/5 shadow-[0_0_20px_rgba(244,63,94,0.15)]' : 'border-white/5';
 
-            const balList = document.getElementById('balances-list');
-            if (balList) {
-                const totals = {};
-                teamData.filter(m => m.role.includes('editor')).forEach(m => totals[m.id] = { name: m.first_name, sum: 0 });
-                pms?.forEach(p => { if (totals[p.editor_id]) totals[p.editor_id].sum += parseFloat(p.amount); });
-                balList.innerHTML = Object.values(totals).map(b => `<div class="flex justify-between items-center p-3 bg-white/5 rounded-xl"><span class="text-sm font-medium">${b.name}</span><span class="text-sm font-bold text-emerald-400">$${b.sum.toFixed(2)}</span></div>`).join('');
-            }
-        }
+                div.className = `glass p-5 rounded-[28px] border ${urgentClass} card-hover flex flex-col gap-4 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
+                div.dataset.id = p.id;
 
-        function createCard(p, isPool = false, isManager = false) {
-            const div = document.createElement('div');
-            const colors = {
-                1: "bg-slate-500/20 text-slate-400 border-slate-500/30",
-                3: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-                5: "bg-rose-500/20 text-rose-400 border-rose-500/30"
-            };
-            const urgentClass = p.is_expiring ? 'border-rose-500 bg-rose-500/5 shadow-[0_0_20px_rgba(244,63,94,0.15)]' : 'border-white/5';
-
-            div.className = `glass p-5 rounded-[28px] border ${urgentClass} card-hover flex flex-col gap-4 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
-            div.dataset.id = p.id;
-
-            div.innerHTML = `
+                div.innerHTML = `
                 ${p.is_expiring ? '<div class="absolute top-0 left-0 right-0 bg-rose-500 text-[9px] font-black text-white py-1 text-center tracking-[0.2em] uppercase">Vence Pronto</div>' : ''}
                 
                 <div class="flex justify-between items-start pt-2">
@@ -1228,11 +1273,11 @@
                         </div>
                         <div class="space-y-2">
                             ${(p.checklist || []).map((item, idx) => {
-                const parts = item.text.split(' ');
-                const hasTime = /^([0-5][0-9]):([0-5][0-9])$/.test(parts[0]);
-                const time = hasTime ? parts[0] : null;
-                const text = hasTime ? parts.slice(1).join(' ') : item.text;
-                return `
+                    const parts = item.text.split(' ');
+                    const hasTime = /^([0-5][0-9]):([0-5][0-9])$/.test(parts[0]);
+                    const time = hasTime ? parts[0] : null;
+                    const text = hasTime ? parts.slice(1).join(' ') : item.text;
+                    return `
                                 <div class="flex items-start gap-3 group/item">
                                     <div class="mt-1" onclick="event.stopPropagation()">
                                         <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleCheckItem('${p.id}', ${idx})" class="w-3.5 h-3.5 rounded-md bg-white/5 border-white/10 accent-violet-500 cursor-pointer">
@@ -1242,7 +1287,7 @@
                                         ${text}
                                     </p>
                                 </div>`;
-            }).join('')}
+                }).join('')}
                         </div>
                         ${p.status === 'qc' ? `
                             <div class="flex gap-2 items-center pt-1" onclick="event.stopPropagation()">
@@ -1263,275 +1308,308 @@
                     `}
                 </div>
             `;
-            lucide.createIcons();
-            return div;
-        }
-
-        async function toggleCheckItem(pid, idx) {
-            const { data } = await sb.from('projects').select('checklist').eq('id', pid).single();
-            const list = data.checklist || []; list[idx].done = !list[idx].done;
-            await sb.from('projects').update({ checklist: list }).eq('id', pid);
-            renderToast("Feedback actualizado"); loadDashboard();
-        }
-
-        async function addCheckItem(pid) {
-            const inp = document.getElementById(`chk-add-${pid}`); const text = inp.value.trim(); if (!text) return;
-            const { data } = await sb.from('projects').select('checklist').eq('id', pid).single();
-            const list = data.checklist || []; list.push({ text, done: false });
-            await sb.from('projects').update({ checklist: list }).eq('id', pid);
-            inp.value = ''; renderToast("Nota de QC añadida"); loadDashboard();
-        }
-
-        async function claimProject(pid) {
-            await sb.from('projects').update({ assigned_to: currentUser.id, status: 'production' }).eq('id', pid);
-            renderToast("Proyecto asignado exitosamente"); loadDashboard();
-        }
-
-        async function moveToNext(pid, current) {
-            const next = { briefing: 'production', production: 'qc', qc: 'completed' }[current];
-            if (next) await updateStatus(pid, next);
-        }
-
-        async function simulatePreQC(pid, url) {
-            renderToast("🧠 Cortex: Iniciando Pre-QC automático...", "info");
-            setTimeout(async () => {
-                const { data: p } = await sb.from('projects').select('checklist').eq('id', pid).single();
-                const list = p.checklist || [];
-                list.unshift({ text: "00:00 Cortex: Link validado procedencialmente", done: true });
-                list.unshift({ text: "00:00 Cortex: Sugerencia: Subir brillo en sombras", done: false });
-                await sb.from('projects').update({ checklist: list }).eq('id', pid);
-                renderToast("🧠 Cortex: Análisis técnico completado", "success");
-                loadDashboard();
-            }, 1500);
-        }
-
-        window.updateStatus = async (id, status, silent = false) => {
-            if (status === 'qc') {
-                const { data: p } = await sb.from('projects').select('production_url').eq('id', id).single();
-                if (!p.production_url) { renderToast("⚠️ Sube el link antes de ir a QC", "error"); return false; }
+                lucide.createIcons();
+                return div;
             }
 
-            const { data: proj } = await sb.from('projects').select('*, clients(*)').eq('id', id).single();
-            const updateData = { status };
-            if (status === 'completed') updateData.delivered_at = new Date();
+            async function toggleCheckItem(pid, idx) {
+                const { data } = await sb.from('projects').select('checklist').eq('id', pid).single();
+                const list = data.checklist || []; list[idx].done = !list[idx].done;
+                await sb.from('projects').update({ checklist: list }).eq('id', pid);
+                renderToast("Feedback actualizado"); loadDashboard();
+            }
 
-            const { error } = await sb.from('projects').update(updateData).eq('id', id);
+            async function addCheckItem(pid) {
+                const inp = document.getElementById(`chk-add-${pid}`); const text = inp.value.trim(); if (!text) return;
+                const { data } = await sb.from('projects').select('checklist').eq('id', pid).single();
+                const list = data.checklist || []; list.push({ text, done: false });
+                await sb.from('projects').update({ checklist: list }).eq('id', pid);
+                inp.value = ''; renderToast("Nota de QC añadida"); loadDashboard();
+            }
 
-            if (!error) {
-                if (!silent) renderToast(`${status.toUpperCase()} actualizado`);
+            async function claimProject(pid) {
+                await sb.from('projects').update({ assigned_to: currentUser.id, status: 'production' }).eq('id', pid);
+                renderToast("Proyecto asignado exitosamente"); loadDashboard();
+            }
 
-                // Trigger Pre-QC Simulation
-                if (status === 'qc') simulatePreQC(id, proj.production_url);
+            async function moveToNext(pid, current) {
+                const next = { briefing: 'production', production: 'qc', qc: 'completed' }[current];
+                if (next) await updateStatus(pid, next);
+            }
 
-                // Webhook Notification
-                if (WHATSAPP_WEBHOOK_URL && (status === 'qc' || status === 'completed')) {
-                    fetch(WHATSAPP_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            project_id: id,
-                            status,
-                            client: proj.clients?.name,
-                            whatsapp: proj.clients?.whatsapp,
-                            service: proj.service_type,
-                            url: proj.production_url
-                        })
-                    }).catch(e => console.error("Webhook error:", e));
+            async function simulatePreQC(pid, url) {
+                renderToast("🧠 Cortex: Iniciando Pre-QC automático...", "info");
+                setTimeout(async () => {
+                    const { data: p } = await sb.from('projects').select('checklist').eq('id', pid).single();
+                    const list = p.checklist || [];
+                    list.unshift({ text: "00:00 Cortex: Link validado procedencialmente", done: true });
+                    list.unshift({ text: "00:00 Cortex: Sugerencia: Subir brillo en sombras", done: false });
+                    await sb.from('projects').update({ checklist: list }).eq('id', pid);
+                    renderToast("🧠 Cortex: Análisis técnico completado", "success");
+                    loadDashboard();
+                }, 1500);
+            }
+
+            window.updateStatus = async (id, status, silent = false) => {
+                if (status === 'qc') {
+                    const { data: p } = await sb.from('projects').select('production_url').eq('id', id).single();
+                    if (!p.production_url) { renderToast("⚠️ Sube el link antes de ir a QC", "error"); return false; }
                 }
 
-                loadDashboard();
-                return true;
+                const { data: proj } = await sb.from('projects').select('*, clients(*)').eq('id', id).single();
+                const updateData = { status };
+                if (status === 'completed') updateData.delivered_at = new Date();
+
+                const { error } = await sb.from('projects').update(updateData).eq('id', id);
+
+                if (!error) {
+                    if (!silent) renderToast(`${status.toUpperCase()} actualizado`);
+
+                    // Trigger Pre-QC Simulation
+                    if (status === 'qc') simulatePreQC(id, proj.production_url);
+
+                    // Webhook Notification
+                    if (WHATSAPP_WEBHOOK_URL && (status === 'qc' || status === 'completed')) {
+                        fetch(WHATSAPP_WEBHOOK_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                project_id: id,
+                                status,
+                                client: proj.clients?.name,
+                                whatsapp: proj.clients?.whatsapp,
+                                service: proj.service_type,
+                                url: proj.production_url
+                            })
+                        }).catch(e => console.error("Webhook error:", e));
+                    }
+
+                    loadDashboard();
+                    return true;
+                }
+                return false;
+            };
+
+            window.openEdit = (id, assign, url, raw) => {
+                document.getElementById('edit-id').value = id;
+                document.getElementById('edit-assign').value = assign || "";
+                document.getElementById('edit-url').value = url;
+                document.getElementById('edit-raw').value = raw || "";
+                document.getElementById('edit-modal').classList.remove('hidden');
+            };
+
+            window.openMemberProfile = (uid) => {
+                const m = teamData.find(x => x.id === uid);
+                if (!m) return;
+
+                document.getElementById('prof-name').textContent = `${m.first_name} ${m.last_name || ''}`;
+                document.getElementById('prof-role').textContent = m.role.replace('_', ' ');
+                document.getElementById('prof-avatar').textContent = m.first_name[0];
+                document.getElementById('prof-summary').textContent = m.interview_summary || "Sin entrevista realizada aún.";
+
+                // Rasgos
+                const traits = document.getElementById('prof-traits');
+                traits.innerHTML = '';
+                const traitsList = (m.personality_traits && m.personality_traits.personality_traits) ? m.personality_traits.personality_traits : [];
+                traitsList.forEach(t => {
+                    const span = document.createElement('span');
+                    span.className = "text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-md text-slate-400";
+                    span.textContent = t;
+                    traits.appendChild(span);
+                });
+
+                document.getElementById('prof-feedback').textContent = (m.personality_traits && m.personality_traits.feedback_preference) ? m.personality_traits.feedback_preference : "-";
+
+                // Acciones
+                const actions = document.getElementById('prof-actions');
+                actions.innerHTML = '';
+                if (m.status === 'pending_approval' || m.status === 'pending') {
+                    actions.innerHTML = `<button onclick="approveMember('${m.id}')" class="bg-emerald-600 px-6 py-2 rounded-xl font-bold text-sm">Aprobar Ahora</button>`;
+                }
+
+                document.getElementById('member-profile-modal').classList.remove('hidden');
+                lucide.createIcons();
+            };
+
+            window.openPayment = (pid, eid) => {
+                document.getElementById('pay-project-id').value = pid;
+                document.getElementById('pay-editor').value = eid || "";
+                document.getElementById('payment-modal').classList.remove('hidden');
+            };
+
+            window.showView = (v) => {
+                document.querySelectorAll('[id^="view-"]').forEach(x => x.classList.add('hidden'));
+                const target = document.getElementById(`view-${v}`);
+                if (target) target.classList.remove('hidden');
+
+                document.querySelectorAll('.sidebar-item').forEach(a => a.classList.remove('active'));
+                document.getElementById(`nav-${v}`)?.classList.add('active');
+
+                if (v === 'analytics') renderAnalytics();
+                if (v === 'team-mgmt') renderTeamMgmt();
+                if (v === 'cortex') {
+                    const inp = document.getElementById('cortex-input');
+                    if (inp) inp.focus();
+                }
+            };
+
+            window.openSettings = () => {
+                document.getElementById('setting-webhook').value = WHATSAPP_WEBHOOK_URL;
+                document.getElementById('setting-backend').value = BACKEND_API_URL;
+                document.getElementById('settings-modal').classList.remove('hidden');
             }
-            return false;
-        };
 
-        window.openEdit = (id, assign, url, raw) => {
-            document.getElementById('edit-id').value = id;
-            document.getElementById('edit-assign').value = assign || "";
-            document.getElementById('edit-url').value = url;
-            document.getElementById('edit-raw').value = raw || "";
-            document.getElementById('edit-modal').classList.remove('hidden');
-        };
+            document.getElementById('settings-form').onsubmit = (e) => {
+                e.preventDefault();
+                WHATSAPP_WEBHOOK_URL = document.getElementById('setting-webhook').value;
+                BACKEND_API_URL = document.getElementById('setting-backend').value;
+                localStorage.setItem('iamazing_webhook_url', WHATSAPP_WEBHOOK_URL);
+                localStorage.setItem('iamazing_api_url', BACKEND_API_URL);
+                closeAllModals();
+                renderToast("Ajustes guardados", "success");
+            };
 
-        window.openPayment = (pid, eid) => {
-            document.getElementById('pay-project-id').value = pid;
-            document.getElementById('pay-editor').value = eid || "";
-            document.getElementById('payment-modal').classList.remove('hidden');
-        };
-
-        window.showView = (v) => {
-            document.querySelectorAll('[id^="view-"]').forEach(x => x.classList.add('hidden'));
-            const target = document.getElementById(`view-${v}`);
-            if (target) target.classList.remove('hidden');
-
-            document.querySelectorAll('.sidebar-item').forEach(a => a.classList.remove('active'));
-            document.getElementById(`nav-${v}`)?.classList.add('active');
-
-            if (v === 'analytics') renderAnalytics();
-            if (v === 'team-mgmt') renderTeamMgmt();
-            if (v === 'cortex') {
-                const inp = document.getElementById('cortex-input');
-                if (inp) inp.focus();
-            }
-        };
-
-        window.openSettings = () => {
-            document.getElementById('setting-webhook').value = WHATSAPP_WEBHOOK_URL;
-            document.getElementById('setting-backend').value = BACKEND_API_URL;
-            document.getElementById('settings-modal').classList.remove('hidden');
-        }
-
-        document.getElementById('settings-form').onsubmit = (e) => {
-            e.preventDefault();
-            WHATSAPP_WEBHOOK_URL = document.getElementById('setting-webhook').value;
-            BACKEND_API_URL = document.getElementById('setting-backend').value;
-            localStorage.setItem('iamazing_webhook_url', WHATSAPP_WEBHOOK_URL);
-            localStorage.setItem('iamazing_api_url', BACKEND_API_URL);
-            closeAllModals();
-            renderToast("Ajustes guardados", "success");
-        };
-
-        window.logActivity = (agent, action, type = 'info') => {
-            const feed = document.getElementById('cortex-activity');
-            if (!feed) return;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const colors = { info: 'text-cyan-400', success: 'text-emerald-400', warning: 'text-amber-400' };
-            const div = document.createElement('div');
-            div.className = "p-3 bg-white/5 rounded-2xl border border-white/5 animate-fade-in mb-3";
-            div.innerHTML = `
+            window.logActivity = (agent, action, type = 'info') => {
+                const feed = document.getElementById('cortex-activity');
+                if (!feed) return;
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const colors = { info: 'text-cyan-400', success: 'text-emerald-400', warning: 'text-amber-400' };
+                const div = document.createElement('div');
+                div.className = "p-3 bg-white/5 rounded-2xl border border-white/5 animate-fade-in mb-3";
+                div.innerHTML = `
                 <div class="flex justify-between items-center mb-1">
                     <span class="text-[9px] font-bold uppercase ${colors[type]} tracking-widest">${agent}</span>
                     <span class="text-[8px] text-slate-500">${time}</span>
                 </div>
                 <p class="text-[10px] text-slate-300 leading-tight">${action}</p>
             `;
-            feed.prepend(div);
-            if (feed.children.length > 8) feed.lastElementChild.remove();
-        }
+                feed.prepend(div);
+                if (feed.children.length > 8) feed.lastElementChild.remove();
+            }
 
-        window.formatMarkdown = (text) => {
-            return text
-                .replace(/^# (.*$)/gm, '<h1 class="text-xl font-bold text-white mb-4 mt-2 border-b border-white/10 pb-2">$1</h1>')
-                .replace(/^## (.*$)/gm, '<h2 class="text-lg font-bold text-violet-300 mb-2 mt-4">$1</h2>')
-                .replace(/^### (.*$)/gm, '<h3 class="text-md font-bold text-violet-300/80 mb-2 mt-3">$1</h3>')
-                .replace(/\*\*(.*?)\*\*/g, '<b class="text-violet-400">$1</b>')
-                .replace(/^[-*] (.*$)/gm, '<div class="flex gap-2 mb-1 pl-2"><span class="text-violet-500">•</span><span>$1</span></div>')
-                .replace(/\n/g, '<br>');
-        }
+            window.formatMarkdown = (text) => {
+                return text
+                    .replace(/^# (.*$)/gm, '<h1 class="text-xl font-bold text-white mb-4 mt-2 border-b border-white/10 pb-2">$1</h1>')
+                    .replace(/^## (.*$)/gm, '<h2 class="text-lg font-bold text-violet-300 mb-2 mt-4">$1</h2>')
+                    .replace(/^### (.*$)/gm, '<h3 class="text-md font-bold text-violet-300/80 mb-2 mt-3">$1</h3>')
+                    .replace(/\*\*(.*?)\*\*/g, '<b class="text-violet-400">$1</b>')
+                    .replace(/^[-*] (.*$)/gm, '<div class="flex gap-2 mb-1 pl-2"><span class="text-violet-500">•</span><span>$1</span></div>')
+                    .replace(/\n/g, '<br>');
+            }
 
-        window.speakResponse = async (text, btn) => {
-            const icon = btn.querySelector('i');
-            const originalIcon = icon.getAttribute('data-lucide');
+            window.speakResponse = async (text, btn) => {
+                const icon = btn.querySelector('i');
+                const originalIcon = icon.getAttribute('data-lucide');
 
-            try {
-                icon.setAttribute('data-lucide', 'refresh-cw');
-                icon.classList.add('animate-spin');
-                lucide.createIcons();
+                try {
+                    icon.setAttribute('data-lucide', 'refresh-cw');
+                    icon.classList.add('animate-spin');
+                    lucide.createIcons();
 
-                const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
-                const res = await fetch(`${cleanBaseUrl}/api/voice`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: text.replace(/[#*]/g, '') })
-                });
-                const data = await res.json();
+                    const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+                    const res = await fetch(`${cleanBaseUrl}/api/voice`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text.replace(/[#*]/g, '') })
+                    });
+                    const data = await res.json();
 
-                if (data.url) {
-                    const audio = new Audio(`${cleanBaseUrl}/${data.url}`);
-                    audio.play();
-                    icon.setAttribute('data-lucide', 'volume-2');
+                    if (data.url) {
+                        const audio = new Audio(`${cleanBaseUrl}/${data.url}`);
+                        audio.play();
+                        icon.setAttribute('data-lucide', 'volume-2');
+                        icon.classList.remove('animate-spin');
+                        lucide.createIcons();
+                        audio.onended = () => {
+                            icon.setAttribute('data-lucide', originalIcon);
+                            lucide.createIcons();
+                        };
+                    }
+                } catch (e) {
+                    console.error("Audio error:", e);
+                    renderToast("Error al generar audio", "error");
+                    icon.setAttribute('data-lucide', originalIcon);
                     icon.classList.remove('animate-spin');
                     lucide.createIcons();
-                    audio.onended = () => {
-                        icon.setAttribute('data-lucide', originalIcon);
-                        lucide.createIcons();
-                    };
                 }
-            } catch (e) {
-                console.error("Audio error:", e);
-                renderToast("Error al generar audio", "error");
-                icon.setAttribute('data-lucide', originalIcon);
-                icon.classList.remove('animate-spin');
-                lucide.createIcons();
             }
-        }
 
-        window.sendCortex = async () => {
-            const input = document.getElementById('cortex-input');
-            const chat = document.getElementById('cortex-chat');
-            const query = input.value.trim();
-            if (!query) return;
+            window.sendCortex = async () => {
+                const input = document.getElementById('cortex-input');
+                const chat = document.getElementById('cortex-chat');
+                const query = input.value.trim();
+                if (!query) return;
 
-            // User message UI
-            const userBox = document.createElement('div');
-            userBox.className = "self-end bg-violet-600/20 text-violet-100 p-4 rounded-3xl rounded-tr-none text-sm max-w-[80%] border border-violet-500/20";
-            userBox.textContent = query;
-            chat.appendChild(userBox);
-            input.value = '';
-            chat.scrollTop = chat.scrollHeight;
+                // User message UI
+                const userBox = document.createElement('div');
+                userBox.className = "self-end bg-violet-600/20 text-violet-100 p-4 rounded-3xl rounded-tr-none text-sm max-w-[80%] border border-violet-500/20";
+                userBox.textContent = query;
+                chat.appendChild(userBox);
+                input.value = '';
+                chat.scrollTop = chat.scrollHeight;
 
-            logActivity('Cortex', 'Procesando consulta...', 'info');
+                logActivity('Cortex', 'Procesando consulta...', 'info');
 
-            // Bot placeholder UI
-            const botBox = document.createElement('div');
-            botBox.className = "self-start bg-white/5 p-4 rounded-3xl text-slate-300 text-sm border border-white/5 max-w-[80%] whitespace-pre-wrap";
-            botBox.innerHTML = `<span class="italic animate-pulse">Pensando...</span>`;
-            chat.appendChild(botBox);
+                // Bot placeholder UI
+                const botBox = document.createElement('div');
+                botBox.className = "self-start bg-white/5 p-4 rounded-3xl text-slate-300 text-sm border border-white/5 max-w-[80%] whitespace-pre-wrap";
+                botBox.innerHTML = `<span class="italic animate-pulse">Pensando...</span>`;
+                chat.appendChild(botBox);
 
-            try {
-                const q = query.toLowerCase();
-                let agentType = 'manager';
-                let finalResponse = "";
-                let prefix = "";
+                try {
+                    const q = query.toLowerCase();
+                    let agentType = 'manager';
+                    let finalResponse = "";
+                    let prefix = "";
 
-                // 🧠 FILTRO DE INTENCIÓN (Fase 5: Inteligencia Selectiva)
-                if (q === 'hola' || q === 'buenos dias' || q === 'buenas tardes' || q === 'que tal') {
-                    prefix = "🧠 Cortex";
-                    finalResponse = `¡Hola ${currentUser?.first_name || ''}! Soy Cortex. Estoy monitoreando tus proyectos en tiempo real. 
+                    // 🧠 FILTRO DE INTENCIÓN (Fase 5: Inteligencia Selectiva)
+                    if (q === 'hola' || q === 'buenos dias' || q === 'buenas tardes' || q === 'que tal') {
+                        prefix = "🧠 Cortex";
+                        finalResponse = `¡Hola ${currentUser?.first_name || ''}! Soy Cortex. Estoy monitoreando tus proyectos en tiempo real. 
 
 ¿En qué puedo ayudarte hoy? Puedes pedirme:
 - Un **resumen** de prioridades.
 - **Ventas**: Ideas para nuevos clientes.
 - **Producción**: Guiones o ideas para videos.
 - **Investigación**: Tendencias de IA actuales.`;
-                    agentType = 'chat';
-                } else {
-                    if (q.includes('guion') || q.includes('idea') || q.includes('produccion')) agentType = 'production';
-                    if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
-                    if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
+                        agentType = 'chat';
+                    } else {
+                        if (q.includes('guion') || q.includes('idea') || q.includes('produccion')) agentType = 'production';
+                        if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
+                        if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
 
-                    const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+                        const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
 
-                    const response = await fetch(`${cleanBaseUrl}/api/agent`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            agent_type: agentType,
-                            query: query,
-                            topic: query,
-                            client: currentUser?.first_name || 'Prospecto',
-                            niche: 'Contenido Digital',
-                            title: 'Video Solicitado',
-                            idea: query,
-                            projects: projectsData
-                        })
-                    });
+                        const response = await fetch(`${cleanBaseUrl}/api/agent`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                agent_type: agentType,
+                                query: query,
+                                topic: query,
+                                client: currentUser?.first_name || 'Prospecto',
+                                niche: 'Contenido Digital',
+                                title: 'Video Solicitado',
+                                idea: query,
+                                projects: projectsData
+                            })
+                        });
 
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || `Error del servidor (${response.status})`);
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || `Error del servidor (${response.status})`);
+                        }
+
+                        const data = await response.json();
+                        prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
+                        finalResponse = data.result || "No recibí una respuesta clara.";
                     }
 
-                    const data = await response.json();
-                    prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
-                    finalResponse = data.result || "No recibí una respuesta clara.";
-                }
+                    logActivity(prefix, 'Respuesta generada', 'success');
 
-                logActivity(prefix, 'Respuesta generada', 'success');
-
-                // Typing Effect con Formateo Markdown
-                const formattedResponse = formatMarkdown(finalResponse);
-                botBox.innerHTML = `
+                    // Typing Effect con Formateo Markdown
+                    const formattedResponse = formatMarkdown(finalResponse);
+                    botBox.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
                         <span class="text-xs font-bold text-violet-400 uppercase tracking-widest">${prefix}</span>
                         <button onclick="speakResponse(\`${finalResponse.replace(/`/g, "'")}\`, this)" class="p-1.5 hover:bg-white/10 rounded-lg transition-all text-slate-500 hover:text-white">
@@ -1540,76 +1618,76 @@
                     </div>
                     <div class="typing-container"></div>
                 `;
-                lucide.createIcons();
+                    lucide.createIcons();
 
-                const container = botBox.querySelector('.typing-container');
-                container.innerHTML = formattedResponse; // Aplicar formato de golpe para evitar problemas con tags rotos durante el tipado
-                container.style.opacity = '0';
-                container.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500, fill: 'forwards' });
-                chat.scrollTop = chat.scrollHeight;
+                    const container = botBox.querySelector('.typing-container');
+                    container.innerHTML = formattedResponse; // Aplicar formato de golpe para evitar problemas con tags rotos durante el tipado
+                    container.style.opacity = '0';
+                    container.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500, fill: 'forwards' });
+                    chat.scrollTop = chat.scrollHeight;
 
-            } catch (e) {
-                console.error("Cortex Error:", e);
-                logActivity('Error', e.message, 'warning');
-                if (e.message.includes('fetch') || e.message.includes('NetworkError')) {
-                    botBox.textContent = "⚠️ Error de conexión: No se pudo contactar con el servidor. Revisa la URL en Ajustes.";
-                } else {
-                    botBox.textContent = `⚠️ Error en Cortex: ${e.message}. Asegúrate de haber configurado las API Keys en Railway.`;
+                } catch (e) {
+                    console.error("Cortex Error:", e);
+                    logActivity('Error', e.message, 'warning');
+                    if (e.message.includes('fetch') || e.message.includes('NetworkError')) {
+                        botBox.textContent = "⚠️ Error de conexión: No se pudo contactar con el servidor. Revisa la URL en Ajustes.";
+                    } else {
+                        botBox.textContent = `⚠️ Error en Cortex: ${e.message}. Asegúrate de haber configurado las API Keys en Railway.`;
+                    }
                 }
+                chat.scrollTop = chat.scrollHeight;
+            };
+
+            // 📊 RENDER ANALYTICS (PREMIUM)
+            function renderAnalytics() {
+                const revenueTotal = paymentsData.reduce((acc, p) => acc + parseFloat(p.amount), 0);
+                const completedCount = projectsData.filter(p => p.status === 'completed').length;
+
+                if (document.getElementById('stat-revenue')) document.getElementById('stat-revenue').textContent = `$${revenueTotal.toFixed(2)}`;
+                if (document.getElementById('stat-deliveries')) document.getElementById('stat-deliveries').textContent = completedCount;
+                if (document.getElementById('stat-approval')) document.getElementById('stat-approval').textContent = "94%";
+
+                // Revenue Chart
+                renderChart('chart-revenue', 'line', {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1200, 1900, 1500, 2500, 2200, revenueTotal > 0 ? revenueTotal : 3000],
+                        borderColor: '#a78bfa',
+                        backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.5,
+                        pointRadius: 0
+                    }]
+                });
+
+                // Efficiency Chart
+                const clientNames = clientsData.slice(0, 5).map(c => c.name);
+                const clientData = clientNames.map(() => Math.floor(Math.random() * 20) + 10);
+
+                renderChart('chart-efficiency', 'bar', {
+                    labels: clientNames.length ? clientNames : ['Client A', 'Client B', 'Client C'],
+                    datasets: [{
+                        label: 'Entregas',
+                        data: clientData.length ? clientData : [12, 19, 8],
+                        backgroundColor: 'rgba(6, 182, 212, 0.6)',
+                        borderColor: '#06b6d4',
+                        borderWidth: 1,
+                        borderRadius: 12,
+                        barThickness: 20
+                    }]
+                });
             }
-            chat.scrollTop = chat.scrollHeight;
-        };
 
-        // 📊 RENDER ANALYTICS (PREMIUM)
-        function renderAnalytics() {
-            const revenueTotal = paymentsData.reduce((acc, p) => acc + parseFloat(p.amount), 0);
-            const completedCount = projectsData.filter(p => p.status === 'completed').length;
+            // 👥 REBUILT: PREMIUM TEAM MGMT (Con sistema de Aprobación)
+            function renderTeamMgmt() {
+                const body = document.getElementById('team-mgmt-body');
+                if (!body) return;
 
-            if (document.getElementById('stat-revenue')) document.getElementById('stat-revenue').textContent = `$${revenueTotal.toFixed(2)}`;
-            if (document.getElementById('stat-deliveries')) document.getElementById('stat-deliveries').textContent = completedCount;
-            if (document.getElementById('stat-approval')) document.getElementById('stat-approval').textContent = "94%";
-
-            // Revenue Chart
-            renderChart('chart-revenue', 'line', {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Revenue',
-                    data: [1200, 1900, 1500, 2500, 2200, revenueTotal > 0 ? revenueTotal : 3000],
-                    borderColor: '#a78bfa',
-                    backgroundColor: 'rgba(167, 139, 250, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.5,
-                    pointRadius: 0
-                }]
-            });
-
-            // Efficiency Chart
-            const clientNames = clientsData.slice(0, 5).map(c => c.name);
-            const clientData = clientNames.map(() => Math.floor(Math.random() * 20) + 10);
-
-            renderChart('chart-efficiency', 'bar', {
-                labels: clientNames.length ? clientNames : ['Client A', 'Client B', 'Client C'],
-                datasets: [{
-                    label: 'Entregas',
-                    data: clientData.length ? clientData : [12, 19, 8],
-                    backgroundColor: 'rgba(6, 182, 212, 0.6)',
-                    borderColor: '#06b6d4',
-                    borderWidth: 1,
-                    borderRadius: 12,
-                    barThickness: 20
-                }]
-            });
-        }
-
-        // 👥 REBUILT: PREMIUM TEAM MGMT (Con sistema de Aprobación)
-        function renderTeamMgmt() {
-            const body = document.getElementById('team-mgmt-body');
-            if (!body) return;
-
-            body.innerHTML = teamData.map(m => {
-                const isPending = m.status === 'pending_approval' || m.status === 'pending';
-                return `
+                body.innerHTML = teamData.map(m => {
+                    const isPending = m.status === 'pending_approval' || m.status === 'pending';
+                    return `
                 <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group ${isPending ? 'bg-violet-500/5' : ''}">
                     <td class="py-4 px-2">
                         <div class="flex items-center gap-3">
@@ -1629,125 +1707,130 @@
                     </td>
                     <td class="py-4 px-2">
                         ${isPending ?
-                        '<span class="text-xs text-slate-500 italic">No asignada</span>' :
-                        `<div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px]">
+                            '<span class="text-xs text-slate-500 italic">No asignada</span>' :
+                            `<div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px]">
                                 <i data-lucide="key" class="w-3 h-3 text-slate-600 ml-2"></i>
                                 <input type="text" value="${m.password || '123'}" 
                                     onchange="updatePassword('${m.id}', this.value)" 
                                     class="bg-transparent border-none text-xs text-center w-full focus:ring-0 text-white font-mono"
                                 >
                             </div>`
-                    }
+                        }
                     </td>
                     <td class="py-4 px-2">
-                         ${isPending ?
-                        `<button onclick="approveMember('${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2">
-                                <i data-lucide="check-circle" class="w-3 h-3"></i> Aprobar
-                            </button>` :
-                        `<button class="p-2 text-slate-500 hover:text-white rounded-lg transition-colors">
-                                <i data-lucide="settings" class="w-4 h-4"></i>
-                            </button>`
-                    }
+                        <div class="flex items-center gap-2">
+                            <button onclick="openMemberProfile('${m.id}')" class="p-2 text-violet-400 hover:bg-violet-400/10 rounded-lg transition-all" title="Ver ADN">
+                                <i data-lucide="search" class="w-4 h-4"></i>
+                            </button>
+                             ${isPending ?
+                            `<button onclick="approveMember('${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2">
+                                    <i data-lucide="check-circle" class="w-3 h-3"></i> Aprobar
+                                </button>` :
+                            `<button class="p-2 text-slate-500 hover:text-white rounded-lg transition-colors">
+                                    <i data-lucide="settings" class="w-4 h-4"></i>
+                                </button>`
+                        }
+                        </div>
                     </td>
                 </tr>
             `}).join('');
 
-            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
-        }
-
-        window.approveMember = async (uid) => {
-            renderToast("Aprobando miembro...", "info");
-            try {
-                const { error } = await sb.from('team_members').update({
-                    status: 'active',
-                    password: '123'
-                }).eq('id', uid);
-
-                if (error) throw error;
-                renderToast("Miembro aprobado con éxito", "success");
-                loadConstants(); // Recargar lista
-            } catch (e) {
-                renderToast("Error al aprobar: " + e.message, "error");
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
             }
-        }
 
-        window.updatePassword = async (uid, newPass) => {
-            const { error } = await sb.from('team_members').update({ password: newPass }).eq('id', uid);
-            if (!error) {
-                renderToast("Contraseña actualizada", "success");
-                await loadConstants();
+            window.approveMember = async (uid) => {
+                renderToast("Aprobando miembro...", "info");
+                try {
+                    const { error } = await sb.from('team_members').update({
+                        status: 'active',
+                        password: '123'
+                    }).eq('id', uid);
+
+                    if (error) throw error;
+                    renderToast("Miembro aprobado con éxito", "success");
+                    loadConstants(); // Recargar lista
+                } catch (e) {
+                    renderToast("Error al aprobar: " + e.message, "error");
+                }
             }
-        }
 
-        function renderChart(id, type, data) {
-            if (chartInstances[id]) chartInstances[id].destroy();
-            const canvas = document.getElementById(id);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            chartInstances[id] = new Chart(ctx, {
-                type,
-                data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#64748b', font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#64748b', font: { size: 10 } }
+            window.updatePassword = async (uid, newPass) => {
+                const { error } = await sb.from('team_members').update({ password: newPass }).eq('id', uid);
+                if (!error) {
+                    renderToast("Contraseña actualizada", "success");
+                    await loadConstants();
+                }
+            }
+
+            function renderChart(id, type, data) {
+                if (chartInstances[id]) chartInstances[id].destroy();
+                const canvas = document.getElementById(id);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                chartInstances[id] = new Chart(ctx, {
+                    type,
+                    data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: '#64748b', font: { size: 10 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#64748b', font: { size: 10 } }
+                            }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        document.getElementById('project-form').onsubmit = async (e) => {
-            e.preventDefault();
-            await sb.from('projects').insert([{ client_id: document.getElementById('form-client').value, service_type: document.getElementById('form-service').value, priority: parseInt(document.getElementById('form-priority').value), status: 'briefing' }]);
-            closeAllModals(); reloadDashboard();
-        }
+            document.getElementById('project-form').onsubmit = async (e) => {
+                e.preventDefault();
+                await sb.from('projects').insert([{ client_id: document.getElementById('form-client').value, service_type: document.getElementById('form-service').value, priority: parseInt(document.getElementById('form-priority').value), status: 'briefing' }]);
+                closeAllModals(); reloadDashboard();
+            }
 
-        document.getElementById('edit-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            await sb.from('projects').update({ assigned_to: document.getElementById('edit-assign').value || null, production_url: document.getElementById('edit-url').value, raw_assets_url: document.getElementById('edit-raw').value }).eq('id', id);
-            closeAllModals(); reloadDashboard();
-        }
+            document.getElementById('edit-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('edit-id').value;
+                await sb.from('projects').update({ assigned_to: document.getElementById('edit-assign').value || null, production_url: document.getElementById('edit-url').value, raw_assets_url: document.getElementById('edit-raw').value }).eq('id', id);
+                closeAllModals(); reloadDashboard();
+            }
 
-        document.getElementById('client-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('client-name').value;
-            const whatsapp = document.getElementById('client-whatsapp').value;
-            await sb.from('clients').insert([{ name, whatsapp }]);
-            closeAllModals(); await loadConstants(); await loadDashboard();
-            renderToast("Cliente registrado", "success");
-        }
+            document.getElementById('client-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('client-name').value;
+                const whatsapp = document.getElementById('client-whatsapp').value;
+                await sb.from('clients').insert([{ name, whatsapp }]);
+                closeAllModals(); await loadConstants(); await loadDashboard();
+                renderToast("Cliente registrado", "success");
+            }
 
-        document.getElementById('payment-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const project_id = document.getElementById('pay-project-id').value;
-            const editor_id = document.getElementById('pay-editor').value;
-            const amount = document.getElementById('pay-amount').value;
-            await sb.from('project_payments').insert([{ project_id, editor_id, amount, status: 'paid', paid_at: new Date() }]);
-            closeAllModals(); reloadDashboard();
-            renderToast("Pago registrado exitosamente", "success");
-        }
+            document.getElementById('payment-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const project_id = document.getElementById('pay-project-id').value;
+                const editor_id = document.getElementById('pay-editor').value;
+                const amount = document.getElementById('pay-amount').value;
+                await sb.from('project_payments').insert([{ project_id, editor_id, amount, status: 'paid', paid_at: new Date() }]);
+                closeAllModals(); reloadDashboard();
+                renderToast("Pago registrado exitosamente", "success");
+            }
 
-        window.renderToast = (msg, type = "info") => {
-            const cont = document.getElementById('toast-container') || (() => { const d = document.createElement('div'); d.id = 'toast-container'; d.className = 'toast-container'; document.body.appendChild(d); return d; })();
-            const t = document.createElement('div'); t.className = `toast glass p-4 rounded-2xl border ${type === 'error' ? 'border-red-500/50 text-red-400' : 'border-violet-500/50 text-violet-400'} text-xs font-bold`;
-            t.textContent = msg; cont.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
+            window.renderToast = (msg, type = "info") => {
+                const cont = document.getElementById('toast-container') || (() => { const d = document.createElement('div'); d.id = 'toast-container'; d.className = 'toast-container'; document.body.appendChild(d); return d; })();
+                const t = document.createElement('div'); t.className = `toast glass p-4 rounded-2xl border ${type === 'error' ? 'border-red-500/50 text-red-400' : 'border-violet-500/50 text-violet-400'} text-xs font-bold`;
+                t.textContent = msg; cont.appendChild(t);
+                setTimeout(() => t.remove(), 3000);
+            }
 
-        window.closeAllModals = () => document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden'));
-        window.onload = init;
-    </script>
+            window.closeAllModals = () => document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden'));
+            window.onload = init;
+        </script>
 </body>
 
 </html>
