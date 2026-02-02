@@ -83,15 +83,30 @@ def run_voice():
 def supabase_webhook():
     """Recibe notificaciones de cambios en la DB para disparar agentes."""
     payload = request.json
-    print(f"DEBUG: Webhook recibido: {payload}")
+    event_type = payload.get('type')
+    table = payload.get('table')
+    record = payload.get('record', {})
+    old_record = payload.get('old_record', {})
+
+    print(f"DEBUG: Webhook recibido [{event_type}] en [{table}]")
     
-    # Lógica de disparo automático:
-    # Si se crea un proyecto (INSERT), llamar al Agente Manager para priorizar.
-    if payload.get('type') == 'INSERT' and payload.get('table') == 'projects':
-        project = payload.get('record', {})
-        run_manager([project]) # El manager analiza el nuevo proyecto
-        return jsonify({"status": "success", "message": "Agente Manager disparado"}), 200
+    # 1. Al crear un nuevo proyecto: El Manager analiza y prioriza
+    if event_type == 'INSERT' and table == 'projects':
+        project_name = record.get('service_type', 'Nuevo Proyecto')
+        print(f"AUTOMACIÓN: Agente Manager analizando {project_name}")
+        run_manager(json.dumps([record]))
+        return jsonify({"status": "success", "message": "Manager analizó el nuevo proyecto"}), 200
         
+    # 2. Al cambiar a QC: Disparar investigación o feedback (Simulado)
+    if event_type == 'UPDATE' and table == 'projects':
+        new_status = record.get('status')
+        old_status = old_record.get('status')
+        
+        if new_status == 'qc' and old_status != 'qc':
+            print(f"AUTOMACIÓN: Proyecto {record.get('id')} ha entrado en QC. Preparando reporte de calidad...")
+            # Aquí se podría disparar un agente de calidad específico
+            return jsonify({"status": "success", "message": "Evento QC procesado"}), 200
+
     return jsonify({"status": "ignored", "message": "Evento no procesado"}), 200
 
 if __name__ == '__main__':
