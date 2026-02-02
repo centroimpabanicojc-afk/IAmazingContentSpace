@@ -1245,6 +1245,50 @@
             if (feed.children.length > 8) feed.lastElementChild.remove();
         }
 
+        window.formatMarkdown = (text) => {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<b class="text-violet-400">$1</b>')
+                .replace(/\n/g, '<br>')
+                .replace(/^[-*] (.*)/gm, '<div class="flex gap-2 mb-1"><span class="text-violet-500">•</span><span>$1</span></div>');
+        }
+
+        window.speakResponse = async (text, btn) => {
+            const icon = btn.querySelector('i');
+            const originalIcon = icon.getAttribute('data-lucide');
+
+            try {
+                icon.setAttribute('data-lucide', 'refresh-cw');
+                icon.classList.add('animate-spin');
+                lucide.createIcons();
+
+                const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+                const res = await fetch(`${cleanBaseUrl}/api/voice`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text.replace(/[#*]/g, '') })
+                });
+                const data = await res.json();
+
+                if (data.url) {
+                    const audio = new Audio(`${cleanBaseUrl}/${data.url}`);
+                    audio.play();
+                    icon.setAttribute('data-lucide', 'volume-2');
+                    icon.classList.remove('animate-spin');
+                    lucide.createIcons();
+                    audio.onended = () => {
+                        icon.setAttribute('data-lucide', originalIcon);
+                        lucide.createIcons();
+                    };
+                }
+            } catch (e) {
+                console.error("Audio error:", e);
+                renderToast("Error al generar audio", "error");
+                icon.setAttribute('data-lucide', originalIcon);
+                icon.classList.remove('animate-spin');
+                lucide.createIcons();
+            }
+        }
+
         window.sendCortex = async () => {
             const input = document.getElementById('cortex-input');
             const chat = document.getElementById('cortex-chat');
@@ -1318,19 +1362,24 @@
 
                 logActivity(prefix, 'Respuesta generada', 'success');
 
-                // Typing Effect
-                botBox.innerHTML = `<span class="text-xs font-bold text-violet-400 uppercase tracking-widest">${prefix}</span><br><div class="typing-container"></div>`;
+                // Typing Effect con Formateo Markdown
+                const formattedResponse = formatMarkdown(finalResponse);
+                botBox.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-violet-400 uppercase tracking-widest">${prefix}</span>
+                        <button onclick="speakResponse(\`${finalResponse.replace(/`/g, "'")}\`, this)" class="p-1.5 hover:bg-white/10 rounded-lg transition-all text-slate-500 hover:text-white">
+                            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div class="typing-container"></div>
+                `;
+                lucide.createIcons();
+
                 const container = botBox.querySelector('.typing-container');
-                let i = 0;
-                function type() {
-                    if (i < finalResponse.length) {
-                        container.textContent += finalResponse.charAt(i);
-                        i++;
-                        setTimeout(type, 5);
-                        chat.scrollTop = chat.scrollHeight;
-                    }
-                }
-                type();
+                container.innerHTML = formattedResponse; // Aplicar formato de golpe para evitar problemas con tags rotos durante el tipado
+                container.style.opacity = '0';
+                container.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500, fill: 'forwards' });
+                chat.scrollTop = chat.scrollHeight;
 
             } catch (e) {
                 console.error("Cortex Error:", e);
