@@ -14,7 +14,8 @@
 - [x] **Capa 1 (SOPs):** Crear `architecture/sop_manager.md`.
 - [x] **Capa 2 (Navegación):** Reparar Dashboard (`index.html` con assets locales).
 - [x] **Capa 3 (Herramientas):** Desarrollar `tools/agent_manager.py` (Manager v1 funcional).
-- [ ] **Desarrollo:** Crear Agente de Ventas y Agente de Producción.
+- [x] Desarrollo: Crear Agente de Ventas y Agente de Producción.
+- [ ] Integración: Conectar Cortex UI con el endpoint unificado `/api/agent`.
 
 ## Fase 4: Pulido [P]
 - [ ] Refinamiento de UI/UX para el seguimiento de agentes.

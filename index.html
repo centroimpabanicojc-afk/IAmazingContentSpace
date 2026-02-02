@@ -1104,59 +1104,68 @@
         }
 
         window.sendCortex = async () => {
-            const input = document.getElementById('cortex-input'); const chat = document.getElementById('cortex-chat');
-            const query = input.value.trim(); if (!query) return;
-            const userBox = document.createElement('div'); userBox.className = "self-end bg-violet-600/10 p-4 rounded-3xl text-white text-sm border border-violet-500/20 max-w-[80%]"; userBox.textContent = query;
-            chat.appendChild(userBox); input.value = ''; chat.scrollTop = chat.scrollHeight;
+            const input = document.getElementById('cortex-input');
+            const chat = document.getElementById('cortex-chat');
+            const query = input.value.trim();
+            if (!query) return;
 
-            const botBox = document.createElement('div'); botBox.className = "self-start bg-white/5 p-4 rounded-3xl text-slate-300 text-sm border border-white/5 max-w-[80%]"; botBox.textContent = "... Cortex está analizando ...";
+            // User message UI
+            const userBox = document.createElement('div');
+            userBox.className = "self-end bg-violet-600/10 p-4 rounded-3xl text-white text-sm border border-violet-500/20 max-w-[80%]";
+            userBox.textContent = query;
+            chat.appendChild(userBox);
+            input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+
+            // Bot placeholder UI
+            const botBox = document.createElement('div');
+            botBox.className = "self-start bg-white/5 p-4 rounded-3xl text-slate-300 text-sm border border-white/5 max-w-[80%] whitespace-pre-wrap";
+            botBox.innerHTML = `<span class="italic animate-pulse">Cortex está pensando...</span>`;
             chat.appendChild(botBox);
 
-            setTimeout(async () => {
-                let resp = `Hola ${currentUser.first_name}. ¿En qué te ayudo?`;
-                const q = query.toLowerCase();
-                const { data: allProjects } = await sb.from('projects').select('*, clients(name)');
+            const q = query.toLowerCase();
 
-                if (q.includes('tarea') || q.includes('pendiente') || q.includes('feedback')) {
-                    const myTasks = allProjects.filter(p => p.assigned_to === currentUser.id && p.status !== 'completed');
-                    const withFeedback = myTasks.filter(p => p.checklist && p.checklist.some(i => !i.done));
-
-                    if (q.includes('feedback') || q.includes('corrección')) {
-                        if (withFeedback.length > 0) {
-                            resp = `Tienes ${withFeedback.length} proyectos con feedback pendiente: ${withFeedback.map(p => p.clients.name + ' (' + p.service_type + ')').join(', ')}. Revisa tus tarjetas.`;
-                        } else {
-                            resp = "¡Felicidades! No tienes feedback pendiente por ahora.";
-                        }
-                    } else {
-                        resp = `Tienes ${myTasks.length} tareas activas. ${withFeedback.length > 0 ? 'Ojo: ' + withFeedback.length + ' tienen correcciones marcadas.' : ''}`;
-                    }
-                } else if (q.includes('pago') || q.includes('ganado') || q.includes('balance')) {
-                    const { data } = await sb.from('project_payments').select('amount').eq('editor_id', currentUser.id);
-                    const total = data?.reduce((acc, p) => acc + parseFloat(p.amount), 0) || 0;
-                    resp = `Tu balance acumulado es de $${total.toFixed(2)}. Sigue así.`;
-                } else if (q.includes('disponibilidad') || q.includes('libre') || q.includes('equipo')) {
-                    const counts = {};
-                    teamData.filter(m => m.role.includes('editor')).forEach(m => {
-                        counts[m.first_name] = allProjects.filter(p => p.assigned_to === m.id && p.status !== 'completed').length;
+            try {
+                // INTENT 1: AI Agents (Backend Python)
+                if (q.includes('brief') || q.includes('guion') || q.includes('instruccion') || q.includes('producción')) {
+                    const res = await fetch('http://localhost:5000/api/agent', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ agent_type: 'production', title: 'Video Solicitado', idea: query })
                     });
-                    const ranking = Object.entries(counts).sort((a, b) => a[1] - b[1]);
-                    resp = `El equipo está así: ${ranking.map(([name, count]) => name + ' (' + count + ' tareas)').join(', ')}. ${ranking[0][0]} es quien tiene más disponibilidad ahora.`;
-                } else if (q.includes('vence') || q.includes('deadline') || q.includes('urgente')) {
-                    const urgents = allProjects.filter(p => {
-                        if (!p.deadline || p.status === 'completed') return false;
-                        const diff = (new Date(p.deadline) - new Date()) / (1000 * 3600);
-                        return diff < 48;
-                    });
-                    if (urgents.length > 0) {
-                        resp = `Atención: Hay ${urgents.length} proyectos que vencen pronto: ${urgents.map(p => p.clients.name).join(', ')}.`;
-                    } else {
-                        resp = "Estamos al día, no hay deadlines críticos en las próximas 48h.";
-                    }
+                    const data = await res.json();
+                    botBox.textContent = `🤖 AGENTE PRODUCCIÓN: \n${data.result}`;
                 }
+                else if (q.includes('propuesta') || q.includes('vender') || q.includes('estrategia') || q.includes('tendencia')) {
+                    const res = await fetch('http://localhost:5000/api/agent', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ agent_type: 'sales', client: 'Prospecto', niche: 'Contenido Digital', status: query })
+                    });
+                    const data = await res.json();
+                    botBox.textContent = `💰 AGENTE VENTAS: \n${data.result}`;
+                }
+                // INTENT 2: Quick Data Queries (Local/Supabase)
+                else {
+                    let resp = `Hola ${currentUser.first_name}. Soy Cortex. No detecté una orden de producción o ventas, pero aquí tienes lo último del dashboard:\n\n`;
+                    const { data: allProjects } = await sb.from('projects').select('*, clients(name)');
 
-                botBox.textContent = `CORTEX: ${resp}`;
-                chat.scrollTop = chat.scrollHeight;
-            }, 600);
+                    if (q.includes('tarea') || q.includes('pendiente') || q.includes('revisa')) {
+                        const myTasks = projectsData.filter(p => (p.assigned_to === currentUser.id || !p.assigned_to) && p.status !== 'completed');
+                        resp += `Tienes ${myTasks.length} tareas activas esperando atención.`;
+                    } else if (q.includes('pago') || q.includes('balance') || q.includes('plata')) {
+                        const bal = paymentsData?.reduce((acc, p) => acc + parseFloat(p.amount), 0) || 0;
+                        resp += `El balance total registrado en este momento es de $${bal.toFixed(2)}.`;
+                    } else {
+                        resp += "¿Quieres que genere un brief de producción, una propuesta de ventas o que analice tus métricas?";
+                    }
+                    botBox.textContent = resp;
+                }
+            } catch (e) {
+                console.error("Cortex API Error:", e);
+                botBox.textContent = "Error: No pude conectar con el cerebro de Python. Asegúrate de que el servidor esté corriendo.";
+            }
+            chat.scrollTop = chat.scrollHeight;
         }
 
         // 📊 RENDER ANALYTICS (PREMIUM)

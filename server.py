@@ -1,52 +1,61 @@
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
-import subprocess
-import json
+import sys
+
+# Añadir el directorio actual al path para importar tools
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from tools.agent_manager import run_manager
+from tools.agent_sales import generate_sales_pitch
+from tools.agent_production import generate_production_brief
 
 app = Flask(__name__)
 CORS(app)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+# Servir el frontend
 @app.route('/')
 def index():
-    return send_from_directory(BASE_DIR, 'index.html')
+    return send_from_directory('.', 'index.html')
 
 @app.route('/assets/<path:path>')
 def send_assets(path):
-    return send_from_directory(os.path.join(BASE_DIR, 'assets'), path)
+    return send_from_directory('assets', path)
 
-@app.route('/api/manager', methods=['POST'])
-def run_manager():
+# Endpoint unificado para Agentes
+@app.route('/api/agent', methods=['POST'])
+def run_agent():
+    # Asegurar que los logs usen UTF-8 en Windows
+    os.environ["PYTHONUTF8"] = "1"
+    
+    data = request.json
+    agent_type = data.get('agent_type')
+    
     try:
-        data = request.json
-        projects = data.get('projects', [])
-        
-        # Ejecutar el agente manager de python
-        # Usamos el path relativo al ejecutable de python que instalamos
-        python_exe = os.path.join(BASE_DIR, '.tmp', 'python', 'python.exe')
-        agent_script = os.path.join(BASE_DIR, 'tools', 'agent_manager.py')
-        
-        # Guardar proyectos temporales para que el agente los lea si fuera necesario
-        # Por ahora el agente manager que escribimos acepta json por argumento o mock
-        # Vamos a modificar el agente para que sea una libreria o reciba input
-        
-        # Simulación rápida para el dashboard mientras el agente corre
-        cmd = [python_exe, agent_script]
-        env = os.environ.copy()
-        env["PYTHONUTF8"] = "1"
-        
-        result = subprocess.run(cmd, capture_output=True, text=True, env=env)
-        
-        if result.returncode == 0:
-            return jsonify({"status": "success", "analysis": result.stdout})
+        if agent_type == 'manager':
+            projects = data.get('projects', [])
+            result = run_manager(projects)
+            return jsonify({"status": "success", "result": str(result)})
+            
+        elif agent_type == 'sales':
+            client = data.get('client', 'Cliente Genérico')
+            niche = data.get('niche', 'Contenido Digital')
+            status = data.get('status', 'Activo')
+            result = generate_sales_pitch(client, niche, status)
+            return jsonify({"status": "success", "result": str(result)})
+            
+        elif agent_type == 'production':
+            title = data.get('title', 'Nuevo Video')
+            idea = data.get('idea', 'Sin descripción')
+            result = generate_production_brief(title, idea)
+            return jsonify({"status": "success", "result": str(result)})
+            
         else:
-            return jsonify({"status": "error", "message": result.stderr}), 500
+            return jsonify({"status": "error", "message": "Tipo de agente no reconocido"}), 400
             
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    print("--- SERVIDOR OPERATIVO EN http://localhost:5000 ---")
-    app.run(host='0.0.0.0', port=5000)
+    # Usar el puerto 5000
+    app.run(port=5000, debug=True)
