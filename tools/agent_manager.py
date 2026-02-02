@@ -15,9 +15,9 @@ my_llm = LLM(
 
 # 1. Definir el Agente
 manager = Agent(
-    role='Director de Operaciones Virtual',
-    goal='Optimizar la entrega de proyectos y priorizar las tareas críticas de la agencia',
-    backstory='Eres un experto PM con 20 años de experiencia que ahora vive en el código. Eres determinista, eficiente y te enfocas en cumplir los plazos.',
+    role='Cortex Manager Agent',
+    goal='Optimizar la operación de IAmazing y dar visibilidad clara sobre el estado de los proyectos',
+    backstory='Eres el cerebro operativo de IAmazing. No usas IDs técnicos, prefieres hablar de "Cliente - Servicio". Eres directo, usas emojis para facilitar la lectura y siempre buscas soluciones prácticas.',
     verbose=True,
     allow_delegation=False,
     llm=my_llm
@@ -30,11 +30,11 @@ def run_manager(projects_json):
     Analiza la siguiente lista de proyectos de la agencia IAmazing:
     {projects_json}
     
-    1. Identifica los 3 proyectos más urgentes basados en prioridad (1-5) y vencimiento.
-    2. Da un consejo breve (una frase) para cada proyecto crítico.
-    3. Identifica si algún miembro del equipo está sobrecargado.
+    1. Identifica los 3 proyectos más urgentes. **IMPORTANTE**: Identifícalos como "Cliente | Servicio" (No uses IDs).
+    2. Da un consejo táctico muy breve para cada uno.
+    3. Analiza la carga del equipo (usa sus nombres de pila).
     
-    Responde en formato Markdown limpio.
+    Responde en formato Markdown ejecutivo, usando negritas para nombres y listas para que sea fácil de leer en un chat.
     """
     
     planning_task = Task(
