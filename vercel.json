@@ -2,23 +2,19 @@
     "version": 2,
     "builds": [
         {
-            "src": "server.py",
-            "use": "@vercel/python"
-        },
-        {
             "src": "index.html",
             "use": "@vercel/static"
         },
         {
             "src": "assets/**",
             "use": "@vercel/static"
+        },
+        {
+            "src": "dashboard_standalone.html",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "server.py"
-        },
         {
             "src": "/assets/(.*)",
             "dest": "/assets/$1"

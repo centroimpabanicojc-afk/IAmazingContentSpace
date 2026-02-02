@@ -26,6 +26,14 @@ En el panel de Vercel/Railway, debes añadir estas variables:
 - `SUPABASE_URL`: Tu URL de base de datos.
 - `SUPABASE_ANON_KEY`: Tu llave pública de Supabase.
 
+## Paso 4: Conectar Frontend con Backend
+Una vez desplegados ambos:
+1. Copia la URL que te dé Railway (ej: `https://tu-backend.up.railway.app`).
+2. Ve a tu Dashboard desplegado en Vercel.
+3. Haz clic en **Ajustes** (icono de engranaje).
+4. Pega la URL en el campo **Railway Backend URL** y pulsa **Guardar**.
+5. ¡Listo! Cortex AI ahora enviará las peticiones a la nube.
+
 ---
 > [!TIP]
 > Si prefieres mantenerlo simple, podemos seguir usando el servidor local como hasta ahora. ¡El sistema ya es 100% funcional así!

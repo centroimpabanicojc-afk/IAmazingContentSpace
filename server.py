@@ -95,5 +95,7 @@ def supabase_webhook():
     return jsonify({"status": "ignored", "message": "Evento no procesado"}), 200
 
 if __name__ == '__main__':
-    # Usar el puerto 5000
-    app.run(port=5000, debug=True)
+    # Usar el puerto de Railway o 5000 para local
+    port = int(os.environ.get("PORT", 5000))
+    # En producción (Railway) siempre debe ser 0.0.0.0
+    app.run(host='0.0.0.0', port=port, debug=False)

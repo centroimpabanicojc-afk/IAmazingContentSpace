@@ -678,7 +678,10 @@
             <h2 class="text-2xl font-bold mb-6">Ajustes</h2>
             <form id="settings-form" class="space-y-4">
                 <input type="url" id="setting-webhook" placeholder="WhatsApp Webhook URL"
-                    class="w-full rounded-xl px-4 py-3">
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white mb-2">
+                <input type="url" id="setting-backend"
+                    placeholder="Railway Backend URL (ej: https://su-app.up.railway.app)"
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
                 <button type="submit" class="w-full py-3 bg-violet-600 rounded-xl font-bold">Guardar</button>
             </form>
         </div>
@@ -733,6 +736,7 @@
 
         const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
+        let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "http://localhost:5000";
 
         // 🛡️ FALLBACK: Load Mock Data if DB fails
         async function loadMockData() {
@@ -1209,8 +1213,19 @@
 
         window.openSettings = () => {
             document.getElementById('setting-webhook').value = WHATSAPP_WEBHOOK_URL;
+            document.getElementById('setting-backend').value = BACKEND_API_URL;
             document.getElementById('settings-modal').classList.remove('hidden');
         }
+
+        document.getElementById('settings-form').onsubmit = (e) => {
+            e.preventDefault();
+            WHATSAPP_WEBHOOK_URL = document.getElementById('setting-webhook').value;
+            BACKEND_API_URL = document.getElementById('setting-backend').value;
+            localStorage.setItem('iamazing_webhook_url', WHATSAPP_WEBHOOK_URL);
+            localStorage.setItem('iamazing_api_url', BACKEND_API_URL);
+            closeAllModals();
+            renderToast("Ajustes guardados", "success");
+        };
 
         window.logActivity = (agent, action, type = 'info') => {
             const feed = document.getElementById('cortex-activity');
@@ -1259,7 +1274,7 @@
                 if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
                 if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
 
-                const response = await fetch('http://localhost:5000/api/agent', {
+                const response = await fetch(`${BACKEND_API_URL}/api/agent`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
