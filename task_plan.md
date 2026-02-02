@@ -15,11 +15,12 @@
 - [x] **Capa 2 (Navegación):** Reparar Dashboard (`index.html` con assets locales).
 - [x] **Capa 3 (Herramientas):** Desarrollar `tools/agent_manager.py` (Manager v1 funcional).
 - [x] Desarrollo: Crear Agente de Ventas y Agente de Producción.
-- [ ] Integración: Conectar Cortex UI con el endpoint unificado `/api/agent`.
+- [x] Integración: Conectar Cortex UI con el endpoint unificado `/api/agent`.
 
 ## Fase 4: Pulido [P]
-- [ ] Refinamiento de UI/UX para el seguimiento de agentes.
-- [ ] Pruebas estresadas de generación de video.
+- [ ] Refinamiento de UI/UX: Añadir efectos de escritura y feedback visual en Cortex.
+- [ ] Mejoras Estéticas: Implementar transiciones suaves entre vistas y pulido de tarjetas Kanban.
+- [ ] Optimización: Carga silenciosa de datos y manejo de errores premium.
 
 ## Fase 5: Automatización [A]
 - [ ] Disparadores (Triggers) de n8n.
