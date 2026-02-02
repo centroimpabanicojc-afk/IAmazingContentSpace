@@ -581,39 +581,108 @@
                     </div>
                 </div>
             </div>
+
+            <!-- View: Onboarding Interview -->
+            <div id="view-onboarding" class="hidden h-[80vh] flex flex-col animate-fade-in">
+                <header class="mb-6">
+                    <h1 class="text-3xl font-bold text-white mb-1">Entrevista de Vuelo 🚀</h1>
+                    <p class="text-slate-400">Queremos conocerte para personalizar tu experiencia en la agencia.</p>
+                </header>
+                <div class="glass flex-1 rounded-[40px] flex flex-col overflow-hidden relative border border-white/5">
+                    <div id="onboarding-chat" class="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth pr-4">
+                        <!-- La IA inicia la charla -->
+                    </div>
+                    <div class="p-6 bg-black/20 border-t border-white/5">
+                        <div class="relative flex items-center">
+                            <input type="text" id="onboarding-input"
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-white outline-none focus:border-violet-500 transition-all font-medium"
+                                placeholder="Escribe tu respuesta..."
+                                onkeypress="if(event.key === 'Enter') sendOnboardingMessage()">
+                            <button onclick="sendOnboardingMessage()"
+                                class="absolute right-2 p-3 bg-violet-600 rounded-xl hover:bg-violet-700 transition-all active:scale-95 shadow-lg shadow-violet-600/20">
+                                <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-3 text-center uppercase tracking-widest">Chat privado •
+                            IA de Reclutamiento IAmazing</p>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <!-- Modals -->
+    <!-- Login & Register Modal -->
     <div id="login-modal"
-        class="fixed inset-0 bg-black/95 backdrop-blur-md hidden flex items-center justify-center z-[100] p-4">
-        <div class="glass w-full max-w-md p-10 rounded-[40px] border border-white/10 text-center">
-            <div id="login-step-1">
+        class="fixed inset-0 bg-black/95 backdrop-blur-md flex items-center justify-center z-[100] p-4">
+        <div class="glass w-full max-w-sm p-8 rounded-[40px] border border-white/10 text-center">
+            <div id="login-initial">
                 <div
-                    class="w-16 h-16 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <i data-lucide="zap" class="w-8 h-8 text-white"></i>
+                    class="w-16 h-16 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-violet-500/20">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
                 </div>
-                <h2 class="text-3xl font-bold text-white mb-2">IAmazing <span class="gradient-text">Agency</span></h2>
-                <p class="text-slate-400 text-sm mb-8">Selecciona tu perfil para continuar.</p>
-                <div class="space-y-3 mb-8" id="login-user-list"></div>
-            </div>
-            <div id="login-step-2" class="hidden">
-                <button onclick="showLoginStep(1)"
-                    class="text-xs text-slate-500 hover:text-white mb-6 flex items-center gap-2 mx-auto">
-                    <i data-lucide="arrow-left" class="w-3 h-3"></i> Volver a la lista
-                </button>
-                <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center font-bold text-2xl text-violet-400 mx-auto mb-4 border border-white/10"
-                    id="login-selected-avatar">?</div>
-                <h3 class="text-2xl font-bold text-white mb-1" id="login-selected-name">Usuario</h3>
-                <p class="text-xs text-slate-500 uppercase tracking-widest mb-8" id="login-selected-role">Puesto</p>
-                <div class="space-y-4">
-                    <input type="password" id="login-password" placeholder="Contraseña"
-                        class="w-full rounded-xl px-4 py-4 bg-black/20 border-white/10 text-center text-white outline-none focus:border-violet-500 text-lg tracking-widest"
-                        onkeypress="if(event.key === 'Enter') attemptLogin()">
-                    <button onclick="attemptLogin()"
-                        class="w-full py-4 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-2xl font-bold text-white shadow-lg shadow-violet-600/20 active:scale-95 transition-transform">
-                        Entrar al Sistema
+                <h2 class="text-3xl font-bold text-white mb-2">Acceso <span class="gradient-text">IAmazing</span></h2>
+                <p class="text-slate-400 text-sm mb-8">Sistema operativo de la agencia.</p>
+                <div class="space-y-3">
+                    <button onclick="showLoginStep('member')"
+                        class="w-full bg-white/5 hover:bg-white/10 py-4 rounded-2xl border border-white/10 transition-all font-medium flex items-center justify-center gap-3">
+                        <i data-lucide="users" class="w-4 h-4 text-violet-400"></i> Soy Miembro
                     </button>
+                    <button onclick="showLoginStep('register')"
+                        class="w-full bg-violet-600 hover:bg-violet-700 py-4 rounded-2xl transition-all font-medium flex items-center justify-center gap-3">
+                        <i data-lucide="user-plus" class="w-4 h-4 text-white"></i> Unirme al Equipo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login Miembro Existente -->
+            <div id="login-member" class="hidden animate-fade-in">
+                <button onclick="showLoginStep('initial')"
+                    class="text-xs text-slate-500 hover:text-white mb-6 flex items-center gap-2 mx-auto">
+                    <i data-lucide="arrow-left" class="w-3 h-3"></i> Volver
+                </button>
+                <h3 class="text-xl font-bold mb-6">Selecciona Perfil</h3>
+                <div class="space-y-3 max-h-60 overflow-y-auto pr-2 mb-6" id="login-user-list"></div>
+                <div id="member-password-area" class="hidden">
+                    <input type="password" id="login-password" placeholder="••••"
+                        class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl mb-4 text-center text-lg tracking-[0.5em] outline-none focus:border-violet-500">
+                    <button onclick="attemptLogin()"
+                        class="w-full bg-violet-600 py-4 rounded-2xl font-bold">Entrar</button>
+                </div>
+            </div>
+
+            <!-- Registro Nuevo Trabajador -->
+            <div id="login-register" class="hidden animate-fade-in">
+                <button onclick="showLoginStep('initial')"
+                    class="text-xs text-slate-500 hover:text-white mb-6 flex items-center gap-2 mx-auto">
+                    <i data-lucide="arrow-left" class="w-3 h-3"></i> Volver
+                </button>
+                <h3 class="text-xl font-bold mb-2">Nuevo Colaborador</h3>
+                <p class="text-xs text-slate-500 mb-6">Completa tus datos para iniciar la entrevista.</p>
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase ml-2 mb-1 block">Nombre</label>
+                        <input type="text" id="reg-name" placeholder="Tu nombre"
+                            class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm outline-none focus:border-violet-500 text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase ml-2 mb-1 block">Email (Recibirás
+                            notificaciones)</label>
+                        <input type="email" id="reg-email" placeholder="tu@email.com"
+                            class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm outline-none focus:border-violet-500 text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase ml-2 mb-1 block">Tu Especialidad</label>
+                        <select id="reg-role"
+                            class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm outline-none focus:border-violet-500 text-white">
+                            <option value="editor">Editor de Video</option>
+                            <option value="designer">Diseñador Gráfico</option>
+                            <option value="copywriter">Copywriter / Guionista</option>
+                        </select>
+                    </div>
+                    <button onclick="startOnboarding()"
+                        class="w-full bg-violet-600 py-4 rounded-2xl font-bold mt-2 shadow-lg shadow-violet-500/20 active:scale-95 transition-all">Iniciar
+                        Entrevista</button>
                 </div>
             </div>
         </div>
@@ -814,35 +883,130 @@
         }
 
         function showLoginStep(step) {
-            document.getElementById('login-step-1').classList.toggle('hidden', step !== 1);
-            document.getElementById('login-step-2').classList.toggle('hidden', step !== 2);
-            if (step === 2 && selectedUserTemp) {
-                document.getElementById('login-selected-name').textContent = selectedUserTemp.first_name;
-                document.getElementById('login-selected-role').textContent = selectedUserTemp.role.replace('_', ' ');
-                document.getElementById('login-selected-avatar').textContent = selectedUserTemp.first_name[0];
-                document.getElementById('login-password').value = '';
-                document.getElementById('login-password').focus();
+            ['login-initial', 'login-member', 'login-register'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(`login-${step}`).classList.remove('hidden');
+            if (step === 'member') {
+                const list = document.getElementById('login-user-list');
+                list.innerHTML = teamData.filter(m => m.status === 'active').map(m => `
+                    <button onclick="selectUserForLogin('${m.id}')" class="w-full flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-left">
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-violet-400">${m.first_name[0]}</div>
+                        <div><p class="text-sm font-bold text-white">${m.first_name}</p><p class="text-[10px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div>
+                    </button>
+                `).join('');
             }
+            lucide.createIcons();
         }
 
         function openLogin() {
-            const list = document.getElementById('login-user-list');
-            list.innerHTML = teamData.map(m => `
-                <button onclick="selectUserForLogin('${m.id}')" class="w-full flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-left">
-                    <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-violet-400">${m.first_name[0]}</div>
-                    <div><p class="text-sm font-bold text-white">${m.first_name}</p><p class="text-[10px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div>
-                </button>
-            `).join('');
-            showLoginStep(1);
+            showLoginStep('initial');
             document.getElementById('login-modal').classList.remove('hidden');
-            lucide.createIcons();
         }
 
         let selectedUserTemp = null;
         window.selectUserForLogin = (uid) => {
             selectedUserTemp = teamData.find(m => m.id === uid);
-            showLoginStep(2);
+            document.getElementById('member-password-area').classList.remove('hidden');
+            document.getElementById('login-password').focus();
         };
+
+        // --- SISTEMA DE ONBOARDING ---
+        let onboardingEmployee = null;
+        let interviewLog = [];
+
+        async function startOnboarding() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const role = document.getElementById('reg-role').value;
+
+            if (!name || !email) return renderToast("Completa tus datos", "warning");
+
+            renderToast("Registrando perfil...", "info");
+
+            try {
+                // 1. Crear usuario en tabla team_members (status pending)
+                const { data, error } = await sb.from('team_members').insert({
+                    first_name: name,
+                    last_name: '',
+                    email: email,
+                    role: role,
+                    status: 'pending_approval' // El usuario propone pending_approval
+                }).select().single();
+
+                if (error) throw error;
+                onboardingEmployee = data;
+
+                // 2. Cambiar UI a modo Entrevista
+                document.getElementById('login-modal').classList.add('hidden');
+                showView('onboarding');
+
+                // 3. IA inicia entrevista
+                const welcomeMsg = `Hola **${name}**, qué gusto saludarte. Soy Cortex, la IA de gestión de IAmazing. Marco me ha pedido que te haga una breve entrevista para conocerte mejor y preparar tu espacio de trabajo. \n\nPara empezar: **¿Cuál es tu mayor fortaleza en el área de ${role}?**`;
+                appendOnboardingChat('bot', welcomeMsg);
+                interviewLog.push({ role: 'bot', content: welcomeMsg });
+
+            } catch (e) {
+                console.error(e);
+                renderToast("Error al registrar: " + e.message, "error");
+            }
+        }
+
+        function appendOnboardingChat(role, text) {
+            const chat = document.getElementById('onboarding-chat');
+            const div = document.createElement('div');
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`;
+            div.innerHTML = `
+                <div class="${role === 'user' ? 'bg-violet-600' : 'bg-white/5 border border-white/10'} p-4 rounded-3xl max-w-[80%] shadow-lg">
+                    <p class="text-xs font-bold mb-1 opacity-50">${role === 'user' ? 'Tú' : 'Cortex'}</p>
+                    <div class="text-sm leading-relaxed">${formatMarkdown(text)}</div>
+                </div>
+            `;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function sendOnboardingMessage() {
+            const input = document.getElementById('onboarding-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            appendOnboardingChat('user', text);
+            interviewLog.push({ role: 'user', content: text });
+
+            // Si es la 4ta interacción, cerramos entrevista (simplificado para demo)
+            if (interviewLog.length >= 6) {
+                const finalMsg = "¡Muchas gracias! Ya tengo suficiente información para Marco. El sistema analizará tu perfil y recibirás una notificación cuando tu acceso sea activado. ¡Hasta pronto!";
+                appendOnboardingChat('bot', finalMsg);
+
+                // Enviar al servidor para análisis
+                const transcript = interviewLog.map(m => `${m.role}: ${m.content}`).join('\n');
+                fetch(`${BACKEND_API_URL}/api/onboarding/finish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employee_id: onboardingEmployee.id, transcript: transcript })
+                });
+
+                setTimeout(() => {
+                    renderToast("Entrevista enviada", "success");
+                    location.reload(); // Volver al inicio
+                }, 4000);
+                return;
+            }
+
+            // Simular respuesta inteligente (aquí se podría llamar a un mini-endpoint de chat)
+            setTimeout(() => {
+                const questions = [
+                    "Interesante. ¿Cómo prefieres que te den feedback sobre tu trabajo?",
+                    "¡Entendido! Una última cosa: ¿Cuál es el proyecto del que más te enorgulleces?",
+                    "Perfecto. Con esto tengo lo que necesito para presentarte a Marco."
+                ];
+                const nextQ = questions[Math.floor(interviewLog.length / 2) - 1] || "Cuéntame más sobre eso.";
+                appendOnboardingChat('bot', nextQ);
+                interviewLog.push({ role: 'bot', content: nextQ });
+            }, 1000);
+        }
 
         window.attemptLogin = async () => {
             const pass = document.getElementById('login-password').value;
@@ -1438,26 +1602,24 @@
             });
         }
 
-        // 👥 REBUILT: PREMIUM TEAM MGMT (Static-First)
+        // 👥 REBUILT: PREMIUM TEAM MGMT (Con sistema de Aprobación)
         function renderTeamMgmt() {
             const body = document.getElementById('team-mgmt-body');
             if (!body) return;
 
-            // Use real data OR reliable fallbacks so table is NEVER empty
-            const safeTeam = (teamData && teamData.length > 0) ? teamData : [
-                { id: 't1', first_name: 'Marco', role: 'pm', password: '123' },
-                { id: 't2', first_name: 'Pedro', role: 'editor_sr', password: '123' },
-                { id: 't3', first_name: 'Antigravity', role: 'ai_bot', password: '123' }
-            ];
-
-            body.innerHTML = safeTeam.map(m => `
-                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
+            body.innerHTML = teamData.map(m => {
+                const isPending = m.status === 'pending_approval' || m.status === 'pending';
+                return `
+                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group ${isPending ? 'bg-violet-500/5' : ''}">
                     <td class="py-4 px-2">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 flex items-center justify-center text-xs font-bold text-white border border-white/10">
                                 ${m.first_name ? m.first_name[0] : '?'}
                             </div>
-                            <span class="font-bold text-slate-200">${m.first_name || 'Usuario'}</span>
+                            <div>
+                                <span class="font-bold text-slate-200 block">${m.first_name || 'Usuario'}</span>
+                                ${isPending ? '<span class="text-[9px] text-amber-500 font-bold uppercase tracking-tighter animate-pulse">Esperando Aprobación</span>' : ''}
+                            </div>
                         </div>
                     </td>
                     <td class="py-4 px-2">
@@ -1466,23 +1628,47 @@
                         </span>
                     </td>
                     <td class="py-4 px-2">
-                        <div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px]">
-                            <i data-lucide="key" class="w-3 h-3 text-slate-600 ml-2"></i>
-                            <input type="text" value="${m.password || '---'}" 
-                                onchange="updatePassword('${m.id}', this.value)" 
-                                class="bg-transparent border-none text-xs text-center w-full focus:ring-0 text-white font-mono"
-                            >
-                        </div>
+                        ${isPending ?
+                        '<span class="text-xs text-slate-500 italic">No asignada</span>' :
+                        `<div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px]">
+                                <i data-lucide="key" class="w-3 h-3 text-slate-600 ml-2"></i>
+                                <input type="text" value="${m.password || '123'}" 
+                                    onchange="updatePassword('${m.id}', this.value)" 
+                                    class="bg-transparent border-none text-xs text-center w-full focus:ring-0 text-white font-mono"
+                                >
+                            </div>`
+                    }
                     </td>
                     <td class="py-4 px-2">
-                         <button class="p-2 text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Guardar">
-                            <i data-lucide="save" class="w-4 h-4"></i>
-                        </button>
+                         ${isPending ?
+                        `<button onclick="approveMember('${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-3 h-3"></i> Aprobar
+                            </button>` :
+                        `<button class="p-2 text-slate-500 hover:text-white rounded-lg transition-colors">
+                                <i data-lucide="settings" class="w-4 h-4"></i>
+                            </button>`
+                    }
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
 
             if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        window.approveMember = async (uid) => {
+            renderToast("Aprobando miembro...", "info");
+            try {
+                const { error } = await sb.from('team_members').update({
+                    status: 'active',
+                    password: '123'
+                }).eq('id', uid);
+
+                if (error) throw error;
+                renderToast("Miembro aprobado con éxito", "success");
+                loadConstants(); // Recargar lista
+            } catch (e) {
+                renderToast("Error al aprobar: " + e.message, "error");
+            }
         }
 
         window.updatePassword = async (uid, newPass) => {

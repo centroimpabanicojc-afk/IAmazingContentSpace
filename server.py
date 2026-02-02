@@ -2,6 +2,8 @@ from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
 import sys
+import json
+import asyncio
 
 # Añadir el directorio actual al path para importar tools
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -11,7 +13,7 @@ from tools.agent_sales import generate_sales_pitch
 from tools.agent_production import generate_production_brief
 from tools.agent_researcher import run_research
 from tools.voice_engine import generate_voice
-import asyncio
+from tools.agent_interviewer import analyze_interview_transcript
 
 app = Flask(__name__)
 CORS(app)
@@ -28,9 +30,7 @@ def send_assets(path):
 # Endpoint unificado para Agentes
 @app.route('/api/agent', methods=['POST'])
 def run_agent():
-    # Asegurar que los logs usen UTF-8 en Windows
     os.environ["PYTHONUTF8"] = "1"
-    
     data = request.json
     agent_type = data.get('agent_type')
     
@@ -54,7 +54,7 @@ def run_agent():
             return jsonify({"status": "success", "result": str(result)})
             
         elif agent_type == 'research':
-            topic = data.get('topic', 'IA en Marketing 2026')
+            topic = data.get('topic', 'IA in Marketing 2026')
             result = run_research(topic)
             return jsonify({"status": "success", "result": str(result)})
             
@@ -64,7 +64,7 @@ def run_agent():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# 🎤 Endpoint de Voz (Fase 5: Producción Proactiva)
+# 🎤 Endpoint de Voz
 @app.route('/api/voice', methods=['POST'])
 def run_voice():
     data = request.json
@@ -78,39 +78,65 @@ def run_voice():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# ⚡ NUEVO: Webhook para Automatización Proactiva (Fase 5)
+# ⚡ Webhook para Automatización Proactiva
 @app.route('/api/webhook', methods=['POST'])
 def supabase_webhook():
-    """Recibe notificaciones de cambios en la DB para disparar agentes."""
     payload = request.json
     event_type = payload.get('type')
     table = payload.get('table')
     record = payload.get('record', {})
-    old_record = payload.get('old_record', {})
 
     print(f"DEBUG: Webhook recibido [{event_type}] en [{table}]")
     
-    # 1. Al crear un nuevo proyecto: El Manager analiza y prioriza
     if event_type == 'INSERT' and table == 'projects':
-        project_name = record.get('service_type', 'Nuevo Proyecto')
-        print(f"AUTOMACIÓN: Agente Manager analizando {project_name}")
         run_manager(json.dumps([record]))
-        return jsonify({"status": "success", "message": "Manager analizó el nuevo proyecto"}), 200
+        return jsonify({"status": "success", "message": "Manager analizó el proyecto"}), 200
         
-    # 2. Al cambiar a QC: Disparar investigación o feedback (Simulado)
     if event_type == 'UPDATE' and table == 'projects':
         new_status = record.get('status')
-        old_status = old_record.get('status')
-        
-        if new_status == 'qc' and old_status != 'qc':
-            print(f"AUTOMACIÓN: Proyecto {record.get('id')} ha entrado en QC. Preparando reporte de calidad...")
-            # Aquí se podría disparar un agente de calidad específico
-            return jsonify({"status": "success", "message": "Evento QC procesado"}), 200
+        if new_status == 'qc':
+            print(f"AUTOMACIÓN: Proyecto {record.get('id')} en QC.")
+            return jsonify({"status": "success", "message": "QC detectado"}), 200
 
-    return jsonify({"status": "ignored", "message": "Evento no procesado"}), 200
+    return jsonify({"status": "ignored"}), 200
+
+# 👤 Endpoint para Onboarding (Entrevista IA)
+@app.route('/api/onboarding/finish', methods=['POST'])
+def finish_onboarding():
+    data = request.json
+    employee_id = data.get('employee_id')
+    transcript = data.get('transcript')
+    
+    if not employee_id or not transcript:
+        return jsonify({"status": "error", "message": "Datos incompletos"}), 400
+        
+    try:
+        analysis_raw = analyze_interview_transcript(transcript)
+        analysis_str = str(analysis_raw)
+        
+        if "```json" in analysis_str:
+            analysis_str = analysis_str.split("```json")[1].split("```")[0].strip()
+        elif "{" in analysis_str:
+            start = analysis_str.find("{")
+            end = analysis_str.rfind("}") + 1
+            analysis_str = analysis_str[start:end]
+        
+        analysis = json.loads(analysis_str)
+        
+        from tools.agent_manager import supabase
+        update_data = {
+            "interview_summary": analysis.get('executive_summary'),
+            "personality_traits": analysis, 
+            "status": "pending_approval"
+        }
+        supabase.table("team_members").update(update_data).eq("id", employee_id).execute()
+        
+        return jsonify({"status": "success", "analysis": analysis})
+        
+    except Exception as e:
+        print(f"ERROR ONBOARDING: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    # Usar el puerto de Railway o 5000 para local
     port = int(os.environ.get("PORT", 5000))
-    # En producción (Railway) siempre debe ser 0.0.0.0
     app.run(host='0.0.0.0', port=port, debug=False)
