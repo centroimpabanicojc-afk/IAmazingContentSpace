@@ -2,11 +2,20 @@ import asyncio
 import edge_tts
 import os
 
-async def generate_voice(text, output_path="assets/audio/output.mp3", voice="es-MX-DaliaNeural"):
+async def generate_voice(text, output_path="assets/audio/output.mp3", agent_type="manager"):
     """
-    Genera un archivo de audio a partir de texto usando Edge-TTS.
-    Voces recomendadas: es-MX-DaliaNeural (Femenina), es-MX-JorgeNeural (Masculina).
+    Genera un archivo de audio con una voz personalizada según el tipo de agente.
     """
+    # Mapa de Personalidades por Voz
+    VOICES = {
+        "manager": "es-MX-JorgeNeural",    # Autoridad, serio
+        "sales": "es-ES-AlvaroNeural",     # Entusiasta, comercial
+        "research": "es-ES-ElviraNeural",  # Analítica, precisa
+        "production": "es-MX-DaliaNeural", # Creativa, fluida
+        "interviewer": "es-MX-DaliaNeural" # Empática
+    }
+    
+    voice = VOICES.get(agent_type, "es-MX-JorgeNeural")
     
     # Asegurar que el directorio de destino exista
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

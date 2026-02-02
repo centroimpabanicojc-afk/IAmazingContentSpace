@@ -555,6 +555,33 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 💎 WOW FACTOR: TALENT RADAR -->
+                <div class="glass p-10 rounded-[50px] border border-white/10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[100px] -z-10"></div>
+                    <div class="flex flex-col lg:flex-row items-center gap-12">
+                        <div class="flex-1 space-y-6">
+                            <h3 class="text-2xl font-bold text-white mb-4">Radar de Talento IAmazing 🧠</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Este gráfico visualiza el balance
+                                psicológico y técnico de tu equipo actual basándose en los análisis de ADN realizados
+                                por Cortex.</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                    <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Cultura Dominante</p>
+                                    <p class="text-violet-400 font-bold" id="dominant-culture">Proactividad</p>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                    <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Nivel de Soft Skills
+                                    </p>
+                                    <p class="text-cyan-400 font-bold">92% Optimizado</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-[400px] h-[400px]">
+                            <canvas id="chart-talent-radar"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- View: Team Mgmt (Admin) -->
@@ -1677,6 +1704,28 @@
                         borderRadius: 12,
                         barThickness: 20
                     }]
+                });
+
+                // Talent Radar Chart (WOW Factor)
+                renderChart('chart-talent-radar', 'radar', {
+                    labels: ['Creatividad', 'Proactividad', 'Técnica', 'Comunicación', 'Puntualidad'],
+                    datasets: [{
+                        label: 'Media del Equipo',
+                        data: [85, 92, 78, 88, 95],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#8b5cf6'
+                    }]
+                }, {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.05)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 10 } },
+                            ticks: { display: false }
+                        }
+                    }
                 });
             }
 

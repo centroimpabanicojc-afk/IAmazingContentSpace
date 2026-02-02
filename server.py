@@ -72,8 +72,9 @@ def run_voice():
     if not text: return jsonify({"status": "error", "message": "Falta el texto"}), 400
     
     try:
+        agent_type = data.get('agent_type', 'manager')
         filename = f"assets/audio/voice_{os.urandom(4).hex()}.mp3"
-        asyncio.run(generate_voice(text, filename))
+        asyncio.run(generate_voice(text, filename, agent_type))
         return jsonify({"status": "success", "url": filename})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
