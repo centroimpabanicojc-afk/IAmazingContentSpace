@@ -1,24 +1,28 @@
 import os
 import json
 from crewai import Agent, Task, Crew, Process, LLM
-from dotenv import load_dotenv
+from langchain_community.tools import DuckDuckGoSearchRun
 
 load_dotenv()
+
+# Inicializar herramienta de búsqueda gratuita
+search_tool = DuckDuckGoSearchRun()
 
 # Usar el objeto LLM nativo de CrewAI configurado para Groq
 my_llm = LLM(
     model="groq/llama-3.3-70b-versatile",
     api_key=os.getenv("GROQ_API_KEY"),
-    temperature=0.7 # Un poco más de creatividad para ventas
+    temperature=0.7 
 )
 
 # 1. Definir el Agente de Ventas
 sales_agent = Agent(
-    role='Growth Hacker & Sales Specialist',
-    goal='Generar propuestas de contenido irresistibles y redactar mensajes de outreach efectivos',
-    backstory='Eres un experto en marketing viral y ventas directas. Sabes cómo captar la atención de un cliente en los primeros 3 segundos de un mensaje.',
+    role='Growth Hacker & Proactive Sales Bot',
+    goal='Investigar clientes potenciales en internet y generar propuestas de outreach personalizadas basadas en datos reales',
+    backstory='Eres un experto en prospección digital. No solo esperas, sales a buscar. Utilizas internet para entender el nicho del cliente y sus puntos de dolor antes de escribir.',
     verbose=True,
     allow_delegation=False,
+    tools=[search_tool],
     llm=my_llm
 )
 
@@ -27,14 +31,14 @@ def generate_sales_pitch(client_name, niche, current_status):
     
     task_description = f"""
     Cliente: {client_name}
-    Nicho: {niche}
-    Estado Actual: {current_status}
+    Nicho/Industria: {niche}
     
-    1. Genera 3 ideas de Reels que sean tendencia para este nicho.
-    2. Redacta un mensaje persuasivo para WhatsApp (máximo 100 palabras) invitando al cliente a escalar su producción.
-    3. Incluye un 'gancho' inicial potente.
+    PASOS:
+    1. Usa internet para investigar tendencias actuales, competidores o el estilo de contenido popular en el nicho: {niche}.
+    2. Basado en esa investigación, genera 3 ideas de contenido de alto impacto para {client_name}.
+    3. Redacta un mensaje de outreach para WhatsApp que mencione un dato real o tendencia que encontraste.
     
-    Responde en formato Markdown.
+    Responde en formato Markdown, citando brevemente qué encontraste en tu investigación.
     """
     
     sales_task = Task(

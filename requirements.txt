@@ -9,3 +9,5 @@ playwright
 supabase
 moviepy
 gunicorn
+langchain-community
+duckduckgo-search
