@@ -1,0 +1,353 @@
+<!-- ========================================
+     MÓDULO: I+D (Investigación y Desarrollo)
+     ======================================== -->
+
+<!-- Vista: Experimentos -->
+<div id="view-rd-experiments" class="hidden">
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-1">Experimentos 🧪</h1>
+            <p class="text-slate-400">Proyectos de investigación activos</p>
+        </div>
+        <button onclick="openNewExperimentModal()"
+            class="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-xl text-white font-bold flex items-center gap-2">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            Nuevo Experimento
+        </button>
+    </header>
+
+    <!-- Grid de Experimentos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="experiments-grid">
+        <!-- Experimento Ejemplo -->
+        <div class="glass p-6 rounded-xl">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="font-bold text-white text-lg mb-1">Optimización de Render con IA</h3>
+                    <p class="text-xs text-slate-500">Iniciado: 2026-01-15</p>
+                </div>
+                <span class="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-xs font-bold">En Progreso</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-4">Reducir tiempo de render en 40% usando modelos de predicción de
+                frames</p>
+
+            <!-- Métricas del Experimento -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-black/30 p-3 rounded-lg">
+                    <p class="text-xs text-slate-500">Tiempo Ahorrado</p>
+                    <p class="text-lg font-bold text-emerald-400">32%</p>
+                </div>
+                <div class="bg-black/30 p-3 rounded-lg">
+                    <p class="text-xs text-slate-500">Tests Realizados</p>
+                    <p class="text-lg font-bold text-white">47</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="flex-1 py-2 glass rounded-lg text-xs hover:bg-white/10">Ver Detalles</button>
+                <button class="flex-1 py-2 glass rounded-lg text-xs hover:bg-white/10">Documentar</button>
+            </div>
+        </div>
+
+        <!-- Experimento 2 -->
+        <div class="glass p-6 rounded-xl">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="font-bold text-white text-lg mb-1">Auto-Subtitulado con Whisper</h3>
+                    <p class="text-xs text-slate-500">Iniciado: 2026-02-01</p>
+                </div>
+                <span
+                    class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-bold">Completado</span>
+            </div>
+            <p class="text-sm text-slate-400 mb-4">Implementar subtítulos automáticos con 95% de precisión</p>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-black/30 p-3 rounded-lg">
+                    <p class="text-xs text-slate-500">Precisión</p>
+                    <p class="text-lg font-bold text-emerald-400">96.3%</p>
+                </div>
+                <div class="bg-black/30 p-3 rounded-lg">
+                    <p class="text-xs text-slate-500">Videos Procesados</p>
+                    <p class="text-lg font-bold text-white">128</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button class="flex-1 py-2 glass rounded-lg text-xs hover:bg-white/10">Ver Resultados</button>
+                <button
+                    class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-white text-xs">Implementar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista: Base de Conocimiento -->
+<div id="view-rd-knowledge" class="hidden">
+    <header class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-1">Base de Conocimiento 📚</h1>
+        <p class="text-slate-400">Documentación y hallazgos</p>
+    </header>
+
+    <!-- Categorías -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="glass p-5 rounded-xl hover:bg-white/5 cursor-pointer">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 bg-violet-500/20 rounded-xl flex items-center justify-center">
+                    <i data-lucide="code" class="w-6 h-6 text-violet-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Workflows</h3>
+                    <p class="text-xs text-slate-500">23 documentos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-5 rounded-xl hover:bg-white/5 cursor-pointer">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center">
+                    <i data-lucide="lightbulb" class="w-6 h-6 text-cyan-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Best Practices</h3>
+                    <p class="text-xs text-slate-500">15 documentos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-5 rounded-xl hover:bg-white/5 cursor-pointer">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                    <i data-lucide="zap" class="w-6 h-6 text-emerald-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Automatizaciones</h3>
+                    <p class="text-xs text-slate-500">8 documentos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentos Recientes -->
+    <div class="glass rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-white/10">
+            <h3 class="font-bold text-white">Documentos Recientes</h3>
+        </div>
+        <div class="divide-y divide-white/5">
+            <div class="p-4 hover:bg-white/5 cursor-pointer">
+                <div class="flex items-start gap-4">
+                    <i data-lucide="file-text" class="w-5 h-5 text-violet-400 mt-1"></i>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-white text-sm mb-1">Guía de Edición con IA</h4>
+                        <p class="text-xs text-slate-500">Actualizado hace 2 días • Workflows</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 hover:bg-white/5 cursor-pointer">
+                <div class="flex items-start gap-4">
+                    <i data-lucide="file-text" class="w-5 h-5 text-cyan-400 mt-1"></i>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-white text-sm mb-1">Optimización de Thumbnails</h4>
+                        <p class="text-xs text-slate-500">Actualizado hace 5 días • Best Practices</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista: Métricas IA -->
+<div id="view-rd-metrics" class="hidden">
+    <header class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-1">Métricas de IA 📊</h1>
+        <p class="text-slate-400">Performance de bots y automatizaciones</p>
+    </header>
+
+    <!-- KPIs de Bots -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="glass p-5 rounded-xl">
+            <p class="text-xs uppercase font-bold text-violet-400 mb-2">Antigravity</p>
+            <h3 class="text-2xl font-bold text-white mb-1">98.5%</h3>
+            <p class="text-xs text-slate-500">Uptime</p>
+        </div>
+        <div class="glass p-5 rounded-xl">
+            <p class="text-xs uppercase font-bold text-cyan-400 mb-2">IA Editor</p>
+            <h3 class="text-2xl font-bold text-white mb-1">156</h3>
+            <p class="text-xs text-slate-500">Videos Procesados</p>
+        </div>
+        <div class="glass p-5 rounded-xl">
+            <p class="text-xs uppercase font-bold text-emerald-400 mb-2">RenderBot</p>
+            <h3 class="text-2xl font-bold text-white mb-1">2.3h</h3>
+            <p class="text-xs text-slate-500">Tiempo Ahorrado/día</p>
+        </div>
+        <div class="glass p-5 rounded-xl">
+            <p class="text-xs uppercase font-bold text-amber-400 mb-2">Total Ahorro</p>
+            <h3 class="text-2xl font-bold text-white mb-1">$4,200</h3>
+            <p class="text-xs text-slate-500">Este mes</p>
+        </div>
+    </div>
+
+    <!-- Gráfico de Actividad -->
+    <div class="glass p-6 rounded-xl">
+        <h3 class="font-bold text-white mb-4">Actividad de Bots (Últimos 7 días)</h3>
+        <canvas id="bot-activity-chart" height="100"></canvas>
+    </div>
+</div>
+
+<!-- ========================================
+     MÓDULOS COMUNES
+     ======================================== -->
+
+<!-- Vista: Notificaciones -->
+<div id="view-notifications" class="hidden">
+    <header class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-1">Notificaciones 🔔</h1>
+        <p class="text-slate-400">Actualizaciones y alertas</p>
+    </header>
+
+    <div class="space-y-3">
+        <div class="glass p-4 rounded-xl hover:bg-white/5 cursor-pointer border-l-4 border-violet-500">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-violet-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="inbox" class="w-5 h-5 text-violet-400"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-white text-sm mb-1">Nuevo proyecto asignado</h4>
+                    <p class="text-xs text-slate-400">Video para @CreatorXYZ - Prioridad Alta</p>
+                    <p class="text-xs text-slate-600 mt-1">Hace 5 minutos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-4 rounded-xl hover:bg-white/5 cursor-pointer border-l-4 border-emerald-500">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="dollar-sign" class="w-5 h-5 text-emerald-400"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-white text-sm mb-1">Pago recibido</h4>
+                    <p class="text-xs text-slate-400">$150.00 por Proyecto #abc123</p>
+                    <p class="text-xs text-slate-600 mt-1">Hace 2 horas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista: Chat -->
+<div id="view-chat" class="hidden">
+    <header class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-1">Chat del Equipo 💬</h1>
+        <p class="text-slate-400">Comunicación interna</p>
+    </header>
+
+    <div class="grid grid-cols-3 gap-6">
+        <!-- Lista de Conversaciones -->
+        <div class="glass rounded-xl p-4">
+            <h3 class="font-bold text-white mb-4 text-sm">Conversaciones</h3>
+            <div class="space-y-2">
+                <div class="p-3 glass rounded-lg hover:bg-white/5 cursor-pointer">
+                    <p class="font-bold text-white text-sm">#general</p>
+                    <p class="text-xs text-slate-500">Canal del equipo</p>
+                </div>
+                <div class="p-3 glass rounded-lg hover:bg-white/5 cursor-pointer">
+                    <p class="font-bold text-white text-sm">#produccion</p>
+                    <p class="text-xs text-slate-500">Equipo de producción</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de Chat -->
+        <div class="col-span-2 glass rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                <div class="w-10 h-10 bg-violet-500/20 rounded-xl flex items-center justify-center">
+                    <i data-lucide="hash" class="w-5 h-5 text-violet-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">#general</h3>
+                    <p class="text-xs text-slate-500">12 miembros</p>
+                </div>
+            </div>
+
+            <!-- Mensajes -->
+            <div class="space-y-4 mb-6 h-96 overflow-y-auto">
+                <div class="flex items-start gap-3">
+                    <div class="user-avatar">M</div>
+                    <div>
+                        <p class="text-sm"><span class="font-bold text-white">Marco</span> <span
+                                class="text-xs text-slate-600">10:30 AM</span></p>
+                        <p class="text-sm text-slate-300">Buen trabajo equipo! 🚀</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input de Mensaje -->
+            <div class="flex gap-2">
+                <input type="text" placeholder="Escribe un mensaje..."
+                    class="flex-1 px-4 py-3 glass rounded-xl text-sm">
+                <button class="px-6 py-3 bg-violet-600 hover:bg-violet-700 rounded-xl">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // === LÓGICA DE MÓDULOS COMUNES ===
+
+    function initRDMetrics() {
+        // Inicializar gráfico de actividad de bots
+        const ctx = document.getElementById('bot-activity-chart');
+        if (!ctx) return;
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [
+                    {
+                        label: 'Antigravity',
+                        data: [12, 19, 15, 17, 14, 18, 16],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'IA Editor',
+                        data: [8, 12, 10, 14, 11, 13, 12],
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'RenderBot',
+                        data: [5, 7, 6, 8, 7, 9, 8],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#94a3b8' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#64748b' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b' }
+                    }
+                }
+            }
+        });
+    }
+
+    window.initRDMetrics = initRDMetrics;
+</script>

@@ -18,6 +18,9 @@
     <script src="assets/libs/sortable.js"></script>
     <script src="assets/libs/chart.js"></script>
 
+    <!-- 🔐 Module System (Role-Based Access) -->
+    <script src="assets/js/modules-system.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -864,6 +867,11 @@
 
                 // Force Render immediately with whatever data we have
                 renderTeamMgmt();
+
+                // 🔐 Initialize Module System (Role-Based Access)
+                if (typeof initModuleSystem === 'function') {
+                    await initModuleSystem();
+                }
 
                 // 🔄 SILENT BACKGROUND SYNC (Fase 4: Pulido)
                 setInterval(() => {
@@ -1842,6 +1850,47 @@
             window.closeAllModals = () => document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden'));
             window.onload = init;
         </script>
+
+        <!-- ========================================
+             MÓDULOS DEPARTAMENTALES
+             ======================================== -->
+
+        <!-- Incluir vistas de Ventas -->
+        <script>
+            fetch('modules/sales-views.html')
+                .then(r => r.text())
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    document.querySelector('main').appendChild(temp);
+                })
+                .catch(e => console.warn('Sales module not loaded:', e));
+        </script>
+
+        <!-- Incluir vistas de Producción -->
+        <script>
+            fetch('modules/production-views.html')
+                .then(r => r.text())
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    document.querySelector('main').appendChild(temp);
+                })
+                .catch(e => console.warn('Production module not loaded:', e));
+        </script>
+
+        <!-- Incluir vistas de I+D y Comunes -->
+        <script>
+            fetch('modules/rd-common-views.html')
+                .then(r => r.text())
+                .then(html => {
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    document.querySelector('main').appendChild(temp);
+                })
+                .catch(e => console.warn('R&D module not loaded:', e));
+        </script>
+
 </body>
 
 </html>
