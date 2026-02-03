@@ -369,14 +369,6 @@
                             <div id="col-proposal" class="kanban-column flex flex-col gap-4"></div>
                         </div>
 
-                        <!-- I+D -->
-                        <div class="w-72 flex-shrink-0">
-                            <h3
-                                class="font-bold text-[10px] text-pink-400 px-3 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <i data-lucide="flask-conical" class="w-3 h-3"></i> Investigación (I+D)
-                            </h3>
-                            <div id="col-rd" class="kanban-column flex flex-col gap-4"></div>
-                        </div>
 
                         <!-- PRODUCCIÓN -->
                         <div class="w-72 flex-shrink-0">
@@ -406,6 +398,15 @@
                                 <i data-lucide="check-circle-2" class="w-3 h-3"></i> Entrega
                             </h3>
                             <div id="col-completed" class="kanban-column flex flex-col gap-4"></div>
+                        </div>
+
+                        <!-- I+D (Post-Entrega) -->
+                        <div class="w-72 flex-shrink-0">
+                            <h3
+                                class="font-bold text-[10px] text-pink-400 px-3 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i data-lucide="flask-conical" class="w-3 h-3"></i> Investigación (I+D)
+                            </h3>
+                            <div id="col-rd" class="kanban-column flex flex-col gap-4"></div>
                         </div>
                     </div>
                 </div>
@@ -1405,11 +1406,11 @@
                 const cols = {
                     contact: 'col-contact',
                     proposal: 'col-proposal',
-                    rd: 'col-rd',
                     briefing: 'col-briefing',
                     production: 'col-production',
                     qc: 'col-qc',
-                    completed: 'col-completed'
+                    completed: 'col-completed',
+                    rd: 'col-rd'
                 };
                 Object.values(cols).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
 
@@ -1620,11 +1621,11 @@
             async function moveToNext(pid, current) {
                 const next = {
                     contact: 'proposal',
-                    proposal: 'rd',
-                    rd: 'briefing',
+                    proposal: 'briefing',
                     briefing: 'production',
                     production: 'qc',
-                    qc: 'completed'
+                    qc: 'completed',
+                    completed: 'rd'
                 }[current];
                 if (next) await updateStatus(pid, next);
             }
@@ -2367,6 +2368,41 @@
                 }
             }
 
+
+            // 🌐 ADAPTIVE ZOOM ENGINE (Sprint Final)
+            window.adjustScale = () => {
+                const width = window.innerWidth;
+                let scale = 1;
+
+                if (width > 2500) scale = 1.25; // Large Displays
+                else if (width < 1600 && width > 1366) scale = 0.95; // Wide Laptops
+                else if (width <= 1366 && width > 1024) scale = 0.88; // Standard Laptops
+                else if (width <= 1024 && width > 768) scale = 0.82; // Tablets
+                else scale = 1; // Mobile handles with its own logic
+
+                document.documentElement.style.setProperty('--ui-scale', scale);
+            };
+
+            window.toggleSidebar = () => {
+                const aside = document.querySelector('aside');
+                const icon = document.getElementById('sidebar-toggle-icon');
+                if (!aside) return;
+                aside.classList.toggle('sidebar-collapsed');
+
+                if (icon) {
+                    if (aside.classList.contains('sidebar-collapsed')) {
+                        icon.setAttribute('data-lucide', 'chevrons-right');
+                    } else {
+                        icon.setAttribute('data-lucide', 'chevrons-left');
+                    }
+                    lucide.createIcons();
+                }
+                // Reinicializar gráficas para ajustar al nuevo ancho
+                if (typeof renderAnalytics === 'function') setTimeout(renderAnalytics, 300);
+            };
+
+            window.addEventListener('resize', () => adjustScale());
+
             // Inicialización optimizada
             window.onload = async () => {
                 console.log("🚀 Iniciando IAmazing...");
@@ -2391,38 +2427,7 @@
 
                 // 3. Inicializar resto del sistema core
                 await init();
-
-                // 🌐 ADAPTIVE ZOOM ENGINE (Sprint Final)
-                const adjustScale = () => {
-                    const width = window.innerWidth;
-                    let scale = 1;
-
-                    if (width > 2500) scale = 1.25; // Large Displays
-                    else if (width < 1600 && width > 1366) scale = 0.95; // Wide Laptops
-                    else if (width <= 1366 && width > 1024) scale = 0.88; // Standard Laptops
-                    else if (width <= 1024 && width > 768) scale = 0.82; // Tablets
-                    else scale = 1; // Mobile handles with its own logic
-
-                    document.documentElement.style.setProperty('--ui-scale', scale);
-                };
-
-                window.addEventListener('resize', adjustScale);
-                adjustScale(); // Initial call
-
-                window.toggleSidebar = () => {
-                    const aside = document.querySelector('aside');
-                    const icon = document.getElementById('sidebar-toggle-icon');
-                    aside.classList.toggle('sidebar-collapsed');
-
-                    if (aside.classList.contains('sidebar-collapsed')) {
-                        icon.setAttribute('data-lucide', 'chevrons-right');
-                    } else {
-                        icon.setAttribute('data-lucide', 'chevrons-left');
-                    }
-                    lucide.createIcons();
-                    // Reinicializar gráficas para ajustar al nuevo ancho
-                    if (typeof renderAnalytics === 'function') setTimeout(renderAnalytics, 300);
-                };
+                adjustScale();
             };
         </script>
 
