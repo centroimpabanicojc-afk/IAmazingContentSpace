@@ -287,8 +287,9 @@
             <div id="view-dashboard">
                 <header class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-white mb-1">Control de Operaciones V2 🕹️</h1>
-                        <p class="text-slate-400">Gestión global de la agencia.</p>
+                        <h1 class="text-3xl font-bold text-white mb-1 tracking-tight">Control de Operaciones <span
+                                class="text-violet-500">V3</span> 🕹️</h1>
+                        <p class="text-slate-400">Gestión global de la agencia bajo supervisión de Cortex.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-4">
                         <div class="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
@@ -309,6 +310,41 @@
                         </div>
                     </div>
                 </header>
+
+                <!-- 📢 THE OFFICE BOARD (Cortex Boss) -->
+                <div class="mb-10 animate-fade-in group">
+                    <div
+                        class="glass p-6 rounded-[32px] border border-violet-500/20 bg-violet-600/5 relative overflow-hidden">
+                        <div
+                            class="absolute -top-10 -right-10 w-40 h-40 bg-violet-600/10 blur-[60px] group-hover:bg-violet-600/20 transition-all duration-700">
+                        </div>
+                        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                            <div
+                                class="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20 flex-shrink-0">
+                                <i data-lucide="megaphone" class="w-7 h-7 text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xs font-black text-violet-400 uppercase tracking-[0.2em] mb-1">Órdenes
+                                    de Oficina: Cortex Boss</h3>
+                                <div id="office-board-text" class="text-slate-200 text-sm leading-relaxed italic">
+                                    "Analizando flujo de trabajo... Marco, hoy tenemos 2 proyectos urgentes en Edición.
+                                    Sugiero priorizar a 'TechFlow' para evitar retrasos en el pipeline."
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="renderOfficeBoard()"
+                                    class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-all">Sincronizar
+                                    IA</button>
+                                <button
+                                    onclick="speakResponse(document.getElementById('office-board-text').textContent, this)"
+                                    class="p-2 bg-violet-600/20 hover:bg-violet-600 text-violet-400 hover:text-white rounded-xl transition-all">
+                                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto pb-6 -mx-4 px-4 scrollbar-thin">
                     <div class="flex gap-6 min-w-max">
                         <!-- VENTAS -->
@@ -584,21 +620,58 @@
                     <h1 class="text-3xl font-bold text-white mb-1" id="team-title-check">Gestión de Equipo 👥</h1>
                     <p class="text-slate-400">Control de accesos y perfiles.</p>
                 </header>
-                <div class="glass p-6 rounded-3xl border border-white/10 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="text-slate-500 border-b border-white/5">
-                                <tr>
-                                    <th class="py-3 px-2">Miembro</th>
-                                    <th class="py-3 px-2">Rol</th>
-                                    <th class="py-3 px-2">Contraseña</th>
-                                    <th class="py-3 px-2">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="team-mgmt-body" class="text-slate-300">
-                                <!-- Se llena dinámicamente -->
-                            </tbody>
-                        </table>
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <!-- Credential Vault & List -->
+                    <div class="xl:col-span-2 space-y-6">
+                        <div class="glass p-8 rounded-[40px] border border-white/10 overflow-hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3
+                                    class="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Registro de
+                                    Miembros y Accesos
+                                </h3>
+                                <button onclick="toggleVaultVisibility()" id="vault-toggle"
+                                    class="px-4 py-2 glass rounded-xl text-[10px] font-bold uppercase tracking-widest text-violet-400 hover:bg-violet-400/10 border border-violet-400/20 transition-all">
+                                    Mostrar Bóveda de Claves
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="text-slate-500 border-b border-white/5">
+                                        <tr>
+                                            <th class="py-3 px-2">Miembro</th>
+                                            <th class="py-3 px-2 text-center">Estatus</th>
+                                            <th class="py-3 px-2 vault-cell hidden">Contraseña</th>
+                                            <th class="py-3 px-2 text-right">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="team-mgmt-body" class="text-slate-300"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organigram / Hierarchy -->
+                    <div class="space-y-6">
+                        <div class="glass p-8 rounded-[40px] border border-white/10">
+                            <h3
+                                class="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
+                                <i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Estructura Organizativa
+                            </h3>
+                            <div id="organigram-container"
+                                class="relative min-h-[400px] flex items-center justify-center p-4">
+                                <!-- Se llena vía SVG/JS -->
+                                <div class="text-[10px] text-slate-600 uppercase italic">Generando mapa jerárquico...
+                                </div>
+                            </div>
+                            <div class="mt-4 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
+                                <p class="text-[9px] text-amber-500 font-bold uppercase tracking-widest leading-normal">
+                                    <i data-lucide="zap" class="w-3 h-3 inline mr-1"></i> Alarma de Atasco:
+                                </p>
+                                <p id="bottleneck-text" class="text-[10px] text-slate-400 mt-1">Cortex no detecta
+                                    cuellos de botella críticos actualmente.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -960,6 +1033,8 @@
                 await loadConstants(); // Will update teamData/clientsData if connection works
                 checkSession();
                 await loadDashboard(); // Will update projectsData if connection works
+                if (typeof renderOfficeBoard === 'function') renderOfficeBoard();
+                if (typeof renderOrganigram === 'function') renderOrganigram();
 
                 // 🔐 Initialize Module System (Role-Based Access)
                 if (typeof initModuleSystem === 'function') {
@@ -980,7 +1055,7 @@
             }
 
             function initSortable() {
-                const cols = ['col-briefing', 'col-production', 'col-qc', 'col-completed'];
+                const cols = ['col-contact', 'col-proposal', 'col-rd', 'col-briefing', 'col-production', 'col-qc', 'col-completed'];
                 cols.forEach(id => {
                     const el = document.getElementById(id);
                     if (!el) return;
@@ -1834,54 +1909,68 @@
                 });
             }
 
-            // 👥 REBUILT: PREMIUM TEAM MGMT (Con sistema de Aprobación)
+            // 👥 REBUILT: PREMIUM TEAM MGMT (Sprint B: Vault & Organigram)
+            let isVaultVisible = false;
+            window.toggleVaultVisibility = () => {
+                isVaultVisible = !isVaultVisible;
+                const btn = document.getElementById('vault-toggle');
+                btn.textContent = isVaultVisible ? "Bloquear Bóveda" : "Mostrar Bóveda de Claves";
+                btn.classList.toggle('bg-rose-500/10', isVaultVisible);
+                btn.classList.toggle('text-rose-400', isVaultVisible);
+                renderTeamMgmt();
+            };
+
             function renderTeamMgmt() {
                 const body = document.getElementById('team-mgmt-body');
                 if (!body) return;
 
+                // Actualizar headers de la tabla según visibilidad de bóveda
+                document.querySelectorAll('.vault-cell').forEach(el => {
+                    if (isVaultVisible) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                });
+
                 body.innerHTML = teamData.map(m => {
                     const isPending = m.status === 'pending_approval' || m.status === 'pending';
+                    const assignedTasks = projectsData.filter(p => p.assigned_to === m.id && p.status !== 'completed').length;
+                    const isOverloaded = assignedTasks > 3;
+
                     return `
                 <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group ${isPending ? 'bg-violet-500/5' : ''}">
                     <td class="py-4 px-2">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-500/20 flex items-center justify-center text-xs font-bold text-white border border-white/10">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-xs font-bold text-violet-400 border border-white/10 relative">
                                 ${m.first_name ? m.first_name[0] : '?'}
+                                ${isOverloaded ? '<span class="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 border-2 border-[#0f172a] rounded-full animate-pulse"></span>' : ''}
                             </div>
                             <div>
-                                <span class="font-bold text-slate-200 block">${m.first_name || 'Usuario'}</span>
-                                ${isPending ? '<span class="text-[9px] text-amber-500 font-bold uppercase tracking-tighter animate-pulse">Esperando Aprobación</span>' : ''}
+                                <span class="font-bold text-slate-200 block text-sm">${m.first_name || 'Usuario'}</span>
+                                <span class="text-[9px] uppercase font-bold text-slate-500 tracking-widest">${(m.role || 'op').replace('_', ' ')}</span>
                             </div>
                         </div>
                     </td>
-                    <td class="py-4 px-2">
-                        <span class="px-2 py-1 rounded-md bg-white/5 text-[10px] uppercase font-bold text-slate-400 border border-white/5">
-                            ${(m.role || 'operator').replace('_', ' ')}
+                    <td class="py-4 px-2 text-center">
+                        <span class="px-2 py-0.5 rounded-full ${isPending ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'} text-[8px] font-black uppercase border border-current/20">
+                            ${isPending ? 'Pendiente' : 'Activo'}
                         </span>
                     </td>
-                    <td class="py-4 px-2">
-                        ${isPending ?
-                            '<span class="text-xs text-slate-500 italic">No asignada</span>' :
-                            `<div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px]">
-                                <i data-lucide="key" class="w-3 h-3 text-slate-600 ml-2"></i>
-                                <input type="text" value="${m.password || '123'}" 
-                                    onchange="updatePassword('${m.id}', this.value)" 
-                                    class="bg-transparent border-none text-xs text-center w-full focus:ring-0 text-white font-mono"
-                                >
-                            </div>`
-                        }
+                    <td class="py-4 px-2 vault-cell ${isVaultVisible ? '' : 'hidden'}">
+                        <div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px] mx-auto">
+                            <input type="password" value="${m.password || '123'}" 
+                                onchange="updatePassword('${m.id}', this.value)" 
+                                class="bg-transparent border-none text-[10px] text-center w-full focus:ring-0 text-white font-mono"
+                            >
+                        </div>
                     </td>
-                    <td class="py-4 px-2">
-                        <div class="flex items-center gap-2">
-                            <button onclick="openMemberProfile('${m.id}')" class="p-2 text-violet-400 hover:bg-violet-400/10 rounded-lg transition-all" title="Ver ADN">
-                                <i data-lucide="search" class="w-4 h-4"></i>
+                    <td class="py-4 px-2 text-right">
+                        <div class="flex justify-end items-center gap-2">
+                            <button onclick="openMemberProfile('${m.id}')" class="p-2 text-violet-400 hover:bg-violet-400/10 rounded-lg transition-all">
+                                <i data-lucide="dna" class="w-4 h-4"></i>
                             </button>
                              ${isPending ?
-                            `<button onclick="approveMember('${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-2">
-                                    <i data-lucide="check-circle" class="w-3 h-3"></i> Aprobar
-                                </button>` :
+                            `<button onclick="approveMember('${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all">Aprobar</button>` :
                             `<button class="p-2 text-slate-500 hover:text-white rounded-lg transition-colors">
-                                    <i data-lucide="settings" class="w-4 h-4"></i>
+                                    <i data-lucide="settings-2" class="w-4 h-4"></i>
                                 </button>`
                         }
                         </div>
@@ -1889,8 +1978,77 @@
                 </tr>
             `}).join('');
 
+                renderOrganigram();
                 if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
             }
+
+            function renderOrganigram() {
+                const container = document.getElementById('organigram-container');
+                if (!container) return;
+
+                // Simple hierarchy visualization
+                const levels = {
+                    pm: { name: 'Dirección', color: '#a78bfa' },
+                    sales_head: { name: 'Ventas', color: '#22d3ee' },
+                    coord_prod: { name: 'Producción', color: '#f43f5e' },
+                    editor_sr: { name: 'Equipo', color: '#64748b' },
+                    editor_std: { name: 'Equipo', color: '#64748b' },
+                    designer: { name: 'Equipo', color: '#64748b' }
+                };
+
+                let html = '<div class="flex flex-col items-center gap-8 w-full">';
+
+                // PM at top
+                const admins = teamData.filter(m => m.role === 'pm');
+                html += `<div class="flex gap-4">${admins.map(m => `<div class="text-center group"><div class="w-12 h-12 rounded-2xl bg-violet-600/20 border-2 border-violet-500 flex items-center justify-center font-bold text-white shadow-lg shadow-violet-500/20 mb-1">${m.first_name[0]}</div><p class="text-[9px] font-bold text-white">${m.first_name}</p></div>`).join('')}</div>`;
+
+                // Connection line
+                html += '<div class="w-px h-8 bg-gradient-to-b from-violet-500/50 to-transparent"></div>';
+
+                // Middle Managers & Team
+                html += '<div class="flex flex-wrap justify-center gap-6">';
+                const others = teamData.filter(m => m.role !== 'pm');
+                html += others.map(m => `
+                    <div class="flex flex-col items-center group">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center font-bold text-slate-400 group-hover:border-cyan-500/50 group-hover:text-cyan-400 transition-all mb-1 cursor-pointer">
+                            ${m.first_name[0]}
+                        </div>
+                        <p class="text-[8px] font-medium text-slate-500">${m.first_name}</p>
+                    </div>
+                `).join('');
+                html += '</div></div>';
+
+                container.innerHTML = html;
+
+                // Update bottleneck alarm
+                const problematic = teamData.filter(m => projectsData.filter(p => p.assigned_to === m.id && p.status !== 'completed').length > 3);
+                const bText = document.getElementById('bottleneck-text');
+                if (problematic.length > 0) {
+                    bText.innerHTML = `⚠️ <span class="text-rose-400 font-bold">${problematic[0].first_name}</span> tiene sobrecarga de tareas. Considera re-asignar para fluir el pipeline.`;
+                } else {
+                    bText.textContent = "Cortex no detecta cuellos de botella críticos actualmente.";
+                }
+            }
+
+            window.renderOfficeBoard = () => {
+                const board = document.getElementById('office-board-text');
+                if (!board) return;
+
+                const urgent = projectsData.filter(p => p.priority === 5 && p.status !== 'completed');
+                const waiting = projectsData.filter(p => p.status === 'briefing');
+
+                let msg = "";
+                if (urgent.length > 0) {
+                    msg = `🧠 **Alerta de Prioridad**: Hay ${urgent.length} proyectos urgentes. Sugiero que el equipo de producción se enfoque en **${urgent[0].service_type}** ahora mismo.`;
+                } else if (waiting.length > 5) {
+                    msg = `💼 **Aviso de Venta**: El pipeline de entrada está lleno (${waiting.length}). Marco, necesitamos asignar más recursos al área de Briefing.`;
+                } else {
+                    msg = `✨ **Estado Optimo**: El flujo de trabajo está equilibrado. Buen momento para que I+D investigue nuevas tendencias en Shorts.`;
+                }
+
+                board.innerHTML = formatMarkdown(msg);
+                renderToast("Órdenes de Cortex actualizadas", "info");
+            };
 
             window.approveMember = async (uid) => {
                 renderToast("Aprobando miembro...", "info");
