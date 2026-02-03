@@ -238,9 +238,9 @@ function getAvailableModules() {
  */
 function renderDynamicSidebar() {
     console.log("🛠️ Generando Sidebar Dinámico...");
-    const sidebars = document.querySelectorAll('aside nav, #mobile-nav');
+    const sidebars = document.querySelectorAll('#main-nav, #mobile-nav');
     if (sidebars.length === 0) {
-        console.warn("⚠️ No se encontró el elemento nav del sidebar");
+        console.warn("⚠️ No se encontró el elemento #main-nav");
         return;
     }
 
