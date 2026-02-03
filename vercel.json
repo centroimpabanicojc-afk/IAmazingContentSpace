@@ -10,6 +10,10 @@
             "use": "@vercel/static"
         },
         {
+            "src": "modules/**",
+            "use": "@vercel/static"
+        },
+        {
             "src": "dashboard_standalone.html",
             "use": "@vercel/static"
         }
@@ -20,8 +24,12 @@
             "dest": "/assets/$1"
         },
         {
+            "src": "/modules/(.*)",
+            "dest": "/modules/$1"
+        },
+        {
             "src": "/(.*)",
-            "dest": "index.html"
+            "dest": "/index.html"
         }
     ]
 }
