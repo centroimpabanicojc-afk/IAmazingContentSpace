@@ -1096,10 +1096,10 @@
 
                     teamData = team || []; clientsData = clients || [];
                 } catch (e) {
-                    console.warn("LoadConstants Failed - Using Mock");
+                    console.warn("LoadConstants Failed - Using Rich Mock");
                     teamData = [
-                        { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
-                        { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
+                        { id: 'user1', first_name: 'Marco', role: 'pm', password: '123', status: 'active', department: 'admin' },
+                        { id: 'user2', first_name: 'Pedro', role: 'editor_sr', password: '123', status: 'active', department: 'production' }
                     ];
                     clientsData = [{ id: 'c1', name: 'Demo Client' }];
                 }
@@ -1138,8 +1138,8 @@
                     // Force Mock Team if needed
                     if (teamData.length === 0) {
                         teamData = [
-                            { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
-                            { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
+                            { id: 'user1', first_name: 'Marco', role: 'pm', password: '123', status: 'active', department: 'admin' },
+                            { id: 'user2', first_name: 'Pedro', role: 'editor_sr', password: '123', status: 'active', department: 'production' }
                         ];
                         updateUserUI(); // Update UI if team changed
                     }
@@ -1644,7 +1644,7 @@
                                 <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400 flex-shrink-0"></i>
                                 <div>
                                     <p class="text-sm font-bold text-amber-400">Cortex está teniendo dificultades</p>
-                                    <p class="text-xs text-slate-400 mt-1">${e.message.includes('fetch') ? 'Error de conexión con el servidor. Revisa tu internet o la configuración.' : 'Error interno en el agente. Asegúrate de que las API Keys estén configuradas.'}</p>
+                                    <p class="text-xs text-slate-400 mt-1">${e.message.includes('fetch') ? 'Error de conexión. Asegúrate de configurar la URL de tu backend en Ajustes (debe terminar en .up.railway.app)' : 'Error interno en el agente. Asegúrate de que las API Keys estén configuradas en Railway.'}</p>
                                 </div>
                             </div>
                         </div>
