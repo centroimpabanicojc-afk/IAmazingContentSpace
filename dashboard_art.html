@@ -4,504 +4,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IAmazing | Digital Art Experience</title>
+    <title>IAmazing | Dashboard</title>
 
-    <!-- Core Libs (No-Build) -->
-    <link rel="stylesheet" href="assets/css/tailwind_shim.css">
+    <!-- ⚠️ CAMBIO CRÍTICO: Usamos Tailwind CDN real para asegurar que el diseño cargue perfecto -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Librerías -->
     <script src="assets/libs/supabase.js"></script>
     <script src="assets/libs/lucide.js"></script>
     <script src="assets/libs/chart.js"></script>
 
-    <!-- Art Engine -->
+    <!-- Three.js (Fondo) -->
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-    <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        glass: "rgba(20, 20, 25, 0.7)",
+                        neon: "#8b5cf6"
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        @font-face {
-            font-family: 'Plus Jakarta Sans';
-            src: local('Segoe UI');
-        }
-
-        :root {
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --neon-violet: #8b5cf6;
-            --neon-cyan: #06b6d4;
-        }
-
         body {
-            margin: 0;
-            overflow: hidden;
-            /* Canvas controls scroll */
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #000;
-            color: #f8fafc;
+            background: #000;
+            color: #e2e8f0;
         }
 
-        #canvas-container {
+        .glass-panel {
+            background: rgba(30, 30, 35, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        #canvas-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            /* Gradient overlay for readability */
-            background: radial-gradient(circle at 50% 50%, rgba(10, 10, 15, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
-        }
-
-        .premium-glass {
-            background: rgba(15, 15, 20, 0.4);
-            backdrop-filter: blur(20px) saturate(140%);
-            -webkit-backdrop-filter: blur(20px) saturate(140%);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        }
-
-        .sidebar-item {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: var(--neon-violet);
-            transform: scaleY(0);
-            transition: transform 0.3s;
-        }
-
-        .sidebar-item:hover::before,
-        .sidebar-item.active::before {
-            transform: scaleY(1);
-        }
-
-        .sidebar-item:hover {
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), transparent);
-            padding-left: 1rem;
-            /* Micro-interaction */
-        }
-
-        .card-hover {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.3);
-            border-color: rgba(139, 92, 246, 0.4);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .loader-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            opacity: 0.6;
         }
     </style>
 </head>
 
-<body class=" antialiased selection:bg-violet-500/30">
+<body class="h-screen flex text-sm overflow-hidden">
 
-    <!-- 1. Background Art -->
-    <div id="canvas-container"></div>
+    <!-- Fondo 3D -->
+    <div id="canvas-bg"></div>
 
-    <!-- 2. Loading Screen -->
-    <div id="loader" class="loader-overlay">
-        <div class="text-center">
-            <h1 class="text-4xl font-black tracking-tighter text-white mb-2" id="loader-text">IAMAZING</h1>
-            <div class="w-48 h-1 bg-white/10 rounded-full overflow-hidden mx-auto">
-                <div id="loader-bar" class="w-0 h-full bg-violet-500"></div>
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-black/80 border-r border-white/10 flex flex-col p-4 z-10 hidden md:flex">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <div class="w-8 h-8 rounded bg-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                <i data-lucide="zap" class="text-white w-5 h-5"></i>
             </div>
-            <p class="text-xs text-slate-500 mt-2 font-mono">INITIALIZING NEURAL INTERFACE...</p>
+            <div>
+                <h1 class="font-bold text-white tracking-wide">IAmazing</h1>
+                <p class="text-[10px] text-gray-500 font-mono">AGENCY O.S.</p>
+            </div>
         </div>
-    </div>
 
-    <!-- 3. Main UI Layout -->
-    <div id="app-ui" class="flex h-screen opacity-0 transition-opacity duration-1000">
+        <nav class="space-y-1 flex-1">
+            <button onclick="showView('dashboard')" id="nav-dashboard"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all text-left group active-nav">
+                <i data-lucide="layout-grid" class="w-4 h-4 text-gray-500 group-hover:text-violet-400"></i> Dashboard
+            </button>
+            <button onclick="showView('cortex')" id="nav-cortex"
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all text-left group">
+                <i data-lucide="brain-circuit" class="w-4 h-4 text-gray-500 group-hover:text-pink-400"></i> Cortex AI
+            </button>
+        </nav>
 
-        <!-- Sidebar -->
-        <aside class="w-64 premium-glass border-r border-white/5 flex flex-col z-10 m-4 rounded-3xl">
-            <div class="p-6">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                        <i data-lucide="zap" class="text-white w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-lg tracking-tight">IAmazing</h1>
-                        <p class="text-[10px] text-slate-400 font-mono tracking-widest">AGENCY OS v2.0</p>
-                    </div>
+        <div class="mt-auto border-t border-white/10 pt-4">
+            <div class="flex items-center gap-3 px-2">
+                <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold">JD
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white">Usuario</p>
+                    <p class="text-[10px] text-green-400">● Conectado</p>
                 </div>
             </div>
+        </div>
+    </aside>
 
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <button onclick="showView('dashboard')" id="nav-dashboard"
-                    class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-300 rounded-xl hover:text-white group">
-                    <i data-lucide="layout-grid" class="w-4 h-4 group-hover:text-violet-400 transition-colors"></i>
-                    Dashboard
-                </button>
-                <button onclick="showView('my-desk')" id="nav-my-desk"
-                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-300 rounded-xl hover:text-white group">
-                    <i data-lucide="monitor" class="w-4 h-4 group-hover:text-cyan-400 transition-colors"></i> Mi
-                    Escritorio
-                </button>
-                <button onclick="showView('cortex')" id="nav-cortex"
-                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-300 rounded-xl hover:text-white group">
-                    <i data-lucide="brain-circuit" class="w-4 h-4 group-hover:text-pink-400 transition-colors"></i>
-                    Cortex AI
-                </button>
-            </nav>
+    <!-- CONTENT -->
+    <main class="flex-1 flex flex-col min-w-0 bg-transparent relative z-10">
+        <!-- HEADER -->
+        <header
+            class="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-black/40 backdrop-blur-md">
+            <h2 class="text-lg font-bold text-white">Panel General</h2>
+            <button onclick="openNewProject()"
+                class="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 shadow-lg shadow-violet-600/20 transition-all">
+                <i data-lucide="plus" class="w-4 h-4"></i> Nuevo Proyecto
+            </button>
+        </header>
 
-            <div class="p-4 border-t border-white/5">
-                <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-colors"
-                    onclick="openSettings()">
-                    <div id="user-avatar"
-                        class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold ring-2 ring-transparent hover:ring-violet-500 transition-all">
-                        U
+        <!-- VIEW AREA -->
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
+
+            <!-- DASHBOARD VIEW -->
+            <div id="view-dashboard" class="space-y-8 animate-in fade-in duration-500">
+
+                <!-- KPI CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-panel p-4 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">En Producción</p>
+                        <h3 class="text-2xl font-bold text-white" id="stat-production">0</h3>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p id="user-name" class="text-xs font-bold text-white truncate">Usuario</p>
-                        <p id="user-role" class="text-[10px] text-slate-400 truncate">Rol</p>
+                    <div class="glass-panel p-4 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Pendientes</p>
+                        <h3 class="text-2xl font-bold text-white" id="stat-due">0</h3>
                     </div>
-                    <i data-lucide="settings" class="w-4 h-4 text-slate-500"></i>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col h-full overflow-hidden py-4 pr-4">
-
-            <!-- Header (Floating) -->
-            <header class="h-16 premium-glass rounded-2xl mb-4 px-6 flex items-center justify-between z-10 mx-1">
-                <h2 id="page-title"
-                    class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                    Dashboard</h2>
-
-                <div class="flex items-center gap-4">
-                    <button
-                        class="p-2 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors relative">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
-                        <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full"></span>
-                    </button>
-                    <button onclick="openNewProject()"
-                        class="bg-violet-600 hover:bg-violet-500 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-lg shadow-violet-600/20 active:scale-95 transition-all flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Nuevo Proyecto
-                    </button>
-                </div>
-            </header>
-
-            <!-- Scrollable View Container -->
-            <div id="views-container" class="flex-1 premium-glass rounded-2xl overflow-y-auto p-6 relative">
-
-                <!-- View: Dashboard -->
-                <div id="view-dashboard" class="space-y-6 view-section">
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-4 gap-4 mb-6">
-                        <div
-                            class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-violet-500/30 transition-colors">
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">En Producción</p>
-                            <h3 class="text-2xl font-black text-white mt-1" id="stat-production">0</h3>
-                        </div>
-                        <div
-                            class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-colors">
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Por Entregar</p>
-                            <h3 class="text-2xl font-black text-white mt-1" id="stat-due">0</h3>
-                        </div>
-                        <div
-                            class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-emerald-500/30 transition-colors">
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Completados</p>
-                            <h3 class="text-2xl font-black text-white mt-1" id="stat-completed">0</h3>
-                        </div>
-                        <div
-                            class="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-pink-500/30 transition-colors">
-                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Facturación Mes</p>
-                            <h3 class="text-2xl font-black text-white mt-1" id="stat-revenue">$0</h3>
-                        </div>
+                    <div class="glass-panel p-4 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Entregados</p>
+                        <h3 class="text-2xl font-bold text-white" id="stat-completed">0</h3>
                     </div>
-
-                    <!-- Kanban Board -->
-                    <div class="grid grid-cols-4 gap-6 h-full min-h-[500px]">
-                        <!-- Cols generated by JS -->
-                        <div class="col-kanban" data-status="briefing">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-sm font-bold text-slate-300">Briefing</h3>
-                                <div class="px-2 py-0.5 rounded bg-slate-500/20 text-[10px] font-mono text-slate-400"
-                                    id="count-briefing">0</div>
-                            </div>
-                            <div class="space-y-3 min-h-[200px]" id="list-briefing"></div>
-                        </div>
-                        <div class="col-kanban" data-status="production">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-sm font-bold text-violet-300">En Producción</h3>
-                                <div class="px-2 py-0.5 rounded bg-violet-500/20 text-[10px] font-mono text-violet-400"
-                                    id="count-production">0</div>
-                            </div>
-                            <div class="space-y-3 min-h-[200px]" id="list-production"></div>
-                        </div>
-                        <div class="col-kanban" data-status="qc">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-sm font-bold text-amber-300">Control Calidad</h3>
-                                <div class="px-2 py-0.5 rounded bg-amber-500/20 text-[10px] font-mono text-amber-400"
-                                    id="count-qc">0</div>
-                            </div>
-                            <div class="space-y-3 min-h-[200px]" id="list-qc"></div>
-                        </div>
-                        <div class="col-kanban" data-status="delivered">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-sm font-bold text-emerald-300">Entregado</h3>
-                                <div class="px-2 py-0.5 rounded bg-emerald-500/20 text-[10px] font-mono text-emerald-400"
-                                    id="count-delivered">0</div>
-                            </div>
-                            <div class="space-y-3 min-h-[200px]" id="list-delivered"></div>
-                        </div>
+                    <div class="glass-panel p-4 rounded-xl border-violet-500/30 bg-violet-900/10">
+                        <p class="text-[10px] uppercase font-bold text-violet-400 mb-1">Facturación</p>
+                        <h3 class="text-2xl font-bold text-white" id="stat-revenue">$0</h3>
                     </div>
                 </div>
 
-                <!-- View: Cortex AI -->
-                <div id="view-cortex" class="hidden h-full flex flex-col view-section">
-                    <div class="flex-1 overflow-y-auto space-y-4 p-4" id="cortex-chat">
-                        <div class="text-center py-10 opacity-50">
-                            <i data-lucide="brain-circuit"
-                                class="w-16 h-16 mx-auto mb-4 text-violet-500 animate-pulse"></i>
-                            <h2 class="text-2xl font-bold">Cortex Neural Link</h2>
-                            <p class="text-sm">Sistema conectado. Esperando consulta...</p>
+                <!-- KANBAN BOARD -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-start h-full">
+                    <!-- Column -->
+                    <div class="bg-white/5 rounded-xl p-3 min-h-[300px]">
+                        <div class="flex items-center justify-between mb-4 px-1">
+                            <span class="text-xs font-bold text-gray-400">BRIEFING</span>
+                            <span class="text-[10px] bg-white/10 px-2 rounded-full text-white"
+                                id="count-briefing">0</span>
                         </div>
+                        <div class="space-y-3" id="list-briefing"></div>
                     </div>
-                    <div class="mt-4 flex gap-2">
-                        <input type="text" id="cortex-input" placeholder="Pregunta a Cortex sobre tus proyectos..."
-                            class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-violet-500 outline-none">
-                        <button onclick="sendCortex()"
-                            class="bg-violet-600 hover:bg-violet-500 text-white px-6 rounded-xl font-bold transition-all"><i
-                                data-lucide="send" class="w-4 h-4"></i></button>
+                    <!-- Column -->
+                    <div class="bg-white/5 rounded-xl p-3 min-h-[300px]">
+                        <div class="flex items-center justify-between mb-4 px-1">
+                            <span class="text-xs font-bold text-blue-400">PRODUCCIÓN</span>
+                            <span class="text-[10px] bg-blue-500/20 px-2 rounded-full text-blue-300"
+                                id="count-production">0</span>
+                        </div>
+                        <div class="space-y-3" id="list-production"></div>
+                    </div>
+                    <!-- Column -->
+                    <div class="bg-white/5 rounded-xl p-3 min-h-[300px]">
+                        <div class="flex items-center justify-between mb-4 px-1">
+                            <span class="text-xs font-bold text-amber-400">CALIDAD (QC)</span>
+                            <span class="text-[10px] bg-amber-500/20 px-2 rounded-full text-amber-300"
+                                id="count-qc">0</span>
+                        </div>
+                        <div class="space-y-3" id="list-qc"></div>
+                    </div>
+                    <!-- Column -->
+                    <div class="bg-white/5 rounded-xl p-3 min-h-[300px]">
+                        <div class="flex items-center justify-between mb-4 px-1">
+                            <span class="text-xs font-bold text-emerald-400">ENTREGADO</span>
+                            <span class="text-[10px] bg-emerald-500/20 px-2 rounded-full text-emerald-300"
+                                id="count-delivered">0</span>
+                        </div>
+                        <div class="space-y-3" id="list-delivered"></div>
                     </div>
                 </div>
 
             </div>
-        </main>
-    </div>
 
-    <!-- Script Logic (Modularized for Readability) -->
+            <!-- CORTEX VIEW -->
+            <div id="view-cortex" class="hidden h-full flex items-center justify-center text-center opacity-50">
+                <div>
+                    <i data-lucide="brain-circuit" class="w-16 h-16 mx-auto mb-4 text-gray-600"></i>
+                    <h3 class="text-xl font-bold text-gray-500">Cortex está durmiendo...</h3>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
     <script>
-        // --- 1. SOTA ART ENGINE (Three.js) ---
-        const initArt = () => {
-            const container = document.getElementById('canvas-container');
+        // --- LOGIC ---
+        // 1. Three.js Background (Subtle)
+        const initBg = () => {
+            const container = document.getElementById('canvas-bg');
             const scene = new THREE.Scene();
-            // Fog for depth
+            // Dark fog
             scene.fog = new THREE.FogExp2(0x000000, 0.002);
-
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 50;
-
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // Particles (Neural Network Nodes)
             const geometry = new THREE.BufferGeometry();
-            const count = 1000;
-            const positions = new Float32Array(count * 3);
-            const sizes = new Float32Array(count);
+            const count = 500;
+            const pos = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 200;
+            geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const material = new THREE.PointsMaterial({ size: 0.5, color: 0x8b5cf6, transparent: true, opacity: 0.5 });
+            const stars = new THREE.Points(geometry, material);
+            scene.add(stars);
 
-            for (let i = 0; i < count * 3; i++) {
-                positions[i] = (Math.random() - 0.5) * 150;
-            }
-            for (let i = 0; i < count; i++) {
-                sizes[i] = Math.random();
-            }
-
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-            const material = new THREE.PointsMaterial({
-                size: 0.5,
-                color: 0x8b5cf6, // Violet
-                transparent: true,
-                opacity: 0.8,
-                sizeAttenuation: true
-            });
-
-            const particles = new THREE.Points(geometry, material);
-            scene.add(particles);
-
-            // Floating Geometry (Abstract Data)
-            const shapes = [];
-            const geoIco = new THREE.IcosahedronGeometry(1, 0);
-            const matWire = new THREE.MeshBasicMaterial({ color: 0x06b6d4, wireframe: true, transparent: true, opacity: 0.1 });
-
-            for (let i = 0; i < 5; i++) {
-                const mesh = new THREE.Mesh(geoIco, matWire);
-                mesh.position.set((Math.random() - 0.5) * 80, (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
-                mesh.scale.setScalar(Math.random() * 5 + 2);
-                scene.add(mesh);
-                shapes.push({ mesh, speed: Math.random() * 0.01 });
-            }
-
-            // Animation Loop
-            let time = 0;
             const animate = () => {
                 requestAnimationFrame(animate);
-                time += 0.001;
-
-                // Rotate entire particle system gently
-                particles.rotation.y = time * 0.1;
-                particles.rotation.z = time * 0.05;
-
-                // Animate floating shapes
-                shapes.forEach(s => {
-                    s.mesh.rotation.x += s.speed;
-                    s.mesh.rotation.y += s.speed;
-                });
-
-                // Mouse interactivity (Parallax) could be added here
-
+                stars.rotation.y += 0.0002;
                 renderer.render(scene, camera);
-            };
+            }
             animate();
-
-            // Resize Handler
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
-        };
+        }
 
-        // --- 2. LOGIC ADAPTER (Supabase + Data) ---
-        // Mocking ENV vars injection (In real prod, use build step or generic placeholder)
+        // 2. Data
         const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
-
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let projectsData = [];
 
-        async function initData() {
-            // Animate Loader Bar
-            gsap.to('#loader-bar', {
-                width: '100%', duration: 1.5, ease: 'power2.inOut', onComplete: () => {
-                    gsap.to('#loader', { opacity: 0, duration: 0.5, display: 'none' });
-                    gsap.to('#app-ui', { opacity: 1, duration: 1, delay: 0.2 });
-                }
-            });
-
+        async function loadData() {
             try {
-                // Fetch Deliveries (New Table)
-                const { data, error } = await sb.from('deliveries').select('*, clients(*)').order('created_at', { ascending: false });
-                if (error) throw error;
+                const { data } = await sb.from('deliveries').select('*, clients(*)').order('created_at', { ascending: false });
                 projectsData = data || [];
-                renderKanban();
-                updateStats();
-            } catch (e) {
-                console.error("Data Error:", e);
-                // Fallback Mock
-                projectsData = [
-                    { id: 1, name: 'Video Demo 1', status: 'briefing', priority: 5, client: { name: 'TechCorp' } },
-                    { id: 2, name: 'Reel Launch', status: 'production', priority: 3, client: { name: 'YogaLife' } }
-                ];
-                renderKanban();
-            }
-        }
-
-        // --- 3. UI RENDERING ---
-        function renderKanban() {
-            const cols = { briefing: [], production: [], qc: [], delivered: [] };
-
-            projectsData.forEach(p => {
-                if (cols[p.status]) cols[p.status].push(p);
-            });
-
-            Object.keys(cols).forEach(status => {
-                const list = document.getElementById(`list-${status}`);
-                const count = document.getElementById(`count-${status}`);
-                if (list) list.innerHTML = '';
-                if (count) count.textContent = cols[status].length;
-
-                cols[status].forEach(p => {
-                    const el = createCard(p);
-                    if (list) list.appendChild(el);
-                    // GSAP Entry Animation
-                    gsap.from(el, { opacity: 0, y: 20, duration: 0.4, delay: Math.random() * 0.2 });
-                });
-            });
-            lucide.createIcons();
+                render();
+            } catch (e) { console.error(e); }
         }
 
         function createCard(p) {
             const div = document.createElement('div');
-            const colors = { 1: 'border-slate-500', 3: 'border-cyan-500', 5: 'border-rose-500' };
-            div.className = `p-4 rounded-2xl bg-white/5 border border-white/10 card-hover cursor-pointer group hover:bg-white/10`;
+            div.className = "bg-black/40 hover:bg-black/60 border border-white/5 hover:border-violet-500/50 p-3 rounded-lg cursor-pointer transition-all group";
             div.innerHTML = `
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${p.clients?.name || 'Cliente'}</span>
-                    <span class="w-2 h-2 rounded-full ${p.priority === 5 ? 'bg-rose-500 animate-pulse' : 'bg-slate-500'}"></span>
+                <div class="flex justify-between mb-2">
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">${p.clients?.name?.substring(0, 12) || 'CLIENTE'}</span>
+                    ${p.priority === 5 ? '<span class="text-[9px] text-red-500 font-bold">URGENT</span>' : ''}
                 </div>
-                <h4 class="text-sm font-bold text-white mb-1 leading-snug">${p.name || p.service_type || 'Proyecto Sin Nombre'}</h4>
-                <div class="flex items-center justify-between mt-3">
-                    <span class="text-[10px] bg-white/5 px-2 py-1 rounded-md text-slate-300">
-                        ${p.billing_type === 'per_minute' ? '⏱ Min' : '💵 Fijo'}
-                    </span>
-                     <button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white">
-                        <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
-                    </button>
+                <h4 class="text-sm font-medium text-gray-200 group-hover:text-white leading-tight mb-3">${p.name}</h4>
+                <div class="flex items-center justify-between border-t border-white/5 pt-2">
+                    <span class="text-[10px] text-gray-500 font-mono">$${Math.floor(p.total_price || 0)}</span>
+                    <div class="w-5 h-5 rounded-full bg-gray-800 text-[9px] flex items-center justify-center text-gray-400">
+                        ${p.assigned_to ? 'U' : '?'}
+                    </div>
                 </div>
             `;
             return div;
         }
 
-        function updateStats() {
-            // Simple Counts
-            document.getElementById('stat-production').textContent = projectsData.filter(p => p.status === 'production').length;
-            document.getElementById('stat-due').textContent = projectsData.filter(p => p.status === 'briefing').length; // Simplification
-            document.getElementById('stat-completed').textContent = projectsData.filter(p => p.status === 'delivered').length;
+        function render() {
+            const statusMap = { briefing: 'briefing', production: 'production', qc: 'qc', delivered: 'delivered' };
+            const counts = { briefing: 0, production: 0, qc: 0, delivered: 0 };
 
-            // Revenue Calc (SOTA Logic)
-            const total = projectsData.reduce((acc, p) => acc + (parseFloat(p.total_price) || 0), 0);
-            document.getElementById('stat-revenue').textContent = `$${total.toFixed(2)}`;
+            // Clear lists
+            Object.keys(statusMap).forEach(k => {
+                const el = document.getElementById(`list-${k}`);
+                if (el) el.innerHTML = '';
+            });
+
+            projectsData.forEach(p => {
+                const s = p.status in statusMap ? p.status : 'briefing';
+                counts[s]++;
+                const el = document.getElementById(`list-${s}`);
+                if (el) el.appendChild(createCard(p));
+            });
+
+            // Update Counts & Stats
+            Object.keys(counts).forEach(k => document.getElementById(`count-${k}`).textContent = counts[k]);
+
+            document.getElementById('stat-production').textContent = counts.production;
+            document.getElementById('stat-due').textContent = counts.briefing;
+            document.getElementById('stat-completed').textContent = counts.delivered;
+
+            const revenue = projectsData.reduce((sum, p) => sum + (p.total_price || 0), 0);
+            document.getElementById('stat-revenue').textContent = `$${revenue.toLocaleString()}`;
+
+            lucide.createIcons();
         }
 
-        window.showView = (viewName) => {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+        window.showView = (v) => {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-cortex').classList.add('hidden');
+            document.getElementById(`view-${v}`).classList.remove('hidden');
+        }
 
-            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(`nav-${viewName}`).classList.add('active');
-
-            // GSAP Transition
-            gsap.from(`#view-${viewName}`, { opacity: 0, x: 20, duration: 0.4 });
-        };
-
-        // Initialize
-        window.onload = () => {
-            initArt();
-            initData();
-            lucide.createIcons();
-        };
-
+        // Init
+        initBg();
+        loadData();
+        lucide.createIcons();
     </script>
 </body>
 
