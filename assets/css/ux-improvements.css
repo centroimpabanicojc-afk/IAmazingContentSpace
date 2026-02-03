@@ -8,7 +8,7 @@
 :root {
     /* Fluid scaling factor based on container size */
     --ui-scale: 1;
-    --space-unit: 0.4rem;
+    --space-unit: 0.3rem;
 
     /* Optimized font sizes using rem (relative to html font-size) */
     --text-xs: 0.7rem;
@@ -19,8 +19,8 @@
 }
 
 html {
-    /* Base scaling for maximum operational density */
-    font-size: calc(12px * var(--ui-scale));
+    /* Absolute operational density base */
+    font-size: calc(11px * var(--ui-scale));
     transition: font-size 0.2s ease-out;
 }
 
@@ -107,7 +107,7 @@ aside {
 }
 
 .sidebar-collapsed {
-    width: 80px !important;
+    width: 50px !important;
 }
 
 .sidebar-collapsed .sidebar-item span,
@@ -580,15 +580,28 @@ header {
     height: 0.875rem !important;
 }
 
-/* Kanban column and card sizing - HYPER CONDENSED */
-.kanban-column {
-    width: clamp(160px, 12vw, 200px) !important;
-    gap: 0.3rem !important;
-    padding: 0.3rem !important;
+/* Kanban - ALL AT ONCE FORCE GRID */
+#view-dashboard .flex.gap-1\.5 {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 0.15rem !important;
+    width: 100% !important;
+    overflow: hidden !important;
 }
 
-.sidebar-collapsed+main .kanban-column {
-    width: clamp(180px, 13.5vw, 220px) !important;
+.kanban-column {
+    width: 100% !important;
+    min-width: 0 !important;
+    gap: 0.15rem !important;
+    padding: 0.15rem !important;
+}
+
+.kanban-column h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 8px !important;
+    margin-bottom: 0.4rem !important;
 }
 
 .card-kanban {
