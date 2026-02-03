@@ -131,6 +131,12 @@ const COMMON_MODULES = [
         icon: 'message-circle',
         view: 'view-chat',
         badge: true
+    },
+    {
+        id: 'common-cortex',
+        name: 'Cortex AI',
+        icon: 'brain',
+        view: 'view-cortex'
     }
 ];
 
