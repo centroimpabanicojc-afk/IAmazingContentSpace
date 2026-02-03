@@ -237,64 +237,76 @@ function getAvailableModules() {
  * Renderizar sidebar dinámico según departamento
  */
 function renderDynamicSidebar() {
-    const sidebar = document.querySelector('aside nav');
-    if (!sidebar) return;
+    console.log("🛠️ Generando Sidebar Dinámico...");
+    const sidebars = document.querySelectorAll('aside nav, #mobile-nav');
+    if (sidebars.length === 0) {
+        console.warn("⚠️ No se encontró el elemento nav del sidebar");
+        return;
+    }
 
     const modules = getAvailableModules();
     const deptModules = modules.filter(m => !m.id.startsWith('common-'));
     const commonModules = modules.filter(m => m.id.startsWith('common-'));
 
-    // Limpiar navegación actual
-    sidebar.innerHTML = '';
+    console.log(`📦 Módulos a renderizar: ${deptModules.length} de depto, ${commonModules.length} comunes.`);
 
-    // Renderizar módulos del departamento
-    deptModules.forEach((module, index) => {
-        const navItem = document.createElement('a');
-        navItem.href = '#';
-        navItem.id = `nav-${module.id}`;
-        navItem.className = `sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl ${index === 0 ? 'active' : ''}`;
-        navItem.onclick = (e) => {
-            e.preventDefault();
-            showModuleView(module.view);
-        };
+    sidebars.forEach(sidebar => {
+        // Limpiar navegación actual
+        sidebar.innerHTML = '';
 
-        navItem.innerHTML = `
-            <i data-lucide="${module.icon}" class="w-5 h-5"></i>
-            <span class="font-semibold text-sm">${module.name}</span>
-        `;
-
-        sidebar.appendChild(navItem);
-    });
-
-    // Separador
-    if (commonModules.length > 0) {
-        const separator = document.createElement('div');
-        separator.className = 'pt-4 border-t border-white/5 mt-4';
-        sidebar.appendChild(separator);
-
-        // Renderizar módulos comunes
-        commonModules.forEach(module => {
+        // Renderizar módulos del departamento
+        deptModules.forEach((module, index) => {
             const navItem = document.createElement('a');
             navItem.href = '#';
             navItem.id = `nav-${module.id}`;
-            navItem.className = 'sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl';
+            navItem.className = `sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl ${index === 0 ? 'active' : ''}`;
             navItem.onclick = (e) => {
                 e.preventDefault();
                 showModuleView(module.view);
             };
 
             navItem.innerHTML = `
-                <i data-lucide="${module.icon}" class="w-5 h-5"></i>
-                <span class="font-semibold text-sm">${module.name}</span>
-                ${module.badge ? '<span class="ml-auto w-2 h-2 bg-violet-500 rounded-full"></span>' : ''}
-            `;
+            <i data-lucide="${module.icon}" class="w-5 h-5"></i>
+            <span class="font-semibold text-sm">${module.name}</span>
+        `;
 
             sidebar.appendChild(navItem);
         });
-    }
+
+        // Separador
+        if (commonModules.length > 0) {
+            const separator = document.createElement('div');
+            separator.className = 'pt-4 border-t border-white/5 mt-4';
+            sidebar.appendChild(separator);
+
+            // Renderizar módulos comunes
+            commonModules.forEach(module => {
+                const navItem = document.createElement('a');
+                navItem.href = '#';
+                navItem.id = `nav-${module.id}`;
+                navItem.className = 'sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl';
+                navItem.onclick = (e) => {
+                    e.preventDefault();
+                    showModuleView(module.view);
+                };
+
+                navItem.innerHTML = `
+                    <i data-lucide="${module.icon}" class="w-5 h-5"></i>
+                    <span class="font-semibold text-sm">${module.name}</span>
+                    ${module.badge ? '<span class="ml-auto w-2 h-2 bg-violet-500 rounded-full"></span>' : ''}
+                `;
+
+                sidebar.appendChild(navItem);
+            });
+        }
+    });
 
     // Recrear iconos de Lucide
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    } else if (typeof _lucide !== 'undefined') {
+        _lucide.createIcons();
+    }
 }
 
 /**
