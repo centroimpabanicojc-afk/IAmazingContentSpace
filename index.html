@@ -802,9 +802,9 @@
 
             // 🛡️ DATA SHIELD: Initialize with data so it is NEVER empty
             let teamData = [
-                { id: 't1', first_name: 'Marco', role: 'pm', password: '123' },
-                { id: 't2', first_name: 'Pedro', role: 'editor_sr', password: '123' },
-                { id: 't3', first_name: 'Yara', role: 'designer', password: '123' }
+                { id: 't1', first_name: 'Marco', role: 'pm', password: '123', status: 'active' },
+                { id: 't2', first_name: 'Pedro', role: 'editor_sr', password: '123', status: 'active' },
+                { id: 't3', first_name: 'Yara', role: 'designer', password: '123', status: 'active' }
             ];
 
             let projectsData = [
@@ -916,13 +916,20 @@
                 });
                 document.getElementById(`login-${step}`).classList.remove('hidden');
                 if (step === 'member') {
+                    console.log("👥 Mostrando lista de miembros. Total:", teamData.length);
                     const list = document.getElementById('login-user-list');
-                    list.innerHTML = teamData.filter(m => m.status === 'active').map(m => `
-                    <button onclick="selectUserForLogin('${m.id}')" class="w-full flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-left">
-                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-violet-400">${m.first_name[0]}</div>
-                        <div><p class="text-sm font-bold text-white">${m.first_name}</p><p class="text-[10px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div>
-                    </button>
-                `).join('');
+                    const activeMembers = teamData.filter(m => m.status === 'active' || !m.status);
+
+                    if (activeMembers.length === 0) {
+                        list.innerHTML = `<p class="text-xs text-slate-500 py-4">No se encontraron miembros activos.</p>`;
+                    } else {
+                        list.innerHTML = activeMembers.map(m => `
+                        <button onclick="selectUserForLogin('${m.id}')" class="w-full flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-left">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-violet-400">${m.first_name[0]}</div>
+                            <div><p class="text-sm font-bold text-white">${m.first_name}</p><p class="text-[10px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div>
+                        </button>
+                    `).join('');
+                    }
                 }
                 lucide.createIcons();
             }
