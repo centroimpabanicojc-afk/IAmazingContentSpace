@@ -135,18 +135,43 @@
                     throw errDeliv;
                 }
 
-                // Verificar Cálculo
+                // Verificar Cálculo Base
                 const total = parseFloat(deliv[0].total_price);
                 log(`Total calculado por DB: $${total}`);
 
                 if (total === 50) {
-                    log("✅ CÁLCULO AUTOMÁTICO FUNCIONA CORRCTAMENTE.", 'success');
-                    statusDiv.innerHTML = '<span class="text-emerald-400">✅ SISTEMA 100% OPERATIVO</span>';
+                    log("✅ CÁLCULO PRECIO BASE (50): OK", 'success');
+                } else {
+                    throw new Error(`Precio Base Incorrecto. Esperaba 50, recibió ${total}`);
+                }
+
+                // Verificar REPARTO FINANCIERO (SOTA)
+                log("--- Verificando Reparto (SOTA) ---");
+                const feeAgency = parseFloat(deliv[0].fee_agency);
+                const subTotal = parseFloat(deliv[0].amount_net_sub);
+                const payProd = parseFloat(deliv[0].pay_producer);
+                const feeRnd = parseFloat(deliv[0].fee_rnd);
+
+                // Esperado:
+                // Agency: 20% of 50 = 10
+                // Sub: 80% of 50 = 40
+                // Producer: 52% of 50 (o 65% de 40) = 26
+                // R&D: 8% of 50 = 4
+
+                log(`Agency (20%): $${feeAgency} (Esp: 10)`);
+                log(`Subtotal (80%): $${subTotal} (Esp: 40)`);
+                log(`Producer (65% del Sub): $${payProd} (Esp: 26)`);
+
+                if (feeAgency === 10 && subTotal === 40 && payProd === 26 && feeRnd === 4) {
+                    log("✅ LÓGICA FINANCIERA OK: Todo cuadra.", 'success');
+                    statusDiv.innerHTML = '<span class="text-emerald-400">✅ MODELO DE NEGOCIO VERIFICADO</span>';
+                    statusDiv.innerHTML += '<p class="text-xs text-white mt-2">La distribución de dinero es 100% exacta.</p>';
                     statusDiv.className = "text-center text-xl font-bold mt-4 animate-bounce";
                 } else {
-                    log(`❌ Error de cálculo: Esperaba 50, recibí ${total}`, 'error');
-                    statusDiv.innerHTML = '<span class="text-amber-400">⚠️ ALERTA: Problema de Cálculo</span>';
+                    log(`❌ ERROR FINANCIERO: Revisa las fórmulas.`, 'error');
+                    statusDiv.innerHTML = '<span class="text-amber-400">⚠️ DATOS INCORRECTOS</span>';
                 }
+
 
                 // Limpieza
                 await sb.from('deliveries').delete().eq('id', deliv[0].id);
