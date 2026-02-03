@@ -89,14 +89,14 @@ def supabase_webhook():
 
     print(f"DEBUG: Webhook recibido [{event_type}] en [{table}]")
     
-    if event_type == 'INSERT' and table == 'projects':
+    if event_type == 'INSERT' and table == 'deliveries':
         run_manager(json.dumps([record]))
-        return jsonify({"status": "success", "message": "Manager analizó el proyecto"}), 200
+        return jsonify({"status": "success", "message": "Manager analizó la entrega"}), 200
         
-    if event_type == 'UPDATE' and table == 'projects':
+    if event_type == 'UPDATE' and table == 'deliveries':
         new_status = record.get('status')
         if new_status == 'qc':
-            print(f"AUTOMACIÓN: Proyecto {record.get('id')} en QC.")
+            print(f"AUTOMACIÓN: Entrega {record.get('id')} en QC.")
             return jsonify({"status": "success", "message": "QC detectado"}), 200
 
     return jsonify({"status": "ignored"}), 200

@@ -19,8 +19,9 @@ def update_project_db(project_id: str, updates_json: str):
     """
     try:
         updates = json.loads(updates_json)
-        result = supabase.table("projects").update(updates).eq("id", project_id).execute()
-        return f"Éxito: Proyecto {project_id} actualizado con {updates_json}"
+        # Mapear status antiguo a nuevo si es necesario, o asegurar que use los nuevos status
+        result = supabase.table("deliveries").update(updates).eq("id", project_id).execute()
+        return f"Éxito: Entrega {project_id} actualizada con {updates_json}"
     except Exception as e:
         return f"Error al actualizar: {str(e)}"
 
@@ -54,9 +55,9 @@ def run_manager(projects_json):
     DATOS DEL EQUIPO (ADN): {team_dna}
     
     Tus responsabilidades:
-    1. Si un proyecto no tiene prioridad o es errónea, usa 'update_project_db' para corregirla (Priority 1: Urgent, 5: Low).
+    1. Analiza la tabla 'deliveries': Si una entrega no tiene prioridad, usa 'update_project_db' (Priority 1: Urgent, 5: Low).
     2. Identifica los 3 más urgentes para el reporte humano.
-    3. REVISIÓN DE ADN: Para cada tarea activa, mira quién es el responsable y su perfil ('personality_traits'). 
+    3. REVISIÓN DE ADN: Para cada entrega activa, mira quién es el responsable y su perfil ('personality_traits'). 
        - Si el trabajador prefiere feedback "Directo", sé conciso.
        - Si prefiere "Detallado", menciona puntos técnicos específicos.
     4. GESTIÓN DE TALENTO: Si ves a alguien en 'pending_approval', lee su 'interview_summary' y dile a Marco si te parece un buen perfil para el equipo o qué precaución tomar.

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>IAmazing | Verificación de Migración SOTA</title>
+    <!-- Usamos los mismos assets locales que index.html -->
+    <link rel="stylesheet" href="assets/css/tailwind_shim.css">
+    <script src="assets/libs/supabase.js"></script>
+    <script src="assets/libs/lucide.js"></script>
+    <style>
+        body {
+            background-color: #050507;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 500px;
+            text-align: center;
+        }
+
+        .status {
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .log {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1 class="text-2xl font-bold mb-4">Verificando Migración...</h1>
+        <div id="loader" class="animate-pulse text-violet-400">Conectando a base de datos...</div>
+        <div id="status" class="status"></div>
+        <div id="log" class="log"></div>
+        <button onclick="location.href='index.html'"
+            class="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm hidden" id="btn-back">Volver al
+            Dashboard</button>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN INYECTADA
+        const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
+
+        const logDiv = document.getElementById('log');
+        const statusDiv = document.getElementById('status');
+        const loader = document.getElementById('loader');
+
+        function log(msg, type = 'info') {
+            const colors = { error: 'red', success: '#4ade80', info: '#aaa' };
+            logDiv.innerHTML += `<div style="color:${colors[type]}">> ${msg}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function verify() {
+            try {
+                if (!supabase) throw new Error("No se cargó la librería de Supabase.");
+                const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                log("Cliente Supabase inicializado.");
+
+                // 1. Verificar Tabla CLIENTS (Nuevas Columnas)
+                log("Verificando tabla 'clients'...");
+                const { data: clients, error: errClients } = await sb.from('clients').select('billing_model').limit(1);
+
+                if (errClients) {
+                    // Si el error es sobre columna inexistente, falló la migración
+                    if (errClients.message.includes('column') || errClients.code === '42703') {
+                        throw new Error("Faltan columnas en 'clients'. Ejecuta el SQL.");
+                    }
+                    throw errClients;
+                }
+                log("✅ Tabla 'clients' tiene estructura correcta.", 'success');
+
+                // 2. Verificar Tabla DELIVERIES
+                log("Verificando tabla 'deliveries' y cálculo automático...");
+
+                // Buscar cliente para insertar (o crear mock)
+                let clientId = null;
+                if (clients.length > 0) {
+                    clientId = clients[0].id; // Esto fallará si clients[0] no tiene id en el select anterior, oh wait el select solo pidió billing_model
+                    // Mejor pedimos ID también
+                    const { data: c2 } = await sb.from('clients').select('id').limit(1);
+                    if (c2.length) clientId = c2[0].id;
+                }
+
+                if (!clientId) {
+                    log("Creando cliente temporal de prueba...");
+                    const { data: newC, error: errNewC } = await sb.from('clients').insert([{ name: 'Test SOTA', whatsapp: '000' }]).select();
+                    if (errNewC) throw errNewC;
+                    clientId = newC[0].id;
+                }
+
+                // Insertar Entrega
+                const testData = {
+                    client_id: clientId,
+                    name: "Test Automático SOTA",
+                    billing_type: 'per_minute',
+                    duration_minutes: 10,
+                    rate_applied: 5,
+                    status: 'briefing'
+                };
+
+                log("Insertando entrega de prueba (10min * $5)...");
+                const { data: deliv, error: errDeliv } = await sb.from('deliveries').insert([testData]).select();
+
+                if (errDeliv) {
+                    log("❌ Error insertando: " + errDeliv.message, 'error');
+                    if (errDeliv.message.includes('relation "deliveries" does not exist')) {
+                        throw new Error("La tabla 'deliveries' NO EXISTE. Ejecuta el SQL.");
+                    }
+                    throw errDeliv;
+                }
+
+                // Verificar Cálculo
+                const total = parseFloat(deliv[0].total_price);
+                log(`Total calculado por DB: $${total}`);
+
+                if (total === 50) {
+                    log("✅ CÁLCULO AUTOMÁTICO FUNCIONA CORRCTAMENTE.", 'success');
+                    statusDiv.innerHTML = '<span class="text-emerald-400">✅ SISTEMA 100% OPERATIVO</span>';
+                    statusDiv.className = "text-center text-xl font-bold mt-4 animate-bounce";
+                } else {
+                    log(`❌ Error de cálculo: Esperaba 50, recibí ${total}`, 'error');
+                    statusDiv.innerHTML = '<span class="text-amber-400">⚠️ ALERTA: Problema de Cálculo</span>';
+                }
+
+                // Limpieza
+                await sb.from('deliveries').delete().eq('id', deliv[0].id);
+                log("Datos de prueba limpiados.");
+
+            } catch (e) {
+                console.error(e);
+                log("❌ ERROR CRÍTICO: " + e.message, 'error');
+                statusDiv.innerHTML = '<span class="text-red-500">❌ MIGRACIÓN INCOMPLETA</span>';
+                statusDiv.innerHTML += '<p class="text-xs text-slate-400 mt-2">Por favor ejecuta el script SQL en Supabase.</p>';
+            } finally {
+                loader.classList.add('hidden');
+                document.getElementById('btn-back').classList.remove('hidden');
+            }
+        }
+
+        verify();
+    </script>
+</body>
+
+</html>

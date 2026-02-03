@@ -1149,7 +1149,7 @@
                     const { error: ping } = await sb.from('team_members').select('count').limit(1);
                     if (ping) throw new Error("Connection Timeout");
 
-                    const resProjects = await sb.from('projects').select('*, clients(name, whatsapp), team_members(first_name)');
+                    const resProjects = await sb.from('deliveries').select('*, clients(name, whatsapp), team_members(first_name)');
                     if (resProjects.error) throw resProjects.error;
                     projectsData = resProjects.data || [];
 
@@ -1340,22 +1340,22 @@
             }
 
             async function toggleCheckItem(pid, idx) {
-                const { data } = await sb.from('projects').select('checklist').eq('id', pid).single();
+                const { data } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
                 const list = data.checklist || []; list[idx].done = !list[idx].done;
-                await sb.from('projects').update({ checklist: list }).eq('id', pid);
+                await sb.from('deliveries').update({ checklist: list }).eq('id', pid);
                 renderToast("Feedback actualizado"); loadDashboard();
             }
 
             async function addCheckItem(pid) {
                 const inp = document.getElementById(`chk-add-${pid}`); const text = inp.value.trim(); if (!text) return;
-                const { data } = await sb.from('projects').select('checklist').eq('id', pid).single();
+                const { data } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
                 const list = data.checklist || []; list.push({ text, done: false });
-                await sb.from('projects').update({ checklist: list }).eq('id', pid);
+                await sb.from('deliveries').update({ checklist: list }).eq('id', pid);
                 inp.value = ''; renderToast("Nota de QC añadida"); loadDashboard();
             }
 
             async function claimProject(pid) {
-                await sb.from('projects').update({ assigned_to: currentUser.id, status: 'production' }).eq('id', pid);
+                await sb.from('deliveries').update({ assigned_to: currentUser.id, status: 'production' }).eq('id', pid);
                 renderToast("Proyecto asignado exitosamente"); loadDashboard();
             }
 
@@ -1367,11 +1367,11 @@
             async function simulatePreQC(pid, url) {
                 renderToast("🧠 Cortex: Iniciando Pre-QC automático...", "info");
                 setTimeout(async () => {
-                    const { data: p } = await sb.from('projects').select('checklist').eq('id', pid).single();
+                    const { data: p } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
                     const list = p.checklist || [];
                     list.unshift({ text: "00:00 Cortex: Link validado procedencialmente", done: true });
                     list.unshift({ text: "00:00 Cortex: Sugerencia: Subir brillo en sombras", done: false });
-                    await sb.from('projects').update({ checklist: list }).eq('id', pid);
+                    await sb.from('deliveries').update({ checklist: list }).eq('id', pid);
                     renderToast("🧠 Cortex: Análisis técnico completado", "success");
                     loadDashboard();
                 }, 1500);
@@ -1379,15 +1379,15 @@
 
             window.updateStatus = async (id, status, silent = false) => {
                 if (status === 'qc') {
-                    const { data: p } = await sb.from('projects').select('production_url').eq('id', id).single();
+                    const { data: p } = await sb.from('deliveries').select('production_url').eq('id', id).single();
                     if (!p.production_url) { renderToast("⚠️ Sube el link antes de ir a QC", "error"); return false; }
                 }
 
-                const { data: proj } = await sb.from('projects').select('*, clients(*)').eq('id', id).single();
+                const { data: proj } = await sb.from('deliveries').select('*, clients(*)').eq('id', id).single();
                 const updateData = { status };
-                if (status === 'completed') updateData.delivered_at = new Date();
+                if (status === 'delivered') updateData.delivered_at = new Date();
 
-                const { error } = await sb.from('projects').update(updateData).eq('id', id);
+                const { error } = await sb.from('deliveries').update(updateData).eq('id', id);
 
                 if (!error) {
                     if (!silent) renderToast(`${status.toUpperCase()} actualizado`);
@@ -1840,14 +1840,25 @@
 
             document.getElementById('project-form').onsubmit = async (e) => {
                 e.preventDefault();
-                await sb.from('projects').insert([{ client_id: document.getElementById('form-client').value, service_type: document.getElementById('form-service').value, priority: parseInt(document.getElementById('form-priority').value), status: 'briefing' }]);
+                const billingType = document.getElementById('form-billing-type').value;
+                const rate = parseFloat(document.getElementById('form-rate').value) || 0;
+
+                await sb.from('deliveries').insert([{
+                    client_id: document.getElementById('form-client').value,
+                    name: document.getElementById('form-name').value,
+                    service_type: document.getElementById('form-service').value,
+                    priority: parseInt(document.getElementById('form-priority').value),
+                    status: 'briefing',
+                    billing_type: billingType,
+                    rate_applied: rate
+                }]);
                 closeAllModals(); reloadDashboard();
             }
 
             document.getElementById('edit-form').onsubmit = async (e) => {
                 e.preventDefault();
                 const id = document.getElementById('edit-id').value;
-                await sb.from('projects').update({ assigned_to: document.getElementById('edit-assign').value || null, production_url: document.getElementById('edit-url').value, raw_assets_url: document.getElementById('edit-raw').value }).eq('id', id);
+                await sb.from('deliveries').update({ assigned_to: document.getElementById('edit-assign').value || null, production_url: document.getElementById('edit-url').value, raw_assets_url: document.getElementById('edit-raw').value }).eq('id', id);
                 closeAllModals(); reloadDashboard();
             }
 
