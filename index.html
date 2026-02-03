@@ -556,30 +556,60 @@
                     <p class="text-slate-400">Análisis operativo en tiempo real.</p>
                 </header>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass p-6 rounded-3xl border border-white/10 text-center">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Revenue Total</p>
-                        <h2 class="text-3xl font-bold text-emerald-400" id="stat-revenue">$0.00</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div
+                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all">
+                        </div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Presupuesto
+                            Real</p>
+                        <h2 class="text-3xl font-black text-white" id="stat-revenue">$0.00</h2>
+                        <div class="mt-2 text-[10px] text-emerald-400 font-bold">+12.5% vs mes anterior</div>
                     </div>
-                    <div class="glass p-6 rounded-3xl border border-white/10 text-center">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Entregas Mes</p>
-                        <h2 class="text-3xl font-bold text-violet-400" id="stat-deliveries">0</h2>
+                    <div
+                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 w-16 h-16 bg-rose-500/10 blur-2xl group-hover:bg-rose-500/20 transition-all">
+                        </div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Gastos
+                            Operativos</p>
+                        <h2 class="text-3xl font-black text-rose-400" id="stat-expenses">$0.00</h2>
+                        <div class="mt-2 text-[10px] text-slate-500">Suscripciones + Operativa</div>
                     </div>
-                    <div class="glass p-6 rounded-3xl border border-white/10 text-center">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Tasa Aprobación</p>
-                        <h2 class="text-3xl font-bold text-cyan-400" id="stat-approval">94%</h2>
+                    <div
+                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 w-16 h-16 bg-cyan-500/10 blur-2xl group-hover:bg-cyan-500/20 transition-all">
+                        </div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Rentabilidad
+                            Neta</p>
+                        <h2 class="text-3xl font-black text-cyan-400" id="stat-profit">0%</h2>
+                        <div class="mt-2 text-[10px] text-cyan-400/70">Margen optimizado</div>
+                    </div>
+                    <div
+                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-4 -top-4 w-16 h-16 bg-violet-500/10 blur-2xl group-hover:bg-violet-500/20 transition-all">
+                        </div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Entregas
+                            Totales</p>
+                        <h2 class="text-3xl font-black text-violet-400" id="stat-deliveries">0</h2>
+                        <div class="mt-2 text-[10px] text-slate-500">Volumen del mes</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="glass p-8 rounded-[40px] border border-white/10">
-                        <h3 class="text-lg font-bold mb-6 text-white text-center">Ingresos Mensuales</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass p-6 rounded-[32px] border border-white/10">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 px-2">Historial de
+                            Ingresos</h3>
                         <div class="h-64">
                             <canvas id="chart-revenue"></canvas>
                         </div>
                     </div>
-                    <div class="glass p-8 rounded-[40px] border border-white/10">
-                        <h3 class="text-lg font-bold mb-6 text-white text-center">Eficiencia por Cliente</h3>
+                    <div class="glass p-6 rounded-[32px] border border-white/10">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 px-2">Eficiencia de
+                            Entrega</h3>
                         <div class="h-64">
                             <canvas id="chart-efficiency"></canvas>
                         </div>
@@ -894,14 +924,28 @@
     <div id="settings-modal"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
         <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white">
-            <h2 class="text-2xl font-bold mb-6">Ajustes</h2>
+            <h2 class="text-2xl font-bold mb-6">Ajustes & Finanzas</h2>
             <form id="settings-form" class="space-y-4">
-                <input type="url" id="setting-webhook" placeholder="WhatsApp Webhook URL"
-                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white mb-2">
-                <input type="url" id="setting-backend"
-                    placeholder="Railway Backend URL (ej: https://su-app.up.railway.app)"
-                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
-                <button type="submit" class="w-full py-3 bg-violet-600 rounded-xl font-bold">Guardar</button>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Infraestructura</label>
+                    <input type="url" id="setting-webhook" placeholder="WhatsApp Webhook URL"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                    <input type="url" id="setting-backend" placeholder="Railway Backend URL"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Control Financiero (Sprint
+                        C)</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="setting-fixed-costs" placeholder="Gastos Fijos $"
+                            class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <input type="number" id="setting-investments" placeholder="Inversiones $"
+                            class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full py-4 bg-violet-600 hover:bg-violet-700 rounded-2xl font-bold transition-all shadow-lg shadow-violet-600/20">Guardar
+                    Configuración</button>
             </form>
         </div>
     </div>
@@ -1035,6 +1079,7 @@
                 await loadDashboard(); // Will update projectsData if connection works
                 if (typeof renderOfficeBoard === 'function') renderOfficeBoard();
                 if (typeof renderOrganigram === 'function') renderOrganigram();
+                if (typeof renderAnalytics === 'function') renderAnalytics();
 
                 // 🔐 Initialize Module System (Role-Based Access)
                 if (typeof initModuleSystem === 'function') {
@@ -1407,6 +1452,7 @@
                         </div>`).join('');
                 }
                 await loadPaymentsDetails();
+                if (typeof renderAnalytics === 'function') renderAnalytics();
                 lucide.createIcons();
             }
 
@@ -2074,6 +2120,57 @@
                 }
             }
 
+            // 💰 SPRINT C: FINANCIAL INTELLIGENCE & COCKPIT
+            async function renderAnalytics() {
+                const revEl = document.getElementById('stat-revenue');
+                if (!revEl) return;
+
+                // 1. Cargamos parámetros financieros de localStorage
+                const fixedCosts = parseFloat(localStorage.getItem('iam_fixed_costs')) || 0;
+                const investments = parseFloat(localStorage.getItem('iam_investments')) || 0;
+
+                // 2. Calculamos Ingresos (Proyectos Facturados)
+                const totalRevenue = projectsData.reduce((acc, p) => acc + (parseFloat(p.rate_applied) || 0), 0);
+
+                // 3. Calculamos Gastos (Pagos a editores + Fijos)
+                const { data: payments } = await sb.from('project_payments').select('amount');
+                const editorPayments = (payments || []).reduce((acc, p) => acc + parseFloat(p.amount), 0);
+                const totalExpenses = editorPayments + fixedCosts + investments;
+
+                // 4. Calculamos Rentabilidad
+                const profit = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue * 100) : 0;
+
+                // 5. Actualizamos UI
+                revEl.textContent = `$${totalRevenue.toLocaleString()}`;
+                document.getElementById('stat-expenses').textContent = `$${totalExpenses.toLocaleString()}`;
+                document.getElementById('stat-profit').textContent = `${profit.toFixed(1)}%`;
+                document.getElementById('stat-deliveries').textContent = projectsData.filter(p => p.status === 'completed').length;
+
+                // 6. Charts (Ingresos vs Gastos)
+                renderChart('chart-revenue', 'bar', {
+                    labels: ['Ingresos', 'Costos Operativos', 'Inversión', 'Pagos Equipo'],
+                    datasets: [{
+                        data: [totalRevenue, fixedCosts, investments, editorPayments],
+                        backgroundColor: ['#10b981', '#f43f5e', '#a78bfa', '#f59e0b'],
+                        borderRadius: 12
+                    }]
+                });
+
+                // Eficiencia
+                renderChart('chart-efficiency', 'doughnut', {
+                    labels: ['Completados', 'En Proceso', 'Ventas'],
+                    datasets: [{
+                        data: [
+                            projectsData.filter(p => p.status === 'completed').length,
+                            projectsData.filter(p => ['production', 'qc', 'briefing'].includes(p.status)).length,
+                            projectsData.filter(p => ['contact', 'proposal'].includes(p.status)).length
+                        ],
+                        backgroundColor: ['#10b981', '#6366f1', '#22d3ee'],
+                        borderWidth: 0
+                    }]
+                });
+            }
+
             function renderChart(id, type, data) {
                 if (chartInstances[id]) chartInstances[id].destroy();
                 const canvas = document.getElementById(id);
@@ -2148,6 +2245,26 @@
                 await sb.from('project_payments').insert([{ project_id, editor_id, amount, status: 'paid', paid_at: new Date() }]);
                 closeAllModals(); reloadDashboard();
                 renderToast("Pago registrado exitosamente", "success");
+            }
+
+            document.getElementById('settings-form').onsubmit = (e) => {
+                e.preventDefault();
+                const wh = document.getElementById('setting-webhook').value;
+                const be = document.getElementById('setting-backend').value;
+                const fc = document.getElementById('setting-fixed-costs').value;
+                const inv = document.getElementById('setting-investments').value;
+
+                localStorage.setItem('iam_webhook_url', wh);
+                localStorage.setItem('iam_backend_url', be);
+                localStorage.setItem('iam_fixed_costs', fc);
+                localStorage.setItem('iam_investments', inv);
+
+                WHATSAPP_WEBHOOK_URL = wh;
+                BACKEND_API_URL = be;
+
+                renderToast("Configuración Guardada", "success");
+                closeAllModals();
+                if (typeof renderAnalytics === 'function') renderAnalytics();
             }
 
             window.renderToast = (msg, type = "info") => {
