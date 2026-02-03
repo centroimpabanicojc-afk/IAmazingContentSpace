@@ -556,190 +556,183 @@
                 </div>
             </div>
 
-            <!-- View: Analytics (Premium Mode) -->
-            <div id="view-analytics" class="hidden view-container space-y-8">
-                <header class="mb-8">
-                    <h1 class="text-3xl font-bold text-white mb-1">Métricas de Rendimiento 📊</h1>
-                    <p class="text-slate-400">Análisis operativo en tiempo real.</p>
+            <div id="view-analytics" class="hidden view-container space-y-4">
+                <header class="mb-4">
+                    <h1 class="text-xl font-bold text-white mb-0.5">Métricas de Rendimiento 📊</h1>
+                    <p class="text-[10px] text-slate-400">Análisis operativo en tiempo real.</p>
                 </header>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div
-                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
                         <div
-                            class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all">
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-emerald-500/10 blur-xl group-hover:bg-emerald-500/20 transition-all">
                         </div>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Presupuesto
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Presupuesto
                             Real</p>
-                        <h2 class="text-3xl font-black text-white" id="stat-revenue">$0.00</h2>
-                        <div class="mt-2 text-[10px] text-emerald-400 font-bold">+12.5% vs mes anterior</div>
+                        <h2 class="text-lg font-black text-white" id="stat-revenue">$0.00</h2>
                     </div>
                     <div
-                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
                         <div
-                            class="absolute -right-4 -top-4 w-16 h-16 bg-rose-500/10 blur-2xl group-hover:bg-rose-500/20 transition-all">
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-rose-500/10 blur-xl group-hover:bg-rose-500/20 transition-all">
                         </div>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Gastos
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Gastos
                             Operativos</p>
-                        <h2 class="text-3xl font-black text-rose-400" id="stat-expenses">$0.00</h2>
-                        <div class="mt-2 text-[10px] text-slate-500">Suscripciones + Operativa</div>
+                        <h2 class="text-lg font-black text-rose-400" id="stat-expenses">$0.00</h2>
                     </div>
                     <div
-                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
                         <div
-                            class="absolute -right-4 -top-4 w-16 h-16 bg-cyan-500/10 blur-2xl group-hover:bg-cyan-500/20 transition-all">
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-cyan-500/10 blur-xl group-hover:bg-cyan-500/20 transition-all">
                         </div>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Rentabilidad
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Rentabilidad
                             Neta</p>
-                        <h2 class="text-3xl font-black text-cyan-400" id="stat-profit">0%</h2>
-                        <div class="mt-2 text-[10px] text-cyan-400/70">Margen optimizado</div>
+                        <h2 class="text-lg font-black text-cyan-400" id="stat-profit">0%</h2>
                     </div>
                     <div
-                        class="glass p-6 rounded-3xl border border-white/10 text-center relative overflow-hidden group">
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
                         <div
-                            class="absolute -right-4 -top-4 w-16 h-16 bg-violet-500/10 blur-2xl group-hover:bg-violet-500/20 transition-all">
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-violet-500/10 blur-xl group-hover:bg-violet-500/20 transition-all">
                         </div>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Entregas
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Entregas
                             Totales</p>
-                        <h2 class="text-3xl font-black text-violet-400" id="stat-deliveries">0</h2>
-                        <div class="mt-2 text-[10px] text-slate-500">Volumen del mes</div>
+                        <h2 class="text-lg font-black text-violet-400" id="stat-deliveries">0</h2>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 glass p-6 rounded-[32px] border border-white/10">
-                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 px-2">Historial de
-                            Ingresos</h3>
-                        <div class="h-64">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                    <div class="lg:col-span-2 glass p-4 rounded-3xl border border-white/10">
+                        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 px-1">Historial
+                            de Ingresos</h3>
+                        <div class="h-48">
                             <canvas id="chart-revenue"></canvas>
                         </div>
                     </div>
-                    <div class="glass p-6 rounded-[32px] border border-white/10">
-                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 px-2">Eficiencia de
-                            Entrega</h3>
-                        <div class="h-64">
+                    <div class="glass p-4 rounded-3xl border border-white/10">
+                        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 px-1">Eficiencia
+                            de Entrega</h3>
+                        <div class="h-48">
                             <canvas id="chart-efficiency"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- 💎 WOW FACTOR: TALENT RADAR -->
-                <div class="glass p-10 rounded-[50px] border border-white/10 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[100px] -z-10"></div>
-                    <div class="flex flex-col lg:flex-row items-center gap-12">
-                        <div class="flex-1 space-y-6">
-                            <h3 class="text-2xl font-bold text-white mb-4">Radar de Talento IAmazing 🧠</h3>
-                            <p class="text-slate-400 text-sm leading-relaxed">Este gráfico visualiza el balance
-                                psicológico y técnico de tu equipo actual basándose en los análisis de ADN realizados
-                                por Cortex.</p>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                    <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Cultura Dominante</p>
-                                    <p class="text-violet-400 font-bold" id="dominant-culture">Proactividad</p>
-                                </div>
-                                <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                                    <p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Nivel de Soft Skills
+                <!-- 💎 WOW FACTOR: TALENT RADAR (Compact) -->
+                <div class="glass p-6 rounded-[32px] border border-white/10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-violet-600/10 blur-[80px] -z-10"></div>
+                    <div class="flex flex-col lg:flex-row items-center gap-6">
+                        <div class="flex-1 space-y-3">
+                            <h3 class="text-lg font-bold text-white">Radar de Talento IAmazing 🧠</h3>
+                            <p class="text-slate-400 text-[10px] leading-tight">Análisis psicométrico y técnico basado
+                                en el ADN de equipo detectado por Cortex.</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="p-2 bg-white/5 rounded-xl border border-white/5">
+                                    <p class="text-[7px] text-slate-500 uppercase font-bold mb-0.5">Cultura Dominante
                                     </p>
-                                    <p class="text-cyan-400 font-bold">92% Optimizado</p>
+                                    <p class="text-violet-400 font-bold text-xs" id="dominant-culture">Proactividad</p>
+                                </div>
+                                <div class="p-2 bg-white/5 rounded-xl border border-white/5">
+                                    <p class="text-[7px] text-slate-500 uppercase font-bold mb-0.5">Nivel Soft Skills
+                                    </p>
+                                    <p class="text-cyan-400 font-bold text-xs">92% Optimizado</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full lg:w-[400px] h-[400px]">
+                        <div class="w-full lg:w-[250px] h-[250px]">
                             <canvas id="chart-talent-radar"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
+    </div>
 
-            <!-- View: Team Mgmt (Admin) -->
-            <div id="view-team-mgmt" class="hidden view-container space-y-8">
-                <header class="mb-8">
-                    <h1 class="text-3xl font-bold text-white mb-1" id="team-title-check">Gestión de Equipo 👥</h1>
-                    <p class="text-slate-400">Control de accesos y perfiles.</p>
-                </header>
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <!-- Credential Vault & List -->
-                    <div class="xl:col-span-2 space-y-6">
-                        <div class="glass p-8 rounded-[40px] border border-white/10 overflow-hidden">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3
-                                    class="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Registro de
-                                    Miembros y Accesos
-                                </h3>
-                                <button onclick="toggleVaultVisibility()" id="vault-toggle"
-                                    class="px-4 py-2 glass rounded-xl text-[10px] font-bold uppercase tracking-widest text-violet-400 hover:bg-violet-400/10 border border-violet-400/20 transition-all">
-                                    Mostrar Bóveda de Claves
-                                </button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left text-sm">
-                                    <thead class="text-slate-500 border-b border-white/5">
-                                        <tr>
-                                            <th class="py-3 px-2">Miembro</th>
-                                            <th class="py-3 px-2 text-center">Estatus</th>
-                                            <th class="py-3 px-2 vault-cell hidden">Contraseña</th>
-                                            <th class="py-3 px-2 text-right">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="team-mgmt-body" class="text-slate-300"></tbody>
-                                </table>
-                            </div>
-                        </div>
+    <!-- View: Team Mgmt (Admin) -->
+    <div id="view-team-mgmt" class="hidden view-container space-y-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-white mb-1" id="team-title-check">Gestión de Equipo 👥</h1>
+            <p class="text-slate-400">Control de accesos y perfiles.</p>
+        </header>
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <!-- Credential Vault & List -->
+            <div class="xl:col-span-2 space-y-6">
+                <div class="glass p-8 rounded-[40px] border border-white/10 overflow-hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Registro de
+                            Miembros y Accesos
+                        </h3>
+                        <button onclick="toggleVaultVisibility()" id="vault-toggle"
+                            class="px-4 py-2 glass rounded-xl text-[10px] font-bold uppercase tracking-widest text-violet-400 hover:bg-violet-400/10 border border-violet-400/20 transition-all">
+                            Mostrar Bóveda de Claves
+                        </button>
                     </div>
-
-                    <!-- Organigram / Hierarchy -->
-                    <div class="space-y-6">
-                        <div class="glass p-8 rounded-[40px] border border-white/10">
-                            <h3
-                                class="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
-                                <i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Estructura Organizativa
-                            </h3>
-                            <div id="organigram-container"
-                                class="relative min-h-[400px] flex items-center justify-center p-4">
-                                <!-- Se llena vía SVG/JS -->
-                                <div class="text-[10px] text-slate-600 uppercase italic">Generando mapa jerárquico...
-                                </div>
-                            </div>
-                            <div class="mt-4 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
-                                <p class="text-[9px] text-amber-500 font-bold uppercase tracking-widest leading-normal">
-                                    <i data-lucide="zap" class="w-3 h-3 inline mr-1"></i> Alarma de Atasco:
-                                </p>
-                                <p id="bottleneck-text" class="text-[10px] text-slate-400 mt-1">Cortex no detecta
-                                    cuellos de botella críticos actualmente.</p>
-                            </div>
-                        </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="text-slate-500 border-b border-white/5">
+                                <tr>
+                                    <th class="py-3 px-2">Miembro</th>
+                                    <th class="py-3 px-2 text-center">Estatus</th>
+                                    <th class="py-3 px-2 vault-cell hidden">Contraseña</th>
+                                    <th class="py-3 px-2 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="team-mgmt-body" class="text-slate-300"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- View: Onboarding Interview -->
-            <div id="view-onboarding" class="hidden h-[80vh] flex flex-col animate-fade-in">
-                <header class="mb-6">
-                    <h1 class="text-3xl font-bold text-white mb-1">Entrevista de Vuelo 🚀</h1>
-                    <p class="text-slate-400">Queremos conocerte para personalizar tu experiencia en la agencia.</p>
-                </header>
-                <div class="glass flex-1 rounded-[40px] flex flex-col overflow-hidden relative border border-white/5">
-                    <div id="onboarding-chat" class="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth pr-4">
-                        <!-- La IA inicia la charla -->
-                    </div>
-                    <div class="p-6 bg-black/20 border-t border-white/5">
-                        <div class="relative flex items-center">
-                            <input type="text" id="onboarding-input"
-                                class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-white outline-none focus:border-violet-500 transition-all font-medium"
-                                placeholder="Escribe tu respuesta..."
-                                onkeypress="if(event.key === 'Enter') sendOnboardingMessage()">
-                            <button onclick="sendOnboardingMessage()"
-                                class="absolute right-2 p-3 bg-violet-600 rounded-xl hover:bg-violet-700 transition-all active:scale-95 shadow-lg shadow-violet-600/20">
-                                <i data-lucide="send" class="w-5 h-5 text-white"></i>
-                            </button>
+            <!-- Organigram / Hierarchy -->
+            <div class="space-y-6">
+                <div class="glass p-8 rounded-[40px] border border-white/10">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
+                        <i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Estructura Organizativa
+                    </h3>
+                    <div id="organigram-container" class="relative min-h-[400px] flex items-center justify-center p-4">
+                        <!-- Se llena vía SVG/JS -->
+                        <div class="text-[10px] text-slate-600 uppercase italic">Generando mapa jerárquico...
                         </div>
-                        <p class="text-[10px] text-slate-500 mt-3 text-center uppercase tracking-widest">Chat privado •
-                            IA de Reclutamiento IAmazing</p>
+                    </div>
+                    <div class="mt-4 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
+                        <p class="text-[9px] text-amber-500 font-bold uppercase tracking-widest leading-normal">
+                            <i data-lucide="zap" class="w-3 h-3 inline mr-1"></i> Alarma de Atasco:
+                        </p>
+                        <p id="bottleneck-text" class="text-[10px] text-slate-400 mt-1">Cortex no detecta
+                            cuellos de botella críticos actualmente.</p>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <!-- View: Onboarding Interview -->
+    <div id="view-onboarding" class="hidden h-[80vh] flex flex-col animate-fade-in">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-white mb-1">Entrevista de Vuelo 🚀</h1>
+            <p class="text-slate-400">Queremos conocerte para personalizar tu experiencia en la agencia.</p>
+        </header>
+        <div class="glass flex-1 rounded-[40px] flex flex-col overflow-hidden relative border border-white/5">
+            <div id="onboarding-chat" class="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth pr-4">
+                <!-- La IA inicia la charla -->
+            </div>
+            <div class="p-6 bg-black/20 border-t border-white/5">
+                <div class="relative flex items-center">
+                    <input type="text" id="onboarding-input"
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-white outline-none focus:border-violet-500 transition-all font-medium"
+                        placeholder="Escribe tu respuesta..."
+                        onkeypress="if(event.key === 'Enter') sendOnboardingMessage()">
+                    <button onclick="sendOnboardingMessage()"
+                        class="absolute right-2 p-3 bg-violet-600 rounded-xl hover:bg-violet-700 transition-all active:scale-95 shadow-lg shadow-violet-600/20">
+                        <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-3 text-center uppercase tracking-widest">Chat privado •
+                    IA de Reclutamiento IAmazing</p>
+            </div>
+        </div>
+    </div>
+    </main>
     </div>
 
     <!-- Modals -->
@@ -1940,69 +1933,6 @@
                 chat.scrollTop = chat.scrollHeight;
             };
 
-            // 📊 RENDER ANALYTICS (PREMIUM)
-            function renderAnalytics() {
-                const revenueTotal = paymentsData.reduce((acc, p) => acc + parseFloat(p.amount), 0);
-                const completedCount = projectsData.filter(p => p.status === 'completed').length;
-
-                if (document.getElementById('stat-revenue')) document.getElementById('stat-revenue').textContent = `$${revenueTotal.toFixed(2)}`;
-                if (document.getElementById('stat-deliveries')) document.getElementById('stat-deliveries').textContent = completedCount;
-                if (document.getElementById('stat-approval')) document.getElementById('stat-approval').textContent = "94%";
-
-                // Revenue Chart
-                renderChart('chart-revenue', 'line', {
-                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Revenue',
-                        data: [1200, 1900, 1500, 2500, 2200, revenueTotal > 0 ? revenueTotal : 3000],
-                        borderColor: '#a78bfa',
-                        backgroundColor: 'rgba(167, 139, 250, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.5,
-                        pointRadius: 0
-                    }]
-                });
-
-                // Efficiency Chart
-                const clientNames = clientsData.slice(0, 5).map(c => c.name);
-                const clientData = clientNames.map(() => Math.floor(Math.random() * 20) + 10);
-
-                renderChart('chart-efficiency', 'bar', {
-                    labels: clientNames.length ? clientNames : ['Client A', 'Client B', 'Client C'],
-                    datasets: [{
-                        label: 'Entregas',
-                        data: clientData.length ? clientData : [12, 19, 8],
-                        backgroundColor: 'rgba(6, 182, 212, 0.6)',
-                        borderColor: '#06b6d4',
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        barThickness: 20
-                    }]
-                });
-
-                // Talent Radar Chart (WOW Factor)
-                renderChart('chart-talent-radar', 'radar', {
-                    labels: ['Creatividad', 'Proactividad', 'Técnica', 'Comunicación', 'Puntualidad'],
-                    datasets: [{
-                        label: 'Media del Equipo',
-                        data: [85, 92, 78, 88, 95],
-                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                        borderColor: '#8b5cf6',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#8b5cf6'
-                    }]
-                }, {
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255,255,255,0.05)' },
-                            grid: { color: 'rgba(255,255,255,0.1)' },
-                            pointLabels: { color: '#94a3b8', font: { size: 10 } },
-                            ticks: { display: false }
-                        }
-                    }
-                });
-            }
 
             // 👥 REBUILT: PREMIUM TEAM MGMT (Sprint B: Vault & Organigram)
             let isVaultVisible = false;
@@ -2169,45 +2099,38 @@
                 }
             }
 
-            // 💰 SPRINT C: FINANCIAL INTELLIGENCE & COCKPIT
+            // 💰 SPRINT C: FINANCIAL INTELLIGENCE & COCKPIT (Refined)
             async function renderAnalytics() {
                 const revEl = document.getElementById('stat-revenue');
                 if (!revEl) return;
 
-                // 1. Cargamos parámetros financieros de localStorage
                 const fixedCosts = parseFloat(localStorage.getItem('iam_fixed_costs')) || 0;
                 const investments = parseFloat(localStorage.getItem('iam_investments')) || 0;
-
-                // 2. Calculamos Ingresos (Proyectos Facturados)
                 const totalRevenue = projectsData.reduce((acc, p) => acc + (parseFloat(p.rate_applied) || 0), 0);
 
-                // 3. Calculamos Gastos (Pagos a editores + Fijos)
                 const { data: payments } = await sb.from('project_payments').select('amount');
                 const editorPayments = (payments || []).reduce((acc, p) => acc + parseFloat(p.amount), 0);
                 const totalExpenses = editorPayments + fixedCosts + investments;
-
-                // 4. Calculamos Rentabilidad
                 const profit = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue * 100) : 0;
 
-                // 5. Actualizamos UI
                 revEl.textContent = `$${totalRevenue.toLocaleString()}`;
                 document.getElementById('stat-expenses').textContent = `$${totalExpenses.toLocaleString()}`;
                 document.getElementById('stat-profit').textContent = `${profit.toFixed(1)}%`;
                 document.getElementById('stat-deliveries').textContent = projectsData.filter(p => p.status === 'completed').length;
 
-                // 6. Charts (Ingresos vs Gastos)
+                // 📊 Global Dashboard Charts
                 renderChart('chart-revenue', 'bar', {
-                    labels: ['Ingresos', 'Costos Operativos', 'Inversión', 'Pagos Equipo'],
+                    labels: ['Ingresos', 'Costos', 'Inv.', 'Equipo'],
                     datasets: [{
                         data: [totalRevenue, fixedCosts, investments, editorPayments],
                         backgroundColor: ['#10b981', '#f43f5e', '#a78bfa', '#f59e0b'],
-                        borderRadius: 12
+                        borderRadius: 8,
+                        barThickness: 30
                     }]
                 });
 
-                // Eficiencia
                 renderChart('chart-efficiency', 'doughnut', {
-                    labels: ['Completados', 'En Proceso', 'Ventas'],
+                    labels: ['Completados', 'Proceso', 'Ventas'],
                     datasets: [{
                         data: [
                             projectsData.filter(p => p.status === 'completed').length,
@@ -2215,12 +2138,37 @@
                             projectsData.filter(p => ['contact', 'proposal'].includes(p.status)).length
                         ],
                         backgroundColor: ['#10b981', '#6366f1', '#22d3ee'],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
+                }, { cutout: '70%', plugins: { legend: { display: false } } });
+
+                // 🧠 Talent Radar (WOW Factor)
+                renderChart('chart-talent-radar', 'radar', {
+                    labels: ['Creatividad', 'Proactividad', 'Técnica', 'Comunicación', 'Soft Skills'],
+                    datasets: [{
+                        label: 'Media Equipo',
+                        data: [88, 92, 85, 90, 94],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8b5cf6',
+                        pointBackgroundColor: '#8b5cf6',
+                        borderWidth: 2
+                    }]
+                }, {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.05)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 9 } },
+                            ticks: { display: false },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
                 });
             }
 
-            function renderChart(id, type, data) {
+            function renderChart(id, type, data, extraOptions = {}) {
                 if (chartInstances[id]) chartInstances[id].destroy();
                 const canvas = document.getElementById(id);
                 if (!canvas) return;
@@ -2232,17 +2180,18 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: { legend: { display: false } },
-                        scales: {
+                        scales: type === 'doughnut' || type === 'radar' ? {} : {
                             y: {
                                 beginAtZero: true,
                                 grid: { color: 'rgba(255,255,255,0.05)' },
-                                ticks: { color: '#64748b', font: { size: 10 } }
+                                ticks: { color: '#64748b', font: { size: 9 } }
                             },
                             x: {
                                 grid: { display: false },
-                                ticks: { color: '#64748b', font: { size: 10 } }
+                                ticks: { color: '#64748b', font: { size: 9 } }
                             }
-                        }
+                        },
+                        ...extraOptions
                     }
                 });
             }
