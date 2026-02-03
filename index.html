@@ -862,15 +862,12 @@
                 checkSession();
                 await loadDashboard(); // Will update projectsData if connection works
 
-                // Force Render immediately with whatever data we have
-                renderTeamMgmt();
-
-                // Force Render immediately with whatever data we have
-                renderTeamMgmt();
-
                 // 🔐 Initialize Module System (Role-Based Access)
                 if (typeof initModuleSystem === 'function') {
                     await initModuleSystem();
+                } else {
+                    console.error("Module system not found! Check assets/js/modules-system.js");
+                    renderTeamMgmt(); // Fallback
                 }
 
                 // 🔄 SILENT BACKGROUND SYNC (Fase 4: Pulido)
@@ -1058,13 +1055,12 @@
                 document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
                 document.getElementById('user-display-name').textContent = currentUser.first_name;
                 document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
-                // ⚠️ TEST MODE: Enable Manager Views for ALL
-                const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
-                document.getElementById('nav-dashboard').style.display = 'flex';
-                document.getElementById('nav-payments').style.display = 'flex';
-                document.getElementById('nav-analytics').style.display = 'flex';
-                document.getElementById('nav-team-mgmt').style.display = 'flex';
-                if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) showView('my-desk');
+                const isManager = ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+                // The module system handles sidebar visibility, but we keep this for legacy view switching
+                if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) {
+                    if (typeof showModuleView === 'function') showModuleView('view-production-desk');
+                    else showView('my-desk');
+                }
                 document.getElementById('personal-notes').value = localStorage.getItem(`notes_${currentUser.id}`) || "";
             }
 
@@ -1165,9 +1161,10 @@
                     const el = document.getElementById(id);
                     if (el && el.children.length === 0) {
                         el.innerHTML = `
-                        <div class="flex flex-col items-center justify-center py-12 opacity-20 border-2 border-dashed border-white/10 rounded-[32px]">
-                            <i data-lucide="inbox" class="w-8 h-8 mb-2"></i>
-                            <p class="text-[10px] font-bold uppercase tracking-widest">Sin Tareas</p>
+                        <div class="empty-state">
+                            <i data-lucide="inbox" class="w-12 h-12 mb-3 text-slate-600"></i>
+                            <p class="text-sm font-bold text-slate-500">Sin Tareas</p>
+                            <p class="text-[10px] text-slate-600 uppercase tracking-widest mt-1">Listo para operar</p>
                         </div>
                     `;
                     }
@@ -1198,7 +1195,16 @@
                 // Team Grid & Payments Info
                 const teamGrid = document.getElementById('team-grid');
                 if (teamGrid) {
-                    teamGrid.innerHTML = teamData.map(m => `<div class="glass px-4 py-3 rounded-2xl flex items-center gap-3 border border-white/5"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10">${m.first_name[0]}</div><div><p class="text-[11px] font-bold text-white">${m.first_name}</p><p class="text-[9px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div></div>`).join('');
+                    teamGrid.innerHTML = teamData.map(m => `
+                        <div class="glass px-4 py-3 rounded-2xl flex items-center gap-3 border border-white/5 hover:border-violet-500/30 transition-all cursor-pointer" onclick="openMemberProfile('${m.id}')">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10 text-violet-400">
+                                ${m.first_name[0]}
+                            </div>
+                            <div>
+                                <p class="text-[11px] font-bold text-white">${m.first_name}</p>
+                                <p class="text-[9px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p>
+                            </div>
+                        </div>`).join('');
                 }
                 await loadPaymentsDetails();
                 lucide.createIcons();
@@ -1614,12 +1620,19 @@
 
                 } catch (e) {
                     console.error("Cortex Error:", e);
-                    logActivity('Error', e.message, 'warning');
-                    if (e.message.includes('fetch') || e.message.includes('NetworkError')) {
-                        botBox.textContent = "⚠️ Error de conexión: No se pudo contactar con el servidor. Revisa la URL en Ajustes.";
-                    } else {
-                        botBox.textContent = `⚠️ Error en Cortex: ${e.message}. Asegúrate de haber configurado las API Keys en Railway.`;
-                    }
+                    const errorHtml = `
+                        <div class="glass p-4 rounded-xl border border-amber-500/30 bg-amber-900/10">
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400 flex-shrink-0"></i>
+                                <div>
+                                    <p class="text-sm font-bold text-amber-400">Cortex está teniendo dificultades</p>
+                                    <p class="text-xs text-slate-400 mt-1">${e.message.includes('fetch') ? 'Error de conexión con el servidor. Revisa tu internet o la configuración.' : 'Error interno en el agente. Asegúrate de que las API Keys estén configuradas.'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    botBox.innerHTML = errorHtml;
+                    lucide.createIcons();
                 }
                 chat.scrollTop = chat.scrollHeight;
             };
@@ -1852,43 +1865,59 @@
         </script>
 
         <!-- ========================================
-             MÓDULOS DEPARTAMENTALES
+             MÓDULOS DEPARTAMENTALES - CARGA ROBUSTA
              ======================================== -->
-
-        <!-- Incluir vistas de Ventas -->
         <script>
-            fetch('modules/sales-views.html')
-                .then(r => r.text())
-                .then(html => {
+            /**
+             * Carga un módulo HTML y ejecuta sus scripts
+             */
+            async function loadModule(url) {
+                try {
+                    const response = await fetch(url);
+                    const html = await response.text();
+
                     const temp = document.createElement('div');
                     temp.innerHTML = html;
-                    document.querySelector('main').appendChild(temp);
-                })
-                .catch(e => console.warn('Sales module not loaded:', e));
-        </script>
 
-        <!-- Incluir vistas de Producción -->
-        <script>
-            fetch('modules/production-views.html')
-                .then(r => r.text())
-                .then(html => {
-                    const temp = document.createElement('div');
-                    temp.innerHTML = html;
-                    document.querySelector('main').appendChild(temp);
-                })
-                .catch(e => console.warn('Production module not loaded:', e));
-        </script>
+                    // 1. Inyectar HTML en el main
+                    const main = document.querySelector('main');
+                    // Mover nodos hijos al main
+                    while (temp.firstChild) {
+                        const child = temp.firstChild;
+                        if (child.tagName === 'SCRIPT') {
+                            // 2. Ejecutar scripts manualmente
+                            const newScript = document.createElement('script');
+                            if (child.src) {
+                                newScript.src = child.src;
+                            } else {
+                                newScript.textContent = child.textContent;
+                            }
+                            document.body.appendChild(newScript);
+                            temp.removeChild(child);
+                        } else {
+                            main.appendChild(child);
+                        }
+                    }
+                    console.log(`✅ Módulo cargado: ${url}`);
+                } catch (e) {
+                    console.warn(`❌ Error cargando módulo ${url}:`, e);
+                }
+            }
 
-        <!-- Incluir vistas de I+D y Comunes -->
-        <script>
-            fetch('modules/rd-common-views.html')
-                .then(r => r.text())
-                .then(html => {
-                    const temp = document.createElement('div');
-                    temp.innerHTML = html;
-                    document.querySelector('main').appendChild(temp);
-                })
-                .catch(e => console.warn('R&D module not loaded:', e));
+            // Sobrescribir el onload original para esperar a los módulos
+            window.onload = async () => {
+                renderToast("Cargando módulos...", "info");
+
+                // Cargar todos los módulos en paralelo
+                await Promise.all([
+                    loadModule('modules/sales-views.html'),
+                    loadModule('modules/production-views.html'),
+                    loadModule('modules/rd-common-views.html')
+                ]);
+
+                // Una vez cargados, inicializar el sistema
+                await init();
+            };
         </script>
 
 </body>

@@ -134,6 +134,18 @@ const COMMON_MODULES = [
     }
 ];
 
+const VIEW_LOADERS = {
+    'view-production-desk': 'loadProductionDesk',
+    'view-production-pool': 'loadProductionPool',
+    'view-production-balance': 'loadProductionBalance',
+    'view-sales-pipeline': 'loadSalesPipeline',
+    'view-sales-clients': 'loadSalesClients',
+    'view-sales-commissions': 'loadSalesCommissions',
+    'view-rd-experiments': 'loadRDExperiments',
+    'view-rd-metrics': 'initRDMetrics',
+    'view-dashboard': 'loadDashboard'
+};
+
 // === ESTADO GLOBAL ===
 let currentUserDepartment = null;
 let currentUserPermissions = [];
@@ -307,6 +319,13 @@ function showModuleView(viewId) {
     const targetView = document.getElementById(viewId);
     if (targetView) {
         targetView.classList.remove('hidden');
+
+        // Ejecutar loader si existe
+        const loaderName = VIEW_LOADERS[viewId];
+        if (loaderName && typeof window[loaderName] === 'function') {
+            console.log(`🚀 Executing loader: ${loaderName}`);
+            window[loaderName]();
+        }
     }
 
     // Actualizar navegación activa
@@ -314,7 +333,8 @@ function showModuleView(viewId) {
         item.classList.remove('active');
     });
 
-    const activeNav = document.querySelector(`[onclick*="${viewId}"]`);
+    const activeNav = document.getElementById(`nav-${viewId.replace('view-', '')}`) ||
+        document.querySelector(`[onclick*="${viewId}"]`);
     if (activeNav) {
         activeNav.classList.add('active');
     }
