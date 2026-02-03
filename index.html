@@ -1905,18 +1905,29 @@
                 }
             }
 
-            // Sobrescribir el onload original para esperar a los módulos
+            // Inicialización optimizada
             window.onload = async () => {
-                renderToast("Cargando módulos...", "info");
+                console.log("🚀 Iniciando IAmazing...");
 
-                // Cargar todos los módulos en paralelo
-                await Promise.all([
+                // 1. Mostrar login de inmediato si es necesario
+                await loadConstants();
+                checkSession();
+
+                // 2. Cargar módulos en segundo plano
+                console.log("📦 Cargando módulos en segundo plano...");
+                Promise.all([
                     loadModule('modules/sales-views.html'),
                     loadModule('modules/production-views.html'),
                     loadModule('modules/rd-common-views.html')
-                ]);
+                ]).then(() => {
+                    console.log("✅ Todos los módulos listos");
+                    // Re-inicializar sistema de módulos por si el usuario ya entró
+                    if (currentUser && typeof initModuleSystem === 'function') {
+                        initModuleSystem();
+                    }
+                });
 
-                // Una vez cargados, inicializar el sistema
+                // 3. Inicializar resto del sistema core
                 await init();
             };
         </script>
