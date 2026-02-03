@@ -219,15 +219,19 @@
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside class="w-64 glass border-r border-white/10 hidden md:flex flex-col">
-            <div class="p-6">
-                <div class="flex items-center gap-3">
+            <div class="p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3 sidebar-brand">
                     <div
-                        class="w-8 h-8 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                        class="w-8 h-8 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-lg flex items-center justify-center shrink-0">
                         <i data-lucide="zap" class="w-5 h-5 text-white"></i>
                     </div>
                     <span class="text-xl font-bold tracking-tight text-white">IA<span
                             class="gradient-text">mazing</span></span>
                 </div>
+                <!-- Toggle Button -->
+                <button onclick="toggleSidebar()" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-500 shrink-0">
+                    <i data-lucide="chevrons-left" id="sidebar-toggle-icon" class="w-4 h-4"></i>
+                </button>
             </div>
             <nav id="main-nav" class="flex-1 px-4 space-y-1.5 mt-4">
                 <a href="#" onclick="showView('dashboard')" id="nav-dashboard"
@@ -2404,6 +2408,21 @@
 
                 window.addEventListener('resize', adjustScale);
                 adjustScale(); // Initial call
+
+                window.toggleSidebar = () => {
+                    const aside = document.querySelector('aside');
+                    const icon = document.getElementById('sidebar-toggle-icon');
+                    aside.classList.toggle('sidebar-collapsed');
+
+                    if (aside.classList.contains('sidebar-collapsed')) {
+                        icon.setAttribute('data-lucide', 'chevrons-right');
+                    } else {
+                        icon.setAttribute('data-lucide', 'chevrons-left');
+                    }
+                    lucide.createIcons();
+                    // Reinicializar gráficas para ajustar al nuevo ancho
+                    if (typeof renderAnalytics === 'function') setTimeout(renderAnalytics, 300);
+                };
             };
         </script>
 

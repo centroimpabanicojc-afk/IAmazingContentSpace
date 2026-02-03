@@ -102,6 +102,35 @@ html {
 }
 
 /* === SIDEBAR IMPROVEMENTS === */
+aside {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.sidebar-collapsed {
+    width: 80px !important;
+}
+
+.sidebar-collapsed .sidebar-item span,
+.sidebar-collapsed aside h2,
+.sidebar-collapsed aside .gradient-text,
+.sidebar-collapsed aside .text-xl span,
+.sidebar-collapsed #user-display-name,
+.sidebar-collapsed #user-display-role {
+    display: none !important;
+}
+
+.sidebar-collapsed .sidebar-item {
+    justify-content: center;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.sidebar-collapsed .p-6,
+.sidebar-collapsed #current-user-sidebar .px-2 {
+    justify-content: center;
+}
+
 .sidebar-item {
     position: relative;
     transition: all 0.2s ease;
@@ -551,9 +580,14 @@ header {
     height: 0.875rem !important;
 }
 
-/* Kanban column and card sizing */
+/* Kanban column and card sizing - Fill more space */
 .kanban-column {
-    width: clamp(250px, 18vw, 320px) !important;
+    width: clamp(240px, 14vw, 300px) !important;
+}
+
+.sidebar-collapsed+main .kanban-column {
+    width: clamp(260px, 16vw, 340px) !important;
+    /* Take advantage of horizontal space */
 }
 
 .card-kanban {
