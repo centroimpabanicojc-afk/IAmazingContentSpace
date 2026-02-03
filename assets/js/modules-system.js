@@ -163,6 +163,12 @@ let currentDepartmentData = null;
  * Obtener departamento del usuario actual
  */
 async function getUserDepartment(userId) {
+    // 🛡️ OFFLINE FALLBACK: Si el usuario ya tiene departamento en sus datos locales (Mock Mode)
+    if (currentUser && currentUser.department) {
+        console.log('📦 Usando departamento local (Offline Mode):', currentUser.department);
+        return { name: currentUser.department, display_name: currentUser.department.toUpperCase() };
+    }
+
     try {
         const { data, error } = await sb
             .from('team_members')
@@ -173,7 +179,9 @@ async function getUserDepartment(userId) {
         if (error) throw error;
         return data?.departments || null;
     } catch (e) {
-        console.error('Error getting user department:', e);
+        console.warn('⚠️ Error conectando con Supabase para departamento, usando fallback.');
+        // Fallback final basado en rol si todo falla
+        if (currentUser?.role === 'pm') return { name: 'admin', display_name: 'MANAGEMENT' };
         return null;
     }
 }
