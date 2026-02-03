@@ -51,7 +51,9 @@
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
-            font-size: 14px;
+            font-size: 1rem;
+            /* Follows HTML scaling */
+            overflow-x: hidden;
         }
 
         .glass {
@@ -229,9 +231,9 @@
             </div>
             <nav id="main-nav" class="flex-1 px-4 space-y-1.5 mt-4">
                 <a href="#" onclick="showView('dashboard')" id="nav-dashboard"
-                    class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Panel Maestro</span>
+                    class="sidebar-item active flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Operaciones</span>
                 </a>
                 <a href="#" onclick="showView('my-desk')" id="nav-my-desk"
                     class="sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl">
@@ -249,14 +251,14 @@
                     <span class="font-semibold text-sm">Cortex AI</span>
                 </a>
                 <a href="#" onclick="showView('analytics')" id="nav-analytics"
-                    class="sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Métricas</span>
+                    class="sidebar-item flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Métricas</span>
                 </a>
                 <a href="#" onclick="showView('team-mgmt')" id="nav-team-mgmt"
-                    class="sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl">
-                    <i data-lucide="users-2" class="w-5 h-5"></i>
-                    <span class="font-semibold text-sm">Equipo</span>
+                    class="sidebar-item flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="users-2" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Equipo</span>
                 </a>
                 <div class="pt-4 border-t border-white/5 mt-4">
                     <a href="#" onclick="openSettings()"
@@ -284,7 +286,7 @@
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8">
             <!-- View: Dashboard (Manager) -->
-            <div id="view-dashboard">
+            <div id="view-dashboard" class="view-container">
                 <header class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
                     <div>
                         <h1 class="text-3xl font-bold text-white mb-1 tracking-tight">Control de Operaciones <span
@@ -412,7 +414,7 @@
             </div>
 
             <!-- View: My Desk (Operator) -->
-            <div id="view-my-desk" class="hidden">
+            <div id="view-my-desk" class="hidden view-container space-y-8">
                 <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 class="text-3xl font-bold text-white mb-1">Mi Escritorio 💻</h1>
@@ -468,7 +470,7 @@
             </div>
 
             <!-- View: Payments (Financial) -->
-            <div id="view-payments" class="hidden">
+            <div id="view-payments" class="hidden view-container space-y-8">
                 <header class="mb-8">
                     <h1 class="text-3xl font-bold text-white mb-1">Pagos & Finanzas 💸</h1>
                     <p class="text-slate-400">Transparencia financiera absoluta.</p>
@@ -498,7 +500,7 @@
             </div>
 
             <!-- View: Cortex AI -->
-            <div id="view-cortex" class="hidden h-full flex flex-col gap-6">
+            <div id="view-cortex" class="hidden view-container h-full flex flex-col gap-6">
                 <header class="flex justify-between items-center">
                     <div>
                         <h1 class="text-3xl font-bold text-white mb-1">Cortex Brain 🧠</h1>
@@ -550,7 +552,7 @@
             </div>
 
             <!-- View: Analytics (Premium Mode) -->
-            <div id="view-analytics" class="hidden space-y-8">
+            <div id="view-analytics" class="hidden view-container space-y-8">
                 <header class="mb-8">
                     <h1 class="text-3xl font-bold text-white mb-1">Métricas de Rendimiento 📊</h1>
                     <p class="text-slate-400">Análisis operativo en tiempo real.</p>
@@ -645,7 +647,7 @@
             </div>
 
             <!-- View: Team Mgmt (Admin) -->
-            <div id="view-team-mgmt" class="hidden">
+            <div id="view-team-mgmt" class="hidden view-container space-y-8">
                 <header class="mb-8">
                     <h1 class="text-3xl font-bold text-white mb-1" id="team-title-check">Gestión de Equipo 👥</h1>
                     <p class="text-slate-400">Control de accesos y perfiles.</p>
@@ -1026,7 +1028,18 @@
                 { id: 'p3', client_id: 'c1', service_type: 'I+D: IA Automation', status: 'rd', priority: 5, clients: { name: 'TechFlow' }, checklist: [] },
                 { id: 'p4', client_id: 'c1', service_type: 'Video Largo', status: 'production', priority: 5, clients: { name: 'TechFlow' }, team_members: { first_name: 'Pedro' }, assigned_to: 't2', deadline: new Date(Date.now() + 86400000).toISOString() },
                 { id: 'p5', client_id: 'c2', service_type: 'Reel Instagram', status: 'briefing', priority: 3, clients: { name: 'YogaSarah' }, checklist: [] },
-                { id: 'p6', client_id: 'c3', service_type: 'Pack Mensual', status: 'completed', priority: 1, clients: { name: 'UrbanEats' }, checklist: [], delivered_at: new Date().toISOString() }
+                { id: 'p6', client_id: 'c3', service_type: 'Pack Mensual', status: 'completed', priority: 1, clients: { name: 'UrbanEats' }, checklist: [], delivered_at: new Date().toISOString() },
+                // 10 Proyectos adicionales para Test de Carga
+                { id: 'p7', client_id: 'c1', service_type: 'Video Corporativo', status: 'production', priority: 5, clients: { name: 'TechFlow' }, deadline: new Date(Date.now() + 10000000).toISOString() },
+                { id: 'p8', client_id: 'c2', service_type: 'Short: Testimonial', status: 'qc', priority: 3, clients: { name: 'YogaSarah' } },
+                { id: 'p9', client_id: 'c1', service_type: 'Ads: Facebook', status: 'briefing', priority: 5, clients: { name: 'TechFlow' } },
+                { id: 'p10', client_id: 'c3', service_type: 'Branding Kit', status: 'proposal', priority: 3, clients: { name: 'UrbanEats' } },
+                { id: 'p11', client_id: 'c2', service_type: 'Podcast: Episodio 1', status: 'production', priority: 1, clients: { name: 'YogaSarah' } },
+                { id: 'p12', client_id: 'c1', service_type: 'Landing Page Copy', status: 'rd', priority: 5, clients: { name: 'TechFlow' } },
+                { id: 'p13', client_id: 'c3', service_type: 'Newsletter Mensual', status: 'contact', priority: 1, clients: { name: 'UrbanEats' } },
+                { id: 'p14', client_id: 'c1', service_type: 'Script: YouTube', status: 'production', priority: 5, clients: { name: 'TechFlow' }, deadline: new Date(Date.now() - 3600000).toISOString() }, // Vencido
+                { id: 'p15', client_id: 'c2', service_type: 'Reel: Trend AI', status: 'briefing', priority: 5, clients: { name: 'YogaSarah' } },
+                { id: 'p16', client_id: 'c3', service_type: 'QC Global', status: 'qc', priority: 5, clients: { name: 'UrbanEats' } }
             ];
 
             let paymentsData = [
@@ -2374,6 +2387,23 @@
 
                 // 3. Inicializar resto del sistema core
                 await init();
+
+                // 🌐 ADAPTIVE ZOOM ENGINE (Sprint Final)
+                const adjustScale = () => {
+                    const width = window.innerWidth;
+                    let scale = 1;
+
+                    if (width > 2500) scale = 1.25; // Large Displays
+                    else if (width < 1600 && width > 1366) scale = 0.95; // Wide Laptops
+                    else if (width <= 1366 && width > 1024) scale = 0.88; // Standard Laptops
+                    else if (width <= 1024 && width > 768) scale = 0.82; // Tablets
+                    else scale = 1; // Mobile handles with its own logic
+
+                    document.documentElement.style.setProperty('--ui-scale', scale);
+                };
+
+                window.addEventListener('resize', adjustScale);
+                adjustScale(); // Initial call
             };
         </script>
 

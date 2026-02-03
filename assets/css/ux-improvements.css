@@ -4,7 +4,27 @@
    Date: 2026-02-03
    ======================================== */
 
-/* === RESPONSIVE BREAKPOINTS === */
+/* === RESPONSIVE & ADAPTIVE SYSTEM === */
+:root {
+    /* Fluid scaling factor based on container size */
+    --ui-scale: 1;
+    /* Default, updated by JS */
+    --space-unit: clamp(0.5rem, 1vw, 1rem);
+
+    /* Optimized font sizes using rem (relative to html font-size) */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.875rem;
+}
+
+html {
+    /* The core magic: Base font-size scales everything */
+    font-size: calc(14px * var(--ui-scale));
+    transition: font-size 0.2s ease-out;
+}
+
 @media (max-width: 768px) {
     body {
         font-size: 13px;
@@ -12,6 +32,8 @@
 
     .kanban-column {
         min-height: 300px;
+        width: 85vw !important;
+        /* Peek at next column */
     }
 
     aside {
@@ -19,21 +41,25 @@
         position: fixed;
         z-index: 100;
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     aside.mobile-open {
         transform: translateX(0);
     }
+
+    .view-container {
+        padding: 1rem !important;
+    }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-    aside {
-        width: 200px;
-    }
+@media (min-width: 1024px) {
 
-    .kanban-column {
-        min-height: 400px;
+    /* On large screens, ensure we can see more at once */
+    .view-container {
+        max-width: 1600px;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -456,6 +482,48 @@ table tbody td {
     transform: scale(1.02);
 }
 
+/* === BUTTON & UI ELEMENT OVERRIDES (ADAPTIVE) === */
+button {
+    font-size: var(--text-xs) !important;
+    padding-top: calc(var(--space-unit) * 0.7) !important;
+    padding-bottom: calc(var(--space-unit) * 0.7) !important;
+    border-radius: 12px !important;
+}
+
+.glass {
+    border-radius: clamp(16px, 2vw, 32px) !important;
+}
+
+input,
+select,
+textarea {
+    font-size: var(--text-sm) !important;
+    padding: calc(var(--space-unit) * 0.8) !important;
+    border-radius: 12px !important;
+}
+
+h1 {
+    font-size: var(--text-xl) !important;
+}
+
+h2 {
+    font-size: var(--text-lg) !important;
+}
+
+h3 {
+    font-size: var(--text-md) !important;
+}
+
+/* Dashboard spacing fixes */
+header {
+    margin-bottom: calc(var(--space-unit) * 2) !important;
+}
+
+.card-kanban,
+.glass.p-5 {
+    padding: var(--space-unit) !important;
+}
+
 /* === GLASSMORPHISM OVERRIDE === */
 .glass {
     backdrop-filter: blur(12px) saturate(180%);
@@ -468,6 +536,56 @@ table tbody td {
 
 .card-kanban:hover {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* === ICON & COMPONENT ADAPTATION === */
+[data-lucide] {
+    width: clamp(1rem, 1.2vw, 1.5rem) !important;
+    height: clamp(1rem, 1.2vw, 1.5rem) !important;
+}
+
+/* Specific icon sizing for smaller areas */
+.text-\[9px\] [data-lucide],
+.text-xs [data-lucide] {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+}
+
+/* Kanban column and card sizing */
+.kanban-column {
+    width: clamp(250px, 18vw, 320px) !important;
+}
+
+.card-kanban {
+    max-width: 100%;
+}
+
+/* Modal sizing fix */
+.fixed.inset-0>div {
+    max-height: 90vh;
+    overflow-y: auto;
+    width: clamp(320px, 90vw, 500px) !important;
+}
+
+/* Analytics charts sizing */
+canvas {
+    max-width: 100%;
+}
+
+/* Global scale-down on high width to keep everything "at once" */
+@media (min-width: 1921px) {
+    html {
+        font-size: 18px;
+        /* Slight bump for 4K */
+    }
+}
+
+@media (max-width: 1366px) {
+
+    /* Laptops: scale down slightly handled by JS */
+    body {
+        font-size: 0.95rem;
+    }
 }
 
 /* === ANIMATIONS === */
