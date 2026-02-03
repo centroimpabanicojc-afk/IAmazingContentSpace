@@ -1081,6 +1081,8 @@
                 if (typeof renderOrganigram === 'function') renderOrganigram();
                 if (typeof renderAnalytics === 'function') renderAnalytics();
 
+                logActivity(`**${currentUser.first_name}** ha iniciado sesión. Sistema Cortex optimizado.`);
+
                 // 🔐 Initialize Module System (Role-Based Access)
                 if (typeof initModuleSystem === 'function') {
                     await initModuleSystem();
@@ -1396,9 +1398,14 @@
 
                 projects?.filter(p => (!filterClient || p.client_id === filterClient) && (p.clients.name.toLowerCase().includes(searchTerm) || p.service_type.toLowerCase().includes(searchTerm)))
                     .sort((a, b) => (b.is_expiring ? 10 : b.priority) - (a.is_expiring ? 10 : a.priority))
-                    .forEach(p => {
+                    .forEach((p, idx) => {
                         const col = document.getElementById(cols[p.status]);
-                        if (col) col.appendChild(createCard(p, false, isManager));
+                        if (col) {
+                            const card = createCard(p, false, isManager);
+                            card.style.animationDelay = `${idx * 0.05}s`;
+                            card.classList.add('animate-fade-in');
+                            col.appendChild(card);
+                        }
                     });
 
                 // Empty State Placeholder
@@ -1479,7 +1486,7 @@
                 };
                 const urgentClass = p.is_expiring ? 'border-rose-500 bg-rose-500/5 shadow-[0_0_20px_rgba(244,63,94,0.15)]' : 'border-white/5';
 
-                div.className = `glass p-5 rounded-[28px] border ${urgentClass} card-hover flex flex-col gap-4 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
+                div.className = `glass p-5 rounded-[28px] border ${urgentClass} card-hover hover-scale stagger-1 flex flex-col gap-4 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
                 div.dataset.id = p.id;
 
                 div.innerHTML = `
@@ -1549,6 +1556,29 @@
                 lucide.createIcons();
                 return div;
             }
+
+            // 🧠 CORTEX BRAIN: ACTIVITY FEED & LOGGING
+            window.logActivity = (text) => {
+                const feed = document.getElementById('cortex-activity');
+                if (!feed) return;
+
+                const div = document.createElement('div');
+                div.className = "flex items-start gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 group animate-fade-in";
+                div.innerHTML = `
+                    <div class="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1.5 shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
+                    <div class="flex-1">
+                        <p class="text-[10px] text-slate-200 leading-snug">${text}</p>
+                        <p class="text-[8px] text-slate-500 uppercase mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                `;
+
+                if (feed.children.length === 1 && feed.children[0].classList.contains('text-[10px]')) {
+                    feed.innerHTML = '';
+                }
+
+                feed.prepend(div);
+                if (feed.children.length > 20) feed.lastElementChild.remove();
+            };
 
             async function toggleCheckItem(pid, idx) {
                 const { data } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
@@ -1630,6 +1660,7 @@
                     }
 
                     loadDashboard();
+                    logActivity(`Estatus actualizado: **${proj.service_type}** (${proj.clients?.name}) movido a **${status.toUpperCase()}**`);
                     return true;
                 }
                 return false;
