@@ -911,10 +911,21 @@
             }
 
             function showLoginStep(step) {
+                console.log("👉 Cambiando a paso de login:", step);
                 ['login-initial', 'login-member', 'login-register'].forEach(id => {
-                    document.getElementById(id).classList.add('hidden');
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                    else console.warn(`Elemento ${id} no encontrado`);
                 });
-                document.getElementById(`login-${step}`).classList.remove('hidden');
+
+                const targetId = `login-${step}`;
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.classList.remove('hidden');
+                } else {
+                    console.error(`Paso de login ${targetId} no existe`);
+                }
+
                 if (step === 'member') {
                     console.log("👥 Mostrando lista de miembros. Total:", teamData.length);
                     const list = document.getElementById('login-user-list');
