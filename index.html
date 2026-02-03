@@ -19,7 +19,7 @@
     <script src="assets/libs/chart.js"></script>
 
     <!-- 🔐 Module System (Role-Based Access) -->
-    <script src="assets/js/modules-system.js"></script>
+    <script src="assets/js/modules-system.js?v=2.0"></script>
 
     <script>
         tailwind.config = {
@@ -287,7 +287,7 @@
             <div id="view-dashboard">
                 <header class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
                     <div>
-                        <h1 class="text-3xl font-bold text-white mb-1">Control de Operaciones 🕹️</h1>
+                        <h1 class="text-3xl font-bold text-white mb-1">Control de Operaciones V2 🕹️</h1>
                         <p class="text-slate-400">Gestión global de la agencia.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-4">
@@ -1872,20 +1872,21 @@
              * Carga un módulo HTML y ejecuta sus scripts
              */
             async function loadModule(url) {
+                console.log(`🔍 Intentando cargar módulo: ${url}`);
                 try {
-                    const response = await fetch(url);
+                    const response = await fetch(url + '?v=' + Date.now());
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     const html = await response.text();
 
                     const temp = document.createElement('div');
                     temp.innerHTML = html;
 
-                    // 1. Inyectar HTML en el main
                     const main = document.querySelector('main');
-                    // Mover nodos hijos al main
-                    while (temp.firstChild) {
-                        const child = temp.firstChild;
-                        if (child.tagName === 'SCRIPT') {
-                            // 2. Ejecutar scripts manualmente
+                    if (!main) throw new Error("No se encontró el elemento <main>");
+
+                    const children = Array.from(temp.childNodes);
+                    for (const child of children) {
+                        if (child.nodeType === 1 && child.tagName === 'SCRIPT') {
                             const newScript = document.createElement('script');
                             if (child.src) {
                                 newScript.src = child.src;
@@ -1893,14 +1894,14 @@
                                 newScript.textContent = child.textContent;
                             }
                             document.body.appendChild(newScript);
-                            temp.removeChild(child);
                         } else {
                             main.appendChild(child);
                         }
                     }
-                    console.log(`✅ Módulo cargado: ${url}`);
+                    console.log(`✅ Módulo cargado satisfactoriamente: ${url}`);
                 } catch (e) {
-                    console.warn(`❌ Error cargando módulo ${url}:`, e);
+                    console.error(`❌ Error crítico cargando módulo ${url}:`, e);
+                    renderToast(`Error cargando ${url}`, "error");
                 }
             }
 
