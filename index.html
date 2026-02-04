@@ -618,28 +618,35 @@
                     </div>
                 </div>
 
-                <!-- 💎 WOW FACTOR: TALENT RADAR (Compact) -->
-                <div class="glass p-6 rounded-[32px] border border-white/10 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-48 h-48 bg-violet-600/10 blur-[80px] -z-10"></div>
-                    <div class="flex flex-col lg:flex-row items-center gap-6">
-                        <div class="flex-1 space-y-3">
-                            <h3 class="text-lg font-bold text-white">Radar de Talento IAmazing 🧠</h3>
-                            <p class="text-slate-400 text-[10px] leading-tight">Análisis psicométrico y técnico basado
-                                en el ADN de equipo detectado por Cortex.</p>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="p-2 bg-white/5 rounded-xl border border-white/5">
-                                    <p class="text-[7px] text-slate-500 uppercase font-bold mb-0.5">Cultura Dominante
-                                    </p>
-                                    <p class="text-violet-400 font-bold text-xs" id="dominant-culture">Proactividad</p>
+                <!-- 💎 WOW FACTOR: TALENT RADAR (Balanced) -->
+                <div class="glass p-5 rounded-[32px] border border-white/10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[100px] -z-10"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
+                                    <i data-lucide="brain-circuit" class="w-6 h-6 text-violet-400"></i>
                                 </div>
-                                <div class="p-2 bg-white/5 rounded-xl border border-white/5">
-                                    <p class="text-[7px] text-slate-500 uppercase font-bold mb-0.5">Nivel Soft Skills
+                                <h3 class="text-lg font-black text-white">Radar de Talento IAmazing</h3>
+                            </div>
+                            <p class="text-slate-400 text-xs leading-relaxed">Análisis psicométrico y técnico basado
+                                en el ADN de equipo detectado por Cortex AI.</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <p class="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">
+                                        Cultura Dominante
                                     </p>
-                                    <p class="text-cyan-400 font-bold text-xs">92% Optimizado</p>
+                                    <p class="text-violet-400 font-black text-sm" id="dominant-culture">Proactividad</p>
+                                </div>
+                                <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <p class="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">Nivel
+                                        Soft Skills
+                                    </p>
+                                    <p class="text-cyan-400 font-black text-sm">92% Optimizado</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full lg:w-[250px] h-[250px]">
+                        <div class="radar-container w-full h-[280px]">
                             <canvas id="chart-talent-radar"></canvas>
                         </div>
                     </div>

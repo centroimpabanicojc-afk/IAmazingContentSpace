@@ -585,63 +585,80 @@ header {
     height: 0.875rem !important;
 }
 
-/* Kanban - ALL AT ONCE FORCE GRID */
+/* Kanban - FLEXIBLE & SCROLLABLE (Replaces rigid 7-column grid) */
 #view-dashboard .flex.gap-1\.5 {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 0.15rem !important;
+    display: flex !important;
+    gap: 0.5rem !important;
     width: 100% !important;
-    overflow: hidden !important;
+    overflow-x: auto !important;
+    /* Allow horizontal scroll if needed */
+    padding-bottom: 1rem !important;
+    align-items: flex-start !important;
 }
 
 .kanban-column {
-    width: 100% !important;
-    min-width: 0 !important;
-    gap: 0.1rem !important;
-    padding: 0.1rem !important;
-    max-height: 48vh !important;
-    /* 🔥 Force columns to scroll internally */
+    min-width: 160px !important;
+    max-width: 220px !important;
+    flex: 1 1 0px !important;
+    gap: 0.3rem !important;
+    padding: 0.4rem !important;
+    max-height: 52vh !important;
+    /* Increased slightly for better view */
     overflow-y: auto !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .kanban-column h3 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 7px !important;
-    /* Slightly smaller headers */
-    margin-bottom: 0.2rem !important;
-    padding-top: 0.2rem !important;
+    font-size: 9px !important;
+    /* Readable but compact */
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem !important;
+    padding: 0.4rem !important;
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 8px;
+    color: #a78bfa !important;
 }
 
 /* Custom scrollbar for columns */
-.kanban-column::-webkit-scrollbar {
-    width: 3px;
+.kanban-column::-webkit-scrollbar,
+#view-dashboard .flex.gap-1\.5::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
 }
 
-.kanban-column::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.2);
+.kanban-column::-webkit-scrollbar-thumb,
+#view-dashboard .flex.gap-1\.5::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
     border-radius: 10px;
 }
 
 /* === TEAM AVAILABILITY - MINI MODE === */
 #section-team {
-    margin-top: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
+    margin-top: 0.1rem !important;
+    margin-bottom: 0.1rem !important;
 }
 
 #section-team h2 {
-    font-size: 10px !important;
-    margin-bottom: 0.5rem !important;
+    font-size: 11px !important;
+    margin-bottom: 0.3rem !important;
+    font-weight: 800;
 }
 
 #team-grid {
-    gap: 0.3rem !important;
+    gap: 0.35rem !important;
 }
 
 .team-member-chip {
-    padding: 0.2rem 0.5rem !important;
-    border-radius: 10px !important;
+    padding: 0.3rem 0.6rem !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .team-member-chip div:first-child {
@@ -669,6 +686,33 @@ header {
 canvas {
     max-width: 100%;
 }
+
+.view-container#view-analytics {
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+}
+
+#view-analytics .grid-cols-2 {
+    gap: 0.75rem !important;
+}
+
+#view-analytics .h-48 {
+    height: 250px !important;
+}
+
+/* Talent Radar Balance */
+#view-analytics .radar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 280px;
+}
+
+#view-analytics .radar-container canvas {
+    max-width: 320px !important;
+    max-height: 280px !important;
+}
+
 
 /* Global scale-down on high width to keep everything "at once" */
 @media (min-width: 1921px) {

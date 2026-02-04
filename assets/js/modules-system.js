@@ -149,7 +149,10 @@ const VIEW_LOADERS = {
     'view-sales-commissions': 'loadSalesCommissions',
     'view-rd-experiments': 'loadRDExperiments',
     'view-rd-metrics': 'initRDMetrics',
-    'view-dashboard': 'loadDashboard'
+    'view-dashboard': 'loadDashboard',
+    'view-team-mgmt': 'renderTeamMgmt',
+    'view-payments': 'loadPaymentsDetails',
+    'view-analytics': 'renderAnalytics'
 };
 
 // === ESTADO GLOBAL ===
