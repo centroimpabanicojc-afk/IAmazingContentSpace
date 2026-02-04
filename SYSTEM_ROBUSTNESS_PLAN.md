@@ -20,6 +20,11 @@ Se han aplicado todas las correcciones críticas para asegurar la estabilidad op
 - [x] **Safe Init Logic**: El proceso de inicio (`window.onload`) ahora tiene `try/catch/finally` y un timeout de seguridad (5s) para garantizar que el sistema siempre sea accesible, incluso si falla un módulo.
 - [x] **Feedback de Rol**: Alerta visual en sidebar si el usuario no tiene departamento asignado.
 
+### 4. Correcciones Post-Despliegue (Vercel)
+- [x] **Pantalla Equipo Vacía**: Solucionado error de sintaxis (redeclaración de variable) que bloqueaba el script.
+- [x] **Integración de Chat**: Se movió el módulo "Chat" dentro de la vista "Equipo" (Pestañas Miembros / Chat) para mejor UX.
+- [x] **Conexión Cortex**: Se configuró `BACKEND_API_URL` apuntando a producción (Railway) para corregir errores de conexión.
+- [x] **Escapado HTML**: Revisión de logs de actividad (Pendiente de verificación visual).
+
 ---
-**Instrucciones Finales**:
-Por favor, recargue la página (`F5` o `Ctrl+R`) para ver el sistema estabilizado. El loader aparecerá brevemente y deberá llevarlo a una interfaz alineada y funcional.
+** Estado Final**: El sistema debería estar 100% operativo en Vercel tras este despliegue.

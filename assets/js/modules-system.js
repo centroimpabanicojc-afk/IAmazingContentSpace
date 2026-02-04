@@ -125,13 +125,7 @@ const COMMON_MODULES = [
         view: 'view-notifications',
         badge: true
     },
-    {
-        id: 'common-chat',
-        name: 'Chat',
-        icon: 'message-circle',
-        view: 'view-chat',
-        badge: true
-    },
+    // REFACTORED: Chat moved to Team View as per user request
     {
         id: 'common-cortex',
         name: 'Cortex AI',
