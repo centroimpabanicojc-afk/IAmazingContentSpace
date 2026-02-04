@@ -5,23 +5,90 @@
    ======================================== */
 
 /* === ULTRA-COMPACT ADAPTIVE SYSTEM === */
-:root {
-    /* Fluid scaling factor based on container size */
-    --ui-scale: 1;
-    --space-unit: 0.3rem;
+/* ========================================
+   IAmazing Design System - Tokens v1.0
+   Based on UI Collective Standards
+   ======================================== */
 
-    /* Optimized font sizes using rem (relative to html font-size) */
-    --text-xs: 0.7rem;
-    --text-sm: 0.8rem;
-    --text-md: 0.9rem;
-    --text-lg: 1.1rem;
-    --text-xl: 1.4rem;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* --- PALETTE NEUTRALS (Slate/Zinc optimized) --- */
+    --color-bg-base: #020617;
+    /* Deepest background */
+    --color-bg-surface: #0f172a;
+    /* Card surface */
+    --color-bg-surface-hover: #1e293b;
+
+    --color-border-subtle: rgba(255, 255, 255, 0.06);
+    --color-border-strong: rgba(255, 255, 255, 0.12);
+
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #94a3b8;
+    --color-text-tertiary: #64748b;
+
+    /* --- PALETTE ACCENTS (Neon Glass) --- */
+    --color-primary-500: #8b5cf6;
+    /* Violet */
+    --color-primary-glow: rgba(139, 92, 246, 0.4);
+
+    --color-info-500: #06b6d4;
+    /* Cyan */
+    --color-success-500: #10b981;
+    /* Emerald */
+    --color-warning-500: #f59e0b;
+    /* Amber */
+    --color-danger-500: #f43f5e;
+    /* Rose */
+
+    /* --- TYPOGRAPHY (Inter) --- */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+    --text-xs: 0.75rem;
+    /* 12px */
+    --text-sm: 0.875rem;
+    /* 14px */
+    --text-base: 1rem;
+    /* 16px */
+    --text-lg: 1.125rem;
+    /* 18px */
+    --text-xl: 1.25rem;
+    /* 20px */
+    --text-2xl: 1.5rem;
+    /* 24px */
+
+    /* --- SPACING & SHAPE --- */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    --spacing-xs: 0.25rem;
+    /* 4px */
+    --spacing-sm: 0.5rem;
+    /* 8px */
+    --spacing-md: 1rem;
+    /* 16px */
+    --spacing-lg: 1.5rem;
+    /* 24px */
 }
 
+/* Base Reset with System Fonts */
 html {
-    /* Absolute operational density base */
-    font-size: calc(11px * var(--ui-scale));
-    transition: font-size 0.2s ease-out;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    /* Default desktop base density */
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+}
+
+body {
+    background-color: transparent !important;
+    /* Managed by html */
+    color: inherit;
 }
 
 @media (max-width: 768px) {
@@ -465,19 +532,19 @@ table tbody td {
     background: rgba(139, 92, 246, 0.4);
 }
 
-/* === KANBAN COLUMN WIDTHS === */
+/* === KANBAN COLUMN WIDTHS (Tokenized) === */
 .kanban-column {
     min-height: 500px;
-    background: rgba(255, 255, 255, 0.01);
-    padding: 1rem;
-    border-radius: 24px;
-    border: 1px dashed rgba(255, 255, 255, 0.05);
+    background: var(--color-bg-surface);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--color-border-strong);
     transition: all 0.3s ease;
 }
 
 .kanban-column:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(139, 92, 246, 0.1);
+    background: var(--color-bg-surface-hover);
+    border-color: var(--color-primary-500);
 }
 
 /* === PREMIUM ENTRANCE ANIMATIONS === */
@@ -515,25 +582,41 @@ table tbody td {
     transform: scale(1.02);
 }
 
-/* === BUTTON & UI ELEMENT OVERRIDES (ADAPTIVE) === */
+/* === ATOMIC COMPONENTS (Tokens Applied) === */
 button {
     font-size: var(--text-xs) !important;
-    padding-top: calc(var(--space-unit) * 0.7) !important;
-    padding-bottom: calc(var(--space-unit) * 0.7) !important;
-    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    border-radius: var(--radius-md) !important;
+    transition: all 0.2s ease !important;
 }
 
 .glass {
-    border-radius: clamp(16px, 2vw, 32px) !important;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    backdrop-filter: blur(16px);
+    border-radius: var(--radius-xl) !important;
 }
 
 input,
 select,
 textarea {
     font-size: var(--text-sm) !important;
-    padding: calc(var(--space-unit) * 0.8) !important;
-    border-radius: 12px !important;
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    border-radius: var(--radius-md) !important;
+    background: var(--color-bg-base) !important;
+    border: 1px solid var(--color-border-subtle) !important;
+    color: var(--color-text-primary) !important;
 }
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--color-primary-500) !important;
+    box-shadow: 0 0 0 2px var(--color-primary-glow) !important;
+}
+
+
 
 h1 {
     font-size: var(--text-xl) !important;
