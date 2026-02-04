@@ -859,11 +859,13 @@
                         <button
                             class="p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"><i
                                 data-lucide="paperclip" class="w-5 h-5"></i></button>
-                        <input type="text" placeholder="Enviar mensaje a #general..."
-                            class="flex-1 bg-black/30 border-white/10 rounded-xl px-4 text-sm focus:border-violet-500 outline-none transition-all">
-                        <button
-                            class="p-3 bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-lg shadow-violet-600/20 transition-all"><i
-                                data-lucide="send" class="w-5 h-5"></i></button>
+                        <input type="text" id="team-chat-input" placeholder="Enviar mensaje a #general..."
+                            class="flex-1 bg-black/30 border-white/10 rounded-xl px-4 text-sm focus:border-violet-500 outline-none transition-all"
+                            onkeypress="if(event.key === 'Enter') sendTeamMessage()">
+                        <button onclick="sendTeamMessage()"
+                            class="p-3 bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-lg shadow-violet-600/20 transition-all">
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2151,8 +2153,54 @@
                 } else {
                     membersContent.classList.add('hidden');
                     chatContent.classList.remove('hidden');
+                    // Scroll to bottom when opening chat
+                    const chatMessages = document.getElementById('team-chat-messages');
+                    if (chatMessages) {
+                        setTimeout(() => {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, 50);
+                    }
                 }
             };
+
+            window.sendTeamMessage = () => {
+                const input = document.getElementById('team-chat-input');
+                const text = input.value.trim();
+                if (!text || !currentUser) return;
+
+                appendTeamMessage(currentUser.first_name, text, true);
+                input.value = '';
+
+                // Simulate response
+                if (text.toLowerCase().includes('hola')) {
+                    setTimeout(() => {
+                        appendTeamMessage('Cortex AI', `¡Hola **${currentUser.first_name}**! Estoy monitoreando este canal.`, false);
+                    }, 800);
+                }
+            };
+
+            function appendTeamMessage(sender, text, isMe) {
+                const container = document.getElementById('team-chat-messages');
+                if (!container) return;
+
+                if (container.querySelector('.opacity-50')) container.innerHTML = '';
+
+                const div = document.createElement('div');
+                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-slide-up`;
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${sender}</span>
+                        <span class="text-[9px] text-slate-600">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <div class="max-w-[80%] p-3 rounded-2xl ${isMe ? 'bg-violet-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none'} text-sm leading-relaxed">
+                        ${formatMarkdown(text)}
+                    </div>
+                `;
+
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
+            }
 
             function renderTeamMgmt() {
                 const body = document.getElementById('team-mgmt-body');
