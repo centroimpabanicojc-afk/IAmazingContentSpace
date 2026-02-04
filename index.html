@@ -1523,13 +1523,13 @@
                 const teamGrid = document.getElementById('team-grid');
                 if (teamGrid) {
                     teamGrid.innerHTML = teamData.map(m => `
-                        <div class="team-member-chip glass px-2 py-1 rounded-xl flex items-center gap-1.5 border border-white/5 hover:border-violet-500/30 transition-all cursor-pointer" onclick="openMemberProfile('${m.id}')">
-                            <div class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[7px] font-bold border border-white/10 text-violet-400">
+                        <div class="team-member-chip glass flex items-center gap-2 border-transparent hover:border-primary-500/30 transition-all cursor-pointer" onclick="openMemberProfile('${m.id}')" style="padding: var(--spacing-sm); border-radius: var(--radius-md);">
+                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10 text-primary-500">
                                 ${m.first_name ? m.first_name[0] : '?'}
                             </div>
                             <div>
-                                <p class="text-[9px] font-bold text-white">${m.first_name || 'User'}</p>
-                                <p class="text-[7px] text-slate-500 uppercase">${(m.role || 'op').replace('_', ' ')}</p>
+                                <p class="text-[11px] font-bold text-white">${m.first_name || 'User'}</p>
+                                <p class="text-[9px] text-slate-500 uppercase tracking-wider">${(m.role || 'op').replace('_', ' ')}</p>
                             </div>
                         </div>`).join('');
                 }
@@ -1561,18 +1561,18 @@
                 };
                 const urgentClass = p.is_expiring ? 'border-rose-500 bg-rose-500/5 shadow-[0_0_15px_rgba(244,63,94,0.1)]' : 'border-white/5';
 
-                div.className = `glass p-2 rounded-xl border ${urgentClass} card-hover hover-scale stagger-1 flex flex-col gap-1 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
+                div.className = `glass p-3 rounded-lg border ${urgentClass} card-hover hover-scale stagger-1 flex flex-col gap-2 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
                 div.dataset.id = p.id;
 
                 div.innerHTML = `
                 ${p.is_expiring ? '<div class="absolute top-0 left-0 right-0 bg-rose-500 text-[7px] font-black text-white py-0.5 text-center tracking-widest uppercase">Vence Pronto</div>' : ''}
                 
                 <div class="flex justify-between items-start ${p.is_expiring ? 'pt-2' : ''}">
-                    <div class="space-y-0">
-                        <p class="text-[7px] uppercase font-bold text-slate-500 tracking-wider">${p.clients?.name || 'IAmazing'}</p>
-                        <h4 class="text-[10px] font-bold text-white leading-tight">${p.service_type}</h4>
+                    <div class="space-y-0.5">
+                        <p class="text-[9px] uppercase font-bold text-slate-500 tracking-wider">${p.clients?.name || 'IAmazing'}</p>
+                        <h4 class="text-[12px] font-bold text-white leading-tight">${p.service_type}</h4>
                     </div>
-                    <div class="px-1 py-0.5 rounded-md text-[7px] font-bold border ${colors[p.priority] || colors[1]}">
+                    <div class="px-1.5 py-0.5 rounded text-[9px] font-bold border ${colors[p.priority] || colors[1]}">
                         P${p.priority}
                     </div>
                 </div>
