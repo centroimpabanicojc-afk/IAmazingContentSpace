@@ -13,7 +13,7 @@ const DEPARTMENT_MODULES = {
             id: 'sales-pipeline',
             name: 'Pipeline',
             icon: 'trending-up',
-            view: 'view-sales-pipeline',
+            view: 'view-dashboard', // Sharing main dashboard for now
             description: 'Gestiona leads y conversiones'
         },
         {
@@ -27,7 +27,7 @@ const DEPARTMENT_MODULES = {
             id: 'sales-commissions',
             name: 'Comisiones',
             icon: 'dollar-sign',
-            view: 'view-sales-commissions',
+            view: 'view-payments', // Reuse payments view
             description: 'Tus comisiones ganadas'
         }
     ],
@@ -36,28 +36,28 @@ const DEPARTMENT_MODULES = {
             id: 'production-desk',
             name: 'Mi Escritorio',
             icon: 'briefcase',
-            view: 'view-production-desk',
+            view: 'view-my-desk', // FIXED: Matches index.html ID
             description: 'Proyectos asignados'
         },
         {
             id: 'production-pool',
             name: 'Tareas Disponibles',
             icon: 'inbox',
-            view: 'view-production-pool',
+            view: 'view-my-desk', // Pool is inside My Desk
             description: 'Toma proyectos del pool'
         },
         {
             id: 'production-calendar',
             name: 'Calendario',
             icon: 'calendar',
-            view: 'view-production-calendar',
+            view: 'view-dashboard', // Fallback
             description: 'Deadlines y entregas'
         },
         {
             id: 'production-balance',
             name: 'Mi Balance',
             icon: 'wallet',
-            view: 'view-production-balance',
+            view: 'view-payments', // Reuse payments
             description: 'Pagos y finanzas personales'
         }
     ],
@@ -66,21 +66,21 @@ const DEPARTMENT_MODULES = {
             id: 'rd-experiments',
             name: 'Experimentos',
             icon: 'flask-conical',
-            view: 'view-rd-experiments',
+            view: 'view-dashboard', // Fallback
             description: 'Proyectos de investigación'
         },
         {
             id: 'rd-knowledge',
             name: 'Base de Conocimiento',
             icon: 'book-open',
-            view: 'view-rd-knowledge',
+            view: 'view-cortex', // Using Cortex view for knowledge
             description: 'Documentación y hallazgos'
         },
         {
             id: 'rd-metrics',
             name: 'Métricas IA',
             icon: 'activity',
-            view: 'view-rd-metrics',
+            view: 'view-analytics', // Reuse analytics
             description: 'Performance de bots'
         }
     ],
@@ -141,18 +141,13 @@ const COMMON_MODULES = [
 ];
 
 const VIEW_LOADERS = {
-    'view-production-desk': 'loadProductionDesk',
-    'view-production-pool': 'loadProductionPool',
-    'view-production-balance': 'loadProductionBalance',
-    'view-sales-pipeline': 'loadSalesPipeline',
-    'view-sales-clients': 'loadSalesClients',
-    'view-sales-commissions': 'loadSalesCommissions',
-    'view-rd-experiments': 'loadRDExperiments',
-    'view-rd-metrics': 'initRDMetrics',
+    'view-my-desk': 'loadDashboard', // Main projects loader handling my-desk
     'view-dashboard': 'loadDashboard',
-    'view-team-mgmt': 'renderTeamMgmt',
+    'view-sales-clients': 'loadConstants', // Fallback
     'view-payments': 'loadPaymentsDetails',
-    'view-analytics': 'renderAnalytics'
+    'view-analytics': 'renderAnalytics',
+    'view-team-mgmt': 'renderTeamMgmt',
+    'view-cortex': 'renderOfficeBoard' // Or generic init
 };
 
 // === ESTADO GLOBAL ===
