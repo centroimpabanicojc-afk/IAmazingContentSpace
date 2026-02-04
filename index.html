@@ -9,8 +9,47 @@
     <!-- ⚡ CRITICAL: Tailwind CDN for guaranteed styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- 🎨 UX/UI Improvements -->
-    <link rel="stylesheet" href="assets/css/ux-improvements.css">
+    <!-- 🎨 UX/UI Improvements (Versioned for Instant Update) -->
+    <link rel="stylesheet" href="assets/css/ux-improvements.css?v=FIX_FINAL_1122">
+
+    <!-- 🛡️ LAYOUT ENFORCER: Styles injected primarily to guarantee structure if CSS fails -->
+    <style id="layout-enforcer">
+        /* Force Horizontal Scroll on Kanban */
+        #view-dashboard .flex.gap-1\.5 {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            padding-bottom: 20px !important;
+            gap: 12px !important;
+            align-items: flex-start !important;
+        }
+
+        /* Prevent Squashed Columns */
+        .kanban-column {
+            min-width: 260px !important;
+            /* Healthy width */
+            max-width: 320px !important;
+            flex: 0 0 auto !important;
+            /* Don't shrink */
+        }
+
+        /* Ensure Analytics Charts are Tall Enough */
+        #view-analytics canvas {
+            max-height: 400px !important;
+            width: 100% !important;
+        }
+
+        #view-analytics .h-48 {
+            height: 300px !important;
+        }
+
+        /* Fix Radar Container */
+        .radar-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+    </style>
 
     <!-- IAmazing Local Engine -->
     <script src="assets/libs/lucide.js"></script>
