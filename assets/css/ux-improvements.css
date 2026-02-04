@@ -104,18 +104,27 @@ html {
 aside {
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    width: 256px;
+    /* Explicit default width */
 }
 
 .sidebar-collapsed {
-    width: 50px !important;
+    width: 60px !important;
 }
 
-.sidebar-collapsed .sidebar-item span,
-.sidebar-collapsed aside h2,
-.sidebar-collapsed aside .gradient-text,
-.sidebar-collapsed aside .text-xl span,
+.sidebar-collapsed .p-6,
+.sidebar-collapsed .p-4 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar-collapsed .sidebar-brand,
 .sidebar-collapsed #user-display-name,
-.sidebar-collapsed #user-display-role {
+.sidebar-collapsed #user-display-role,
+.sidebar-collapsed .sidebar-item span {
     display: none !important;
 }
 

@@ -739,7 +739,10 @@
     <!-- Login & Register Modal -->
     <div id="login-modal"
         class="fixed inset-0 bg-black/95 backdrop-blur-md flex items-center justify-center z-[100] p-4">
-        <div class="glass w-full max-w-sm p-8 rounded-[40px] border border-white/10 text-center">
+        <div class="glass w-full max-w-sm p-8 rounded-[40px] border border-white/10 text-center relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
             <div id="login-initial">
                 <div
                     class="w-16 h-16 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-violet-500/20">
@@ -814,7 +817,10 @@
 
     <div id="project-modal"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
             <h2 class="text-2xl font-bold mb-6 text-white">Nuevo Proyecto</h2>
             <form id="project-form" class="space-y-4">
                 <select id="form-client" required
@@ -871,7 +877,10 @@
 
     <div id="edit-modal"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
             <h2 class="text-2xl font-bold mb-6">Actualizar Proyecto</h2>
             <form id="edit-form" class="space-y-4">
                 <input type="hidden" id="edit-id">
@@ -909,7 +918,10 @@
 
     <div id="payment-modal"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
             <h2 class="text-2xl font-bold mb-6">Registrar Pago</h2>
             <form id="payment-form" class="space-y-4">
                 <input type="hidden" id="pay-project-id">
@@ -923,7 +935,10 @@
 
     <div id="settings-modal"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
             <h2 class="text-2xl font-bold mb-6">Ajustes & Finanzas</h2>
             <form id="settings-form" class="space-y-4">
                 <div class="space-y-1">
@@ -952,7 +967,10 @@
 
     <div id="client-modal"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
             <h2 class="text-2xl font-bold mb-6">Nuevo Cliente</h2>
             <form id="client-form" class="space-y-4">
                 <input type="text" id="client-name" placeholder="Nombre de la Empresa / Marca" required
@@ -2336,19 +2354,21 @@
                 const aside = document.querySelector('aside');
                 const icon = document.getElementById('sidebar-toggle-icon');
                 if (!aside) return;
-                aside.classList.toggle('sidebar-collapsed');
+
+                const isCollapsed = aside.classList.toggle('sidebar-collapsed');
 
                 if (icon) {
-                    if (aside.classList.contains('sidebar-collapsed')) {
-                        icon.setAttribute('data-lucide', 'chevrons-right');
-                    } else {
-                        icon.setAttribute('data-lucide', 'chevrons-left');
-                    }
-                    lucide.createIcons();
+                    icon.setAttribute('data-lucide', isCollapsed ? 'chevrons-right' : 'chevrons-left');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
                 }
+
                 // Reinicializar gráficas para ajustar al nuevo ancho
                 if (typeof renderAnalytics === 'function') setTimeout(renderAnalytics, 300);
             };
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeAllModals();
+            });
 
             window.addEventListener('resize', () => adjustScale());
 
