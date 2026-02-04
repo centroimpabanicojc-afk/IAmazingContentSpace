@@ -675,22 +675,25 @@ header {
 /* Kanban - FLEXIBLE & SCROLLABLE (Replaces rigid 7-column grid) */
 #view-dashboard .flex.gap-1\.5 {
     display: flex !important;
-    gap: 0.5rem !important;
+    gap: 1rem !important;
+    /* Increased gap for breathing room */
     width: 100% !important;
     overflow-x: auto !important;
     /* Allow horizontal scroll if needed */
-    padding-bottom: 1rem !important;
+    padding-bottom: 2rem !important;
     align-items: flex-start !important;
 }
 
 .kanban-column {
-    min-width: 160px !important;
-    max-width: 220px !important;
-    flex: 1 1 0px !important;
-    gap: 0.3rem !important;
-    padding: 0.4rem !important;
-    max-height: 52vh !important;
-    /* Increased slightly for better view */
+    min-width: 260px !important;
+    /* ROBUSTNESS: Safer width to prevent squashing */
+    max-width: 320px !important;
+    flex: 0 0 auto !important;
+    /* Don't shrink, don't grow unpredictably */
+    gap: 0.5rem !important;
+    padding: 0.75rem !important;
+    max-height: 65vh !important;
+    /* Taller columns */
     overflow-y: auto !important;
     background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid rgba(255, 255, 255, 0.05) !important;
@@ -700,23 +703,25 @@ header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 9px !important;
-    /* Readable but compact */
+    font-size: 11px !important;
+    /* Unified title size */
     font-weight: 800 !important;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0.5rem !important;
-    padding: 0.4rem !important;
+    margin-bottom: 0.75rem !important;
+    padding: 0.5rem !important;
     background: rgba(139, 92, 246, 0.1);
     border-radius: 8px;
     color: #a78bfa !important;
+    text-align: center;
+    /* Better alignment */
 }
 
 /* Custom scrollbar for columns */
 .kanban-column::-webkit-scrollbar,
 #view-dashboard .flex.gap-1\.5::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
 }
 
 .kanban-column::-webkit-scrollbar-thumb,

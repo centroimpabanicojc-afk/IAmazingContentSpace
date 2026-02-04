@@ -243,6 +243,13 @@ function renderDynamicSidebar() {
     }
 
     const modules = getAvailableModules();
+
+    // Safety check: Don't wipe sidebar if no modules found
+    if (!modules || modules.length === 0) {
+        console.warn("⚠️ No modules found for user, keeping default sidebar.");
+        return;
+    }
+
     const deptModules = modules.filter(m => !m.id.startsWith('common-'));
     const commonModules = modules.filter(m => m.id.startsWith('common-'));
 
@@ -257,7 +264,9 @@ function renderDynamicSidebar() {
             const navItem = document.createElement('a');
             navItem.href = '#';
             navItem.id = `nav-${module.id}`;
-            navItem.className = `sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl ${index === 0 ? 'active' : ''}`;
+            // FIX: Using standardized classes for all items to prevent misalignment
+            // Changed py-3 to py-2.5 and forced font-semibold text-sm for consistency
+            navItem.className = `sidebar-item flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl ${index === 0 ? 'active' : ''}`;
             navItem.onclick = (e) => {
                 e.preventDefault();
                 showModuleView(module.view);
@@ -272,6 +281,7 @@ function renderDynamicSidebar() {
         });
 
         // Separador
+        // Separador
         if (commonModules.length > 0) {
             const separator = document.createElement('div');
             separator.className = 'pt-4 border-t border-white/5 mt-4';
@@ -282,7 +292,8 @@ function renderDynamicSidebar() {
                 const navItem = document.createElement('a');
                 navItem.href = '#';
                 navItem.id = `nav-${module.id}`;
-                navItem.className = 'sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl';
+                // FIX: Standardized classes here too
+                navItem.className = 'sidebar-item flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl';
                 navItem.onclick = (e) => {
                     e.preventDefault();
                     showModuleView(module.view);
@@ -296,6 +307,20 @@ function renderDynamicSidebar() {
 
                 sidebar.appendChild(navItem);
             });
+        }
+
+        // ⚠️ FALLBACK UI: Si no hay departamento detectado
+        if (!currentUserDepartment && currentUser) {
+            const alertItem = document.createElement('div');
+            alertItem.className = 'mt-4 mx-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl';
+            alertItem.innerHTML = `
+                <div class="flex items-center gap-2 text-red-400 mb-1">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    <span class="text-[10px] font-bold uppercase">Atención</span>
+                </div>
+                <p class="text-[10px] text-red-300 leading-tight">Sin departamento asignado. Contacta a un admin.</p>
+             `;
+            sidebar.appendChild(alertItem);
         }
     });
 
@@ -311,21 +336,23 @@ function renderDynamicSidebar() {
  * Actualizar header del sidebar con info del departamento
  */
 function updateSidebarHeader() {
-    const headerDiv = document.querySelector('aside .p-6');
-    if (!headerDiv || !currentUserDepartment) return;
+    // FIX: Target specific brand container to avoid erasing the Toggle Button
+    const brandContainer = document.querySelector('aside .sidebar-brand');
+    if (!brandContainer || !currentUserDepartment) return;
 
-    headerDiv.innerHTML = `
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center" 
-                 style="background: ${currentUserDepartment.color}20; border: 2px solid ${currentUserDepartment.color}40;">
-                <i data-lucide="${currentUserDepartment.icon}" class="w-6 h-6" style="color: ${currentUserDepartment.color}"></i>
-            </div>
-            <div>
-                <h2 class="text-sm font-bold text-white">${currentUserDepartment.display_name}</h2>
-                <p class="text-xs text-slate-500">${currentUser?.first_name || 'Usuario'}</p>
-            </div>
+    brandContainer.innerHTML = `
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300" 
+             style="background: ${currentUserDepartment.color}20; border: 1px solid ${currentUserDepartment.color}40;">
+            <i data-lucide="${currentUserDepartment.icon}" class="w-5 h-5" style="color: ${currentUserDepartment.color}"></i>
+        </div>
+        <div class="flex flex-col">
+            <h2 class="text-xs font-bold text-white tracking-wide">${currentUserDepartment.display_name}</h2>
+            <p class="text-[9px] text-slate-500 leading-none mt-0.5 uppercase tracking-wider">${currentUser?.first_name || 'Member'}</p>
         </div>
     `;
+
+    // Ensure parent flex alignment is correct for new content
+    brandContainer.className = "flex items-center gap-3 sidebar-brand overflow-hidden";
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
@@ -410,5 +437,7 @@ window.canAccessModule = canAccessModule;
 window.showModuleView = showModuleView;
 window.getUserDepartment = getUserDepartment;
 window.getUserPermissions = getUserPermissions;
+// FIX: Expose current department state for data filtering in other views
+window.getCurrentDepartment = () => currentDepartmentData;
 
 console.log('✅ Module System Loaded');

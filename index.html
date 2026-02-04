@@ -255,6 +255,37 @@
 </head>
 
 <body class="antialiased">
+    <!-- 🔄 ROBUSTNESS: Global App Loader -->
+    <div id="app-loader"
+        class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="relative w-24 h-24 mb-6">
+            <div class="absolute inset-0 border-4 border-violet-500/20 rounded-full animate-ping"></div>
+            <div
+                class="absolute inset-0 border-4 border-t-violet-500 border-r-cyan-500 border-b-violet-500 border-l-cyan-500 rounded-full animate-spin">
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="zap" class="w-8 h-8 text-white"></i>
+            </div>
+        </div>
+        <h2 class="text-xl font-bold text-white tracking-widest animate-pulse">IAMAZING</h2>
+        <p class="text-xs text-slate-500 mt-2 uppercase tracking-wide">Iniciando Sistema...</p>
+    </div>
+
+    <style>
+        /* Stabilize View Containers */
+        .view-container {
+            min-height: 80vh;
+            /* Prevent collapse */
+            animation: viewFadeIn 0.5s ease-out forwards;
+        }
+
+        /* Loader fade out class */
+        .loader-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside class="w-64 glass border-r border-white/10 hidden md:flex flex-col">
@@ -2419,31 +2450,55 @@
             window.addEventListener('resize', () => adjustScale());
 
             // Inicialización optimizada
+            // Inicialización optimizada
             window.onload = async () => {
                 console.log("🚀 Iniciando IAmazing...");
 
-                // 1. Mostrar login de inmediato si es necesario
-                await loadConstants();
-                checkSession();
-
-                // 2. Cargar módulos en segundo plano
-                console.log("📦 Cargando módulos en segundo plano...");
-                Promise.all([
-                    loadModule('modules/sales-views.html'),
-                    loadModule('modules/production-views.html'),
-                    loadModule('modules/rd-common-views.html')
-                ]).then(() => {
-                    console.log("✅ Todos los módulos listos");
-                    // Re-inicializar sistema de módulos por si el usuario ya entró
-                    if (currentUser && typeof initModuleSystem === 'function') {
-                        initModuleSystem();
+                // SAFETY: Force loader removal after 5s if anything hangs
+                setTimeout(() => {
+                    const loader = document.getElementById('app-loader');
+                    if (loader && !loader.classList.contains('loader-hidden')) {
+                        console.warn("⚠️ Loader forced removal (Timeout)");
+                        loader.classList.add('loader-hidden');
+                        setTimeout(() => loader.remove(), 800);
                     }
-                });
+                }, 5000);
 
-                // 3. Inicializar resto del sistema core
-                await init();
-                adjustScale();
+                try {
+                    // 1. Mostrar login de inmediato si es necesario
+                    await loadConstants(); // Core utils
+                    checkSession();
+
+                    // 2. Cargar módulos en segundo plano
+                    console.log("📦 Cargando módulos en segundo plano...");
+                    await Promise.all([
+                        loadModule('modules/sales-views.html'),
+                        loadModule('modules/production-views.html'),
+                        loadModule('modules/rd-common-views.html')
+                    ]).then(() => {
+                        console.log("✅ Todos los módulos listos");
+                        // Re-inicializar sistema de módulos por si el usuario ya entró
+                        if (currentUser && typeof initModuleSystem === 'function') {
+                            initModuleSystem();
+                        }
+                    });
+
+                    // 3. Inicializar resto del sistema core
+                    await init();
+                    adjustScale();
+
+                } catch (e) {
+                    console.error("Critical Init Error:", e);
+                } finally {
+                    // 4. Hide Loader
+                    const loader = document.getElementById('app-loader');
+                    if (loader) {
+                        loader.classList.add('loader-hidden');
+                        setTimeout(() => loader.remove(), 800);
+                    }
+                }
             };
+            adjustScale();
         </script>
 
 </body>
