@@ -155,9 +155,10 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="glass border border-white/10 animate-view-in">
         <div class="flex flex-col gap-6 font-bold text-slate-400">
-            <a href="#" class="hover:text-white transition-colors py-2">Servicios</a>
-            <a href="#" class="hover:text-white transition-colors py-2">Portafolio</a>
-            <a href="#" class="hover:text-white transition-colors py-2">Agentes IA</a>
+            <a href="#servicios" class="hover:text-white transition-colors py-2">Servicios</a>
+            <a href="#portafolio" class="hover:text-white transition-colors py-2">Portafolio</a>
+            <a href="#equipo" class="hover:text-white transition-colors py-2">Equipo</a>
+            <a href="#contacto" class="hover:text-white transition-colors py-2">Contacto</a>
             <button onclick="openLoginModal(); toggleMobileMenu()"
                 class="px-6 py-4 bg-violet-600 text-white rounded-2xl shadow-xl shadow-violet-600/20">Team
                 Access</button>
@@ -192,10 +193,10 @@
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-                <button
-                    class="w-full sm:w-auto px-12 py-6 bg-violet-600 hover:bg-violet-700 text-white rounded-[24px] font-black shadow-2xl shadow-violet-600/40 transition-all hover:scale-105 active:scale-95 text-xl uppercase tracking-wide">
+                <a href="#contacto"
+                    class="w-full sm:w-auto px-12 py-6 bg-violet-600 hover:bg-violet-700 text-white rounded-[24px] font-black shadow-2xl shadow-violet-600/40 transition-all hover:scale-105 active:scale-95 text-xl uppercase tracking-wide inline-block text-center">
                     Agenda una Consulta
-                </button>
+                </a>
                 <button
                     class="w-full sm:w-auto px-12 py-6 glass hover:bg-white/10 text-white rounded-[24px] font-black border border-white/10 transition-all text-xl">
                     Ver Portafolio
@@ -206,29 +207,46 @@
         </div>
     </main>
 
-    <!-- Soluciones Clave -->
-    <section class="py-24 px-6 max-w-7xl mx-auto relative z-10">
-        <h2 class="text-4xl md:text-6xl font-black text-center mb-16 glow-text text-white">SOLUCIONES CLAVE</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Visual -->
+    <!-- SERVICIOS / SOLUCIONES CLAVE (Expanded) -->
+    <section id="servicios" class="py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <h2 class="text-4xl md:text-6xl font-black text-center mb-8 glow-text text-white">SOLUCIONES HÍBRIDAS</h2>
+        <p class="text-xl text-slate-400 text-center max-w-3xl mx-auto mb-16">
+            Estrategias a medida que combinan creatividad humana y velocidad de IA.
+        </p>
+
+        <!-- Service Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            <!-- Editorial -->
             <div
                 class="glass p-8 rounded-[40px] border border-white/10 hover:border-violet-500/50 transition-all group hover:-translate-y-2">
                 <div
                     class="w-16 h-16 bg-violet-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-violet-600/10">
-                    <i data-lucide="image" class="w-8 h-8 text-violet-400"></i>
+                    <i data-lucide="file-text" class="w-8 h-8 text-violet-400"></i>
                 </div>
-                <h3 class="text-2xl font-black mb-4 text-white">VISUAL</h3>
-                <p class="text-slate-400 font-medium">PC-Artwork, Miniaturas, Diseño de Marca</p>
+                <h3 class="text-2xl font-black mb-4 text-white">EDITORIAL</h3>
+                <p class="text-slate-400 font-medium mb-4">Texto optimizado para SEO y conversión.</p>
+                <ul class="text-slate-500 text-sm space-y-2">
+                    <li>• Artículos de Blog & Whitepapers</li>
+                    <li>• Guiones de Video</li>
+                    <li>• Traducción / Transcreación</li>
+                    <li>• Diseño de Personajes (Lore)</li>
+                </ul>
             </div>
-            <!-- Editorial -->
+            <!-- Visual -->
             <div
                 class="glass p-8 rounded-[40px] border border-white/10 hover:border-cyan-500/50 transition-all group hover:-translate-y-2">
                 <div
                     class="w-16 h-16 bg-cyan-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-cyan-600/10">
-                    <i data-lucide="file-text" class="w-8 h-8 text-cyan-400"></i>
+                    <i data-lucide="image" class="w-8 h-8 text-cyan-400"></i>
                 </div>
-                <h3 class="text-2xl font-black mb-4 text-white">EDITORIAL</h3>
-                <p class="text-slate-400 font-medium">Artículos SEO, Guiones, Whitepapers</p>
+                <h3 class="text-2xl font-black mb-4 text-white">VISUAL</h3>
+                <p class="text-slate-400 font-medium mb-4">Impacto visual con asistencia de IA.</p>
+                <ul class="text-slate-500 text-sm space-y-2">
+                    <li>• Artwork & Design</li>
+                    <li>• Clipfounding / Footage</li>
+                    <li>• Edición / Montaje</li>
+                    <li>• Modelado 3D</li>
+                </ul>
             </div>
             <!-- Audio -->
             <div
@@ -238,77 +256,189 @@
                     <i data-lucide="mic" class="w-8 h-8 text-emerald-400"></i>
                 </div>
                 <h3 class="text-2xl font-black mb-4 text-white">AUDIO</h3>
-                <p class="text-slate-400 font-medium">Podcasts, Audios con IA, Guiones</p>
+                <p class="text-slate-400 font-medium mb-4">Experiencias sonoras inmersivas.</p>
+                <ul class="text-slate-500 text-sm space-y-2">
+                    <li>• Locuciones Narradas</li>
+                    <li>• Mezcla & Master</li>
+                    <li>• Voiceovers / Podcast AI</li>
+                    <li>• Producción Musical</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pricing Models -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-6 rounded-3xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <h4 class="text-white font-bold text-lg mb-2">Retenedor Mensual</h4>
+                <p class="text-slate-400 text-sm">Tarifa fija recurrente para flujo de trabajo estable.</p>
+            </div>
+            <div class="p-6 rounded-3xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <h4 class="text-white font-bold text-lg mb-2">Precio Fijo</h4>
+                <p class="text-slate-400 text-sm">Para proyectos puntuales con alcance claro.</p>
+            </div>
+            <div class="p-6 rounded-3xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                <h4 class="text-white font-bold text-lg mb-2">Performance</h4>
+                <p class="text-slate-400 text-sm">Honorarios alineados con resultados (KPIs).</p>
             </div>
         </div>
     </section>
 
-    <!-- Comparativa -->
-    <section class="py-24 px-6 bg-white/5 border-y border-white/5 relative overflow-hidden">
-        <div
-            class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20">
-        </div>
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-            <div>
-                <h2 class="text-4xl md:text-5xl font-black mb-8 text-white">AsistencIA vs <span
-                        class="text-slate-600">Orgánica</span></h2>
-                <p class="text-xl text-slate-300 mb-8 leading-relaxed font-light">
-                    El enfoque tradicional se basa en el esfuerzo manual limitado. Nuestro enfoque híbrido potencia la
-                    creatividad humana con la velocidad de ejecución exponencial de la IA.
-                </p>
-                <div class="space-y-8">
-                    <!-- Stat 1 -->
-                    <div>
-                        <div class="flex justify-between mb-2">
-                            <span class="font-bold text-white text-sm uppercase tracking-widest">Velocidad de
-                                Producción</span>
-                            <span class="font-black text-cyan-400">10x Más Rápido</span>
-                        </div>
-                        <div class="h-3 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-                            <div
-                                class="h-full bg-gradient-to-r from-cyan-500 to-violet-600 w-[95%] shadow-[0_0_20px_rgba(6,182,212,0.5)]">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Stat 2 -->
-                    <div>
-                        <div class="flex justify-between mb-2">
-                            <span class="font-bold text-white text-sm uppercase tracking-widest">Coste Operativo</span>
-                            <span class="font-black text-emerald-400">-60% Reducción</span>
-                        </div>
-                        <div class="h-3 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-                            <div
-                                class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-[80%] shadow-[0_0_20px_rgba(16,185,129,0.5)]">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="glass p-10 rounded-[40px] border border-white/10 relative">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-violet-600/20 blur-[80px] animate-pulse"></div>
-                <div class="flex flex-col gap-8">
+    <!-- PORTAFOLIO -->
+    <section id="portafolio" class="py-24 px-6 relative bg-black/40">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl md:text-6xl font-black mb-16 text-white glow-text">PORTAFOLIO</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Project 1 -->
+                <div class="group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Abstract 3D">
                     <div
-                        class="flex items-center gap-6 opacity-50 grayscale transition-all hover:grayscale-0 hover:opacity-100">
-                        <div class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center"><i
-                                data-lucide="user" class="w-8 h-8 text-slate-400"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-white text-lg">Tradicional</h4>
-                            <div class="h-2 w-1/3 bg-slate-700 rounded-full mt-2"></div>
-                        </div>
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-cyan-400 font-bold text-sm tracking-widest mb-2">VISUAL</span>
+                        <h3 class="text-white font-black text-2xl">Abstract 3D Flows</h3>
                     </div>
-                    <div class="flex items-center gap-6">
-                        <div
-                            class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30 ring-2 ring-white/10">
-                            <i data-lucide="zap" class="w-8 h-8 text-white"></i></div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-white text-lg">IAmazing Method</h4>
-                            <div
-                                class="h-2 w-full bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full mt-2 shadow-[0_0_15px_rgba(139,92,246,0.6)]">
-                            </div>
-                        </div>
+                </div>
+                <!-- Project 2 -->
+                <div class="group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Cyberpunk Setup">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-emerald-400 font-bold text-sm tracking-widest mb-2">TECH</span>
+                        <h3 class="text-white font-black text-2xl">Cyber Setup Review</h3>
+                    </div>
+                </div>
+                <!-- Project 3 -->
+                <div class="group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?q=80&w=2676&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Podcast">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-violet-400 font-bold text-sm tracking-widest mb-2">AUDIO</span>
+                        <h3 class="text-white font-black text-2xl">Future Echoes Podcast</h3>
+                    </div>
+                </div>
+                <!-- Project 4 -->
+                <div class="group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-slate-900 flex items-center justify-center">
+                        <span class="text-slate-600 font-black text-xl">Ver Todo</span>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- EQUIPO -->
+    <section id="equipo" class="py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <h2 class="text-4xl md:text-6xl font-black text-center mb-16 glow-text text-white">NUESTRO EQUIPO</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Commercial -->
+            <div class="glass p-6 rounded-[32px] text-center group hover:bg-white/5 transition-colors">
+                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-full mb-6 p-1">
+                    <div class="w-full h-full bg-slate-950 rounded-full overflow-hidden">
+                        <img src="https://ui-avatars.com/api/?name=Ian+Contento&background=random" alt="Ian"
+                            class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                    </div>
+                </div>
+                <h3 class="text-white font-bold text-xl mb-1">Ian Contento</h3>
+                <p class="text-violet-400 text-sm font-medium tracking-wide">DIRECCIÓN COMERCIAL</p>
+            </div>
+
+            <!-- Production -->
+            <div class="glass p-6 rounded-[32px] text-center group hover:bg-white/5 transition-colors">
+                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full mb-6 p-1">
+                    <div class="w-full h-full bg-slate-950 rounded-full overflow-hidden">
+                        <img src="https://ui-avatars.com/api/?name=SCAN&background=random" alt="SCAN"
+                            class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                    </div>
+                </div>
+                <h3 class="text-white font-bold text-xl mb-1">SCAN</h3>
+                <p class="text-cyan-400 text-sm font-medium tracking-wide">PRODUCCIÓN EJECUTIVA</p>
+            </div>
+
+            <!-- AI Specialist -->
+            <div
+                class="glass p-6 rounded-[32px] text-center group hover:bg-white/5 transition-colors relative overflow-hidden">
+                <div class="absolute inset-0 bg-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                </div>
+                <div
+                    class="w-24 h-24 mx-auto bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full mb-6 p-1 animate-pulse">
+                    <div
+                        class="w-full h-full bg-slate-950 rounded-full overflow-hidden flex items-center justify-center">
+                        <i data-lucide="cpu" class="w-10 h-10 text-emerald-400"></i>
+                    </div>
+                </div>
+                <h3 class="text-white font-bold text-xl mb-1">E-ugenIA</h3>
+                <p class="text-emerald-400 text-sm font-medium tracking-wide">CO-PILOTO IA</p>
+            </div>
+
+            <!-- Other -->
+            <div class="glass p-6 rounded-[32px] text-center group hover:bg-white/5 transition-colors">
+                <div class="w-24 h-24 mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-full mb-6 p-1">
+                    <div class="w-full h-full bg-slate-950 rounded-full overflow-hidden">
+                        <img src="https://ui-avatars.com/api/?name=Bobby&background=random" alt="Bobby"
+                            class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                    </div>
+                </div>
+                <h3 class="text-white font-bold text-xl mb-1">Bobby</h3>
+                <p class="text-slate-400 text-sm font-medium tracking-wide">COMERCIAL</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="py-24 px-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/2 h-full bg-violet-600/5 blur-[120px] rounded-full"></div>
+
+        <div class="max-w-4xl mx-auto glass rounded-[60px] p-8 md:p-16 border border-white/10 relative z-10">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-black text-white mb-6">¿Listo para Escalar?</h2>
+                <p class="text-slate-300 text-lg">Transforme su contenido en crecimiento real. Complete el formulario
+                    para una propuesta alineada con su ROI.</p>
+            </div>
+
+            <form class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-400 ml-4">Nombre</label>
+                        <input type="text"
+                            class="w-full bg-slate-950/50 border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors"
+                            placeholder="Su nombre">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-400 ml-4">Email</label>
+                        <input type="email"
+                            class="w-full bg-slate-950/50 border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors"
+                            placeholder="nombre@empresa.com">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-400 ml-4">Interés Principal</label>
+                    <select
+                        class="w-full bg-slate-950/50 border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors appearance-none">
+                        <option>Estrategia Híbrida (General)</option>
+                        <option>Servicios Editoriales</option>
+                        <option>Producción Visual</option>
+                        <option>Audio & Podcast</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-400 ml-4">Mensaje</label>
+                    <textarea
+                        class="w-full bg-slate-950/50 border border-white/10 rounded-[30px] px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors h-32 resize-none"
+                        placeholder="Cuéntenos sobre su proyecto..."></textarea>
+                </div>
+
+                <button type="button"
+                    class="w-full py-5 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full font-black text-white text-xl tracking-wide shadow-2xl shadow-violet-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    SOLICITAR PRESUPUESTO
+                </button>
+            </form>
         </div>
     </section>
 
