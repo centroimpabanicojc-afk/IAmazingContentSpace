@@ -10,22 +10,31 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
+            /* Tokens from DESIGN.md */
+            --bg-dark: #020617;
+            --bg-surface: #0f172a;
             --accent: #8b5cf6;
-            --accent-glow: rgba(139, 92, 246, 0.3);
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --radius-xl: 40px;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
-            color: white;
+            color: var(--text-primary);
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-xl);
         }
 
         .hero-gradient {
@@ -33,7 +42,7 @@
         }
 
         .glow-text {
-            text-shadow: 0 0 20px var(--accent-glow);
+            text-shadow: 0 0 30px var(--accent-glow);
         }
 
         .animate-float {
@@ -44,11 +53,11 @@
 
             0%,
             100% {
-                transform: translateY(0);
+                transform: translateY(0) rotateX(12deg);
             }
 
             50% {
-                transform: translateY(-20px);
+                transform: translateY(-20px) rotateX(15deg);
             }
         }
 
@@ -64,11 +73,52 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
             z-index: 100;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Responsive Mobile Menu */
+        #mobile-menu {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 90;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        @keyframes view-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px) translateX(-50%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) translateX(-50%);
+            }
+        }
+
+        .animate-view-in {
+            animation: view-in 0.3s ease-out forwards;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 3.5rem !important;
+            }
+
+            .hero-gradient {
+                background: radial-gradient(circle at 50% 10%, var(--accent-glow), transparent 80%);
+            }
         }
     </style>
 </head>
@@ -76,152 +126,301 @@
 <body class="hero-gradient flex flex-col min-h-screen">
 
     <!-- Header / Navbar -->
-    <nav class="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto w-full">
+    <nav class="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto w-full relative z-[100]">
         <div class="flex items-center gap-3">
             <div
-                class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-600/20">
-                <i data-lucide="antigravity" class="w-6 h-6 text-white"></i>
+                class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-600/30">
+                <i data-lucide="zap" class="w-6 h-6 text-white"></i>
             </div>
-            <span class="text-xl font-black tracking-tighter">IAmazing<span
+            <span class="text-2xl font-black tracking-tighter">IAmazing<span
                     class="text-violet-500">Content</span></span>
         </div>
-        <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-400">
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400">
             <a href="#" class="hover:text-white transition-colors">Servicios</a>
             <a href="#" class="hover:text-white transition-colors">Portafolio</a>
             <a href="#" class="hover:text-white transition-colors">Agentes IA</a>
             <button onclick="openLoginModal()"
-                class="px-5 py-2.5 glass rounded-xl text-white hover:bg-white/10 transition-all border border-white/10">Team
+                class="px-6 py-3 glass text-white hover:bg-white/10 transition-all border border-white/10">Team
                 Access</button>
         </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button onclick="toggleMobileMenu()" class="md:hidden p-3 glass text-white border border-white/10">
+            <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+        </button>
     </nav>
 
-    <!-- Hero Section -->
-    <main class="flex-grow flex flex-col items-center justify-center px-4 py-20 text-center relative">
-        <!-- Floating Elements -->
-        <div class="absolute top-40 left-10 w-32 h-32 bg-violet-600/10 blur-[100px] animate-pulse"></div>
-        <div class="absolute bottom-40 right-10 w-32 h-32 bg-cyan-600/10 blur-[100px] animate-pulse"></div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="glass border border-white/10 animate-view-in">
+        <div class="flex flex-col gap-6 font-bold text-slate-400">
+            <a href="#" class="hover:text-white transition-colors py-2">Servicios</a>
+            <a href="#" class="hover:text-white transition-colors py-2">Portafolio</a>
+            <a href="#" class="hover:text-white transition-colors py-2">Agentes IA</a>
+            <button onclick="openLoginModal(); toggleMobileMenu()"
+                class="px-6 py-4 bg-violet-600 text-white rounded-2xl shadow-xl shadow-violet-600/20">Team
+                Access</button>
+        </div>
+    </div>
 
-        <div class="max-w-4xl space-y-8 animate-fade-in perspective-1000">
+    <!-- Hero Section -->
+    <main class="flex-grow flex flex-col items-center justify-center px-6 py-12 md:py-24 text-center relative">
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 w-48 h-48 bg-violet-600/10 blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-20 right-10 w-48 h-48 bg-cyan-600/10 blur-[120px] animate-pulse"></div>
+
+        <div class="max-w-4xl space-y-10 animate-fade-in perspective-1000">
             <div
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-600/10 border border-violet-500/20 text-violet-400 text-xs font-bold uppercase tracking-widest mb-4">
-                <span class="relative flex h-2 w-2">
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-violet-600/15 border border-violet-500/30 text-violet-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                <span class="relative flex h-2.5 w-2.5">
                     <span
                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-violet-500"></span>
                 </span>
                 Impulsado por Cortex AI
             </div>
 
-            <h1 class="text-6xl md:text-8xl font-black tracking-tight text-white leading-[0.9] glow-text">
-                Escala tu Contenido <br />
-                <span class="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent italic">a la
-                    Velocidad de la IA</span>
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-white leading-[0.85] glow-text">
+                Contenido <br />
+                <span
+                    class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent italic">Refinado</span>
             </h1>
 
-            <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed">
-                Fusionamos la creatividad humana de élite con automatización inteligente para producir videos que
-                dominan los algoritmos.
+            <p class="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed px-4">
+                Contenido estratégico potenciado por IA: eficiente, escalable y de alto impacto.
             </p>
 
-            <div class="flex flex-col md:flex-row items-center justify-center gap-4 pt-8">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
                 <button
-                    class="px-10 py-5 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl font-black shadow-2xl shadow-violet-600/30 transition-all hover:scale-105 active:scale-95 text-lg">
-                    Empezar un Proyecto
+                    class="w-full sm:w-auto px-12 py-6 bg-violet-600 hover:bg-violet-700 text-white rounded-[24px] font-black shadow-2xl shadow-violet-600/40 transition-all hover:scale-105 active:scale-95 text-xl uppercase tracking-wide">
+                    Agenda una Consulta
                 </button>
                 <button
-                    class="px-10 py-5 glass hover:bg-white/10 text-white rounded-2xl font-black border border-white/10 transition-all text-lg">
+                    class="w-full sm:w-auto px-12 py-6 glass hover:bg-white/10 text-white rounded-[24px] font-black border border-white/10 transition-all text-xl">
                     Ver Portafolio
                 </button>
             </div>
         </div>
 
-        <!-- Dashboard Mockup -->
-        <div class="mt-24 w-full max-w-5xl mx-auto perspective-1000 px-4">
-            <div class="glass p-4 rounded-[40px] border border-white/10 rotate-x-12 shadow-2xl animate-float">
+        </div>
+    </main>
+
+    <!-- Soluciones Clave -->
+    <section class="py-24 px-6 max-w-7xl mx-auto relative z-10">
+        <h2 class="text-4xl md:text-6xl font-black text-center mb-16 glow-text text-white">SOLUCIONES CLAVE</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Visual -->
+            <div
+                class="glass p-8 rounded-[40px] border border-white/10 hover:border-violet-500/50 transition-all group hover:-translate-y-2">
                 <div
-                    class="aspect-video bg-slate-900 rounded-[30px] overflow-hidden flex items-center justify-center border border-white/5">
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200"
-                        alt="Dashboard Preview"
-                        class="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700">
-                    <div class="absolute inset-0 flex items-center justify-center">
+                    class="w-16 h-16 bg-violet-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-violet-600/10">
+                    <i data-lucide="image" class="w-8 h-8 text-violet-400"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4 text-white">VISUAL</h3>
+                <p class="text-slate-400 font-medium">PC-Artwork, Miniaturas, Diseño de Marca</p>
+            </div>
+            <!-- Editorial -->
+            <div
+                class="glass p-8 rounded-[40px] border border-white/10 hover:border-cyan-500/50 transition-all group hover:-translate-y-2">
+                <div
+                    class="w-16 h-16 bg-cyan-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-cyan-600/10">
+                    <i data-lucide="file-text" class="w-8 h-8 text-cyan-400"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4 text-white">EDITORIAL</h3>
+                <p class="text-slate-400 font-medium">Artículos SEO, Guiones, Whitepapers</p>
+            </div>
+            <!-- Audio -->
+            <div
+                class="glass p-8 rounded-[40px] border border-white/10 hover:border-emerald-500/50 transition-all group hover:-translate-y-2">
+                <div
+                    class="w-16 h-16 bg-emerald-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-emerald-600/10">
+                    <i data-lucide="mic" class="w-8 h-8 text-emerald-400"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4 text-white">AUDIO</h3>
+                <p class="text-slate-400 font-medium">Podcasts, Audios con IA, Guiones</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparativa -->
+    <section class="py-24 px-6 bg-white/5 border-y border-white/5 relative overflow-hidden">
+        <div
+            class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20">
+        </div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+            <div>
+                <h2 class="text-4xl md:text-5xl font-black mb-8 text-white">AsistencIA vs <span
+                        class="text-slate-600">Orgánica</span></h2>
+                <p class="text-xl text-slate-300 mb-8 leading-relaxed font-light">
+                    El enfoque tradicional se basa en el esfuerzo manual limitado. Nuestro enfoque híbrido potencia la
+                    creatividad humana con la velocidad de ejecución exponencial de la IA.
+                </p>
+                <div class="space-y-8">
+                    <!-- Stat 1 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-bold text-white text-sm uppercase tracking-widest">Velocidad de
+                                Producción</span>
+                            <span class="font-black text-cyan-400">10x Más Rápido</span>
+                        </div>
+                        <div class="h-3 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                            <div
+                                class="h-full bg-gradient-to-r from-cyan-500 to-violet-600 w-[95%] shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Stat 2 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="font-bold text-white text-sm uppercase tracking-widest">Coste Operativo</span>
+                            <span class="font-black text-emerald-400">-60% Reducción</span>
+                        </div>
+                        <div class="h-3 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                            <div
+                                class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 w-[80%] shadow-[0_0_20px_rgba(16,185,129,0.5)]">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass p-10 rounded-[40px] border border-white/10 relative">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-violet-600/20 blur-[80px] animate-pulse"></div>
+                <div class="flex flex-col gap-8">
+                    <div
+                        class="flex items-center gap-6 opacity-50 grayscale transition-all hover:grayscale-0 hover:opacity-100">
+                        <div class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center"><i
+                                data-lucide="user" class="w-8 h-8 text-slate-400"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-white text-lg">Tradicional</h4>
+                            <div class="h-2 w-1/3 bg-slate-700 rounded-full mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
                         <div
-                            class="w-20 h-20 bg-violet-600/90 rounded-full flex items-center justify-center text-white blur-0 shadow-lg shadow-violet-600/40">
-                            <i data-lucide="play" class="w-8 h-8 fill-current"></i>
+                            class="w-16 h-16 bg-gradient-to-br from-violet-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30 ring-2 ring-white/10">
+                            <i data-lucide="zap" class="w-8 h-8 text-white"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-white text-lg">IAmazing Method</h4>
+                            <div
+                                class="h-2 w-full bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full mt-2 shadow-[0_0_15px_rgba(139,92,246,0.6)]">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <!-- Platform Preview Mockup -->
+    <div class="py-24 w-full max-w-7xl mx-auto perspective-1000 px-4">
+        <div class="glass p-6 rounded-[50px] border border-white/10 shadow-2xl animate-float">
+            <div
+                class="aspect-video bg-slate-900 rounded-[40px] overflow-hidden flex items-center justify-center border border-white/5 group relative">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1400"
+                    alt="Dashboard Preview"
+                    class="w-full h-full object-cover opacity-40 transition-all duration-1000 group-hover:scale-110">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div
+                        class="w-24 h-24 bg-violet-600/90 rounded-full flex items-center justify-center text-white shadow-2xl shadow-violet-600/50 cursor-pointer transform transition-all hover:scale-125">
+                        <i data-lucide="play" class="w-10 h-10 fill-current"></i>
+                    </div>
+                </div>
+                <!-- Label Overlay -->
+                <div
+                    class="absolute bottom-10 left-10 glass px-6 py-3 border border-white/10 text-sm font-bold text-white">
+                    IAmazing Dashboard v3.0
+                </div>
+            </div>
+        </div>
+    </div>
     </main>
 
     <!-- Footer -->
-    <footer class="py-12 px-8 border-t border-white/5 bg-black/20 text-center">
-        <p class="text-slate-500 text-sm font-medium">© 2026 IAmazing Content Studio. Todos los derechos reservados.</p>
+    <footer class="py-16 px-8 border-t border-white/5 bg-black/40 text-center">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex items-center gap-3 grayscale opacity-60">
+                <div class="w-8 h-8 bg-slate-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="text-lg font-black tracking-tighter">IAmazing<span
+                        class="text-slate-500">Content</span></span>
+            </div>
+            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">© 2026 IAmazing Content Studio. Todos
+                los derechos reservados.</p>
+            <div class="flex gap-6 text-slate-500">
+                <a href="#" class="hover:text-white transition-colors"><i data-lucide="instagram"
+                        class="w-5 h-5"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i data-lucide="linkedin"
+                        class="w-5 h-5"></i></a>
+            </div>
+        </div>
     </footer>
 
     <!-- Login Modal Portal -->
     <div id="login-modal" class="login-card p-6">
         <div
-            class="glass w-full max-w-md p-10 rounded-[40px] border border-white/10 text-white relative animate-view-in">
+            class="glass w-full max-w-lg p-12 rounded-[50px] border border-white/10 text-white relative animate-view-in">
             <button onclick="closeLoginModal()"
-                class="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
+                class="absolute top-10 right-10 text-slate-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-xl">
+                <i data-lucide="x" class="w-8 h-8"></i>
             </button>
 
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-black tracking-tight mb-2">Team Hub</h2>
-                <p class="text-slate-500 text-sm font-medium">Selecciona tu perfil para acceder al sistema operativo.
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-black tracking-tight mb-3">Team Hub</h2>
+                <p class="text-slate-500 text-lg font-medium">Selecciona tu perfil para acceder al sistema operativo.
                 </p>
             </div>
 
-            <div class="space-y-4" id="login-profile-selection">
+            <div class="space-y-6" id="login-profile-selection">
                 <button onclick="selectProfile('staff')"
-                    class="w-full flex items-center gap-5 p-5 glass hover:bg-white/10 rounded-3xl border border-white/5 transition-all text-left group">
+                    class="w-full flex items-center gap-6 p-6 glass hover:bg-white/10 rounded-[32px] border border-white/5 transition-all text-left group">
                     <div
-                        class="w-12 h-12 rounded-2xl bg-violet-600/20 flex items-center justify-center group-hover:bg-violet-600 transition-all">
-                        <i data-lucide="users" class="w-6 h-6 text-violet-400 group-hover:text-white"></i>
+                        class="w-16 h-16 rounded-2xl bg-violet-600/20 flex items-center justify-center group-hover:bg-violet-600 transition-all shadow-lg">
+                        <i data-lucide="users" class="w-8 h-8 text-violet-400 group-hover:text-white"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-lg">Equipo IAmazing</h3>
-                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Editores, Managers & Sales
-                        </p>
+                        <h3 class="font-black text-xl">Equipo IAmazing</h3>
+                        <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">Editores,
+                            Managers & Sales</p>
                     </div>
                 </button>
 
                 <button onclick="selectProfile('client')"
-                    class="w-full flex items-center gap-5 p-5 glass hover:bg-white/10 rounded-3xl border border-white/5 transition-all text-left group">
+                    class="w-full flex items-center gap-6 p-6 glass hover:bg-white/10 rounded-[32px] border border-white/5 transition-all text-left group">
                     <div
-                        class="w-12 h-12 rounded-2xl bg-cyan-600/20 flex items-center justify-center group-hover:bg-cyan-600 transition-all">
-                        <i data-lucide="user-check" class="w-6 h-6 text-cyan-400 group-hover:text-white"></i>
+                        class="w-16 h-16 rounded-2xl bg-cyan-600/20 flex items-center justify-center group-hover:bg-cyan-600 transition-all shadow-lg">
+                        <i data-lucide="user-check" class="w-8 h-8 text-cyan-400 group-hover:text-white"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-lg">Portal del Cliente</h3>
-                        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Seguimiento de proyectos
-                        </p>
+                        <h3 class="font-black text-xl">Portal del Cliente</h3>
+                        <p class="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">Seguimiento de
+                            proyectos</p>
                     </div>
                 </button>
             </div>
 
             <!-- Profile Specific Login Form (Initially hidden) -->
-            <form id="login-form-area" class="hidden space-y-6 mt-6 animate-view-in">
-                <div class="space-y-3">
+            <form id="login-form-area" class="hidden space-y-8 mt-8">
+                <div class="space-y-4">
                     <label id="login-label"
-                        class="text-xs font-bold text-slate-500 uppercase ml-4">Identificación</label>
-                    <input type="text" id="login-id" placeholder="Nombre de usuario / Email"
-                        class="w-full bg-black/20 border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-violet-500/50 transition-all font-medium">
+                        class="text-xs font-black text-slate-500 uppercase ml-6 tracking-widest">Identificación</label>
+                    <input type="text" id="login-id" placeholder="Nombre de usuario"
+                        class="w-full bg-black/40 border border-white/10 rounded-3xl px-8 py-5 text-white outline-none focus:ring-4 focus:ring-violet-500/20 transition-all font-bold text-lg">
                 </div>
-                <div class="space-y-3">
-                    <label class="text-xs font-bold text-slate-500 uppercase ml-4">Contraseña</label>
+                <div class="space-y-4">
+                    <label class="text-xs font-black text-slate-500 uppercase ml-6 tracking-widest">Contraseña</label>
                     <input type="password" id="login-pass" placeholder="••••••••"
-                        class="w-full bg-black/20 border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-violet-500/50 transition-all">
+                        class="w-full bg-black/40 border border-white/10 rounded-3xl px-8 py-5 text-white outline-none focus:ring-4 focus:ring-violet-500/20 transition-all font-bold text-lg">
                 </div>
                 <button type="submit"
-                    class="w-full py-5 bg-violet-600 rounded-3xl font-black text-white shadow-xl shadow-violet-600/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    class="w-full py-6 bg-violet-600 rounded-[30px] font-black text-xl text-white shadow-2xl shadow-violet-600/30 hover:scale-[1.02] active:scale-95 transition-all">
                     Entrar al Sistema
                 </button>
                 <button type="button" onclick="resetLogin()"
-                    class="w-full text-xs font-bold text-slate-500 hover:text-white transition-colors">Volver a
-                    selección</button>
+                    class="w-full text-sm font-black text-slate-500 hover:text-white transition-colors uppercase tracking-widest">Volver
+                    a selección</button>
             </form>
         </div>
     </div>
@@ -243,6 +442,16 @@
         function closeLoginModal() {
             document.getElementById('login-modal').style.display = 'none';
             resetLogin();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            const isOpen = menu.style.display === 'block';
+
+            menu.style.display = isOpen ? 'none' : 'block';
+            icon.setAttribute('data-lucide', isOpen ? 'menu' : 'x');
+            lucide.createIcons();
         }
 
         function selectProfile(type) {

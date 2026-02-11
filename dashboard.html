@@ -78,17 +78,19 @@
 
     <style>
         :root {
-            --bg-deep: #000000;
-            --bg-card: rgba(30, 30, 35, 0.6);
+            --bg-dark: #020617;
+            --bg-surface: rgba(15, 23, 42, 0.6);
             --accent-primary: #8b5cf6;
             --accent-secondary: #06b6d4;
+            --accent-glow: rgba(139, 92, 246, 0.4);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-xl: 40px;
         }
 
         body {
-            background-color: var(--bg-deep);
+            background-color: var(--bg-dark);
             color: var(--text-main);
             font-size: 1rem;
             /* Follows HTML scaling */
@@ -96,9 +98,9 @@
         }
 
         .glass {
-            background: var(--bg-card);
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
             border: 1px solid var(--glass-border);
         }
 
