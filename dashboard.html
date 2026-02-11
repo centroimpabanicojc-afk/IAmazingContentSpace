@@ -1,0 +1,2676 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAmazing Control | Operación Activa</title>
+
+    <!-- ⚡ CRITICAL: Tailwind CDN for guaranteed styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 🎨 UX/UI Improvements (Versioned for Instant Update) -->
+    <link rel="stylesheet" href="assets/css/ux-improvements.css?v=FIX_FINAL_1122">
+
+    <!-- 🛡️ LAYOUT ENFORCER: Styles injected primarily to guarantee structure if CSS fails -->
+    <style id="layout-enforcer">
+        /* Force Horizontal Scroll on Kanban */
+        #view-dashboard .flex.gap-1\.5 {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            padding-bottom: 20px !important;
+            gap: 12px !important;
+            align-items: flex-start !important;
+        }
+
+        /* Prevent Squashed Columns */
+        .kanban-column {
+            min-width: 260px !important;
+            /* Healthy width */
+            max-width: 320px !important;
+            flex: 0 0 auto !important;
+            /* Don't shrink */
+        }
+
+        /* Ensure Analytics Charts are Tall Enough */
+        #view-analytics canvas {
+            max-height: 400px !important;
+            width: 100% !important;
+        }
+
+        #view-analytics .h-48 {
+            height: 300px !important;
+        }
+
+        /* Fix Radar Container */
+        .radar-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+    </style>
+
+    <!-- IAmazing Local Engine -->
+    <script src="assets/libs/lucide.js"></script>
+    <script src="assets/libs/supabase.js"></script>
+    <script src="assets/libs/sortable.js"></script>
+    <script src="assets/libs/chart.js"></script>
+
+    <!-- 🔐 Module System (Role-Based Access) -->
+    <script src="assets/js/modules-system.js?v=2.0"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        glass: "rgba(20, 20, 25, 0.7)",
+                        neon: "#8b5cf6"
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-card: rgba(30, 30, 35, 0.6);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-size: 1rem;
+            /* Follows HTML scaling */
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+
+        .card-hover {
+            transition: all 0.2s ease;
+        }
+
+        .card-hover:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: translateY(-2px);
+            background: rgba(40, 40, 55, 0.8);
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.5);
+        }
+
+        .kanban-column {
+            min-height: 500px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        }
+
+        input,
+        select,
+        textarea {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border: 1px solid var(--glass-border) !important;
+            color: white !important;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent-primary) !important;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
+            outline: none !important;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .priority-5 {
+            animation: pulse-urgent 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-urgent {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(244, 63, 94, 0);
+            }
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
+        }
+
+        .toast {
+            overflow: hidden;
+        }
+
+        .sidebar-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background: var(--accent-primary);
+            border-radius: 0 4px 4px 0;
+            transition: height 0.3s ease;
+        }
+
+        .sidebar-item.active::after {
+            height: 60%;
+        }
+
+        .sidebar-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            color: white !important;
+            box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.1);
+        }
+
+        /* Smooth View Transitions */
+        [id^="view-"] {
+            animation: viewFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes viewFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Typing Effect for JSON/AI responses */
+        .typing::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+    <!-- 🔄 ROBUSTNESS: Global App Loader -->
+    <div id="app-loader"
+        class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="relative w-24 h-24 mb-6">
+            <div class="absolute inset-0 border-4 border-violet-500/20 rounded-full animate-ping"></div>
+            <div
+                class="absolute inset-0 border-4 border-t-violet-500 border-r-cyan-500 border-b-violet-500 border-l-cyan-500 rounded-full animate-spin">
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="zap" class="w-8 h-8 text-white"></i>
+            </div>
+        </div>
+        <h2 class="text-xl font-bold text-white tracking-widest animate-pulse">IAMAZING</h2>
+        <p class="text-xs text-slate-500 mt-2 uppercase tracking-wide">Iniciando Sistema...</p>
+    </div>
+
+    <style>
+        /* Stabilize View Containers */
+        .view-container {
+            min-height: 80vh;
+            /* Prevent collapse */
+            animation: viewFadeIn 0.5s ease-out forwards;
+        }
+
+        /* Loader fade out class */
+        .loader-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 glass border-r border-white/10 hidden md:flex flex-col">
+            <div class="p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3 sidebar-brand">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-lg flex items-center justify-center shrink-0">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-white">IA<span
+                            class="gradient-text">mazing</span></span>
+                </div>
+                <!-- Toggle Button -->
+                <button onclick="toggleSidebar()" class="p-1.5 hover:bg-white/10 rounded-lg text-slate-500 shrink-0">
+                    <i data-lucide="chevrons-left" id="sidebar-toggle-icon" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <nav id="main-nav" class="flex-1 px-4 space-y-1.5 mt-4">
+                <a href="#" onclick="showView('dashboard')" id="nav-dashboard"
+                    class="sidebar-item active flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Operaciones</span>
+                </a>
+                <a href="#" onclick="showView('my-desk')" id="nav-my-desk"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    <span class="font-semibold text-sm">Mi Escritorio</span>
+                </a>
+                <a href="#" onclick="showView('payments')" id="nav-payments"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                    <span class="font-semibold text-sm">Pagos y Gastos</span>
+                </a>
+                <a href="#" onclick="showView('cortex')" id="nav-cortex"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 text-slate-400 rounded-xl">
+                    <i data-lucide="brain" class="w-5 h-5"></i>
+                    <span class="font-semibold text-sm">Cortex AI</span>
+                </a>
+                <a href="#" onclick="showView('analytics')" id="nav-analytics"
+                    class="sidebar-item flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Métricas</span>
+                </a>
+                <a href="#" onclick="showView('team-mgmt')" id="nav-team-mgmt"
+                    class="sidebar-item flex items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="users-2" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Equipo</span>
+                </a>
+                <div class="pt-4 border-t border-white/5 mt-4">
+                    <a href="#" onclick="openSettings()"
+                        class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-white/5 rounded-xl transition-colors">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span class="font-medium text-sm">Configuración</span>
+                    </a>
+                </div>
+            </nav>
+            <!-- User Profile -->
+            <div class="p-4 border-t border-white/10" id="current-user-sidebar">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="user-avatar" id="user-avatar-initials">?</div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-xs font-bold text-white truncate" id="user-display-name">Identificarse</p>
+                        <p class="text-[10px] text-slate-500 uppercase truncate" id="user-display-role">Sin Sesión</p>
+                    </div>
+                    <button onclick="openLogin()" class="text-slate-500 hover:text-white">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-2 md:p-4">
+            <!-- View: Dashboard (Manager) -->
+            <div id="view-dashboard" class="view-container">
+                <header class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white mb-0.5 tracking-tight">Control de Operaciones <span
+                                class="text-violet-500">V3</span> 🕹️</h1>
+                        <p class="text-[10px] text-slate-400">Supervisión táctica by Cortex.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
+                            <input type="text" id="search-project" placeholder="Buscar..."
+                                class="bg-transparent !border-none text-xs w-32 focus:ring-0" oninput="loadDashboard()">
+                            <select id="filter-client" class="bg-transparent !border-none text-[10px] w-28 focus:ring-0"
+                                onchange="loadDashboard()">
+                                <option value="">Todos los Clientes</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="document.getElementById('client-modal').classList.remove('hidden')"
+                                class="px-4 py-2 glass hover:bg-white/10 rounded-xl border border-white/10 text-slate-300 text-sm">+
+                                Cliente</button>
+                            <button onclick="document.getElementById('project-modal').classList.remove('hidden')"
+                                class="px-6 py-2 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-xl font-semibold text-white shadow-lg shadow-violet-500/20 text-sm">+
+                                Proyecto</button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- 📢 THE OFFICE BOARD (Cortex Boss) -->
+                <div class="mb-3 animate-fade-in group">
+                    <div
+                        class="glass p-2 rounded-2xl border border-violet-500/20 bg-violet-600/5 relative overflow-hidden">
+                        <div
+                            class="absolute -top-10 -right-10 w-40 h-40 bg-violet-600/10 blur-[60px] group-hover:bg-violet-600/20 transition-all duration-700">
+                        </div>
+                        <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+                            <div
+                                class="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20 flex-shrink-0">
+                                <i data-lucide="megaphone" class="w-7 h-7 text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xs font-black text-violet-400 uppercase tracking-[0.2em] mb-1">Órdenes
+                                    de Oficina: Cortex Boss</h3>
+                                <div id="office-board-text" class="text-slate-200 text-sm leading-relaxed italic">
+                                    "Analizando flujo de trabajo... Marco, hoy tenemos 2 proyectos urgentes en Edición.
+                                    Sugiero priorizar a 'TechFlow' para evitar retrasos en el pipeline."
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="renderOfficeBoard()"
+                                    class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-all">Sincronizar
+                                    IA</button>
+                                <button
+                                    onclick="speakResponse(document.getElementById('office-board-text').textContent, this)"
+                                    class="p-2 bg-violet-600/20 hover:bg-violet-600 text-violet-400 hover:text-white rounded-xl transition-all">
+                                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pb-4">
+                    <div class="flex gap-1.5">
+                        <!-- VENTAS -->
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-blue-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="phone-outgoing" class="w-3 h-3"></i> Contacto
+                            </h3>
+                            <div id="col-contact" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-cyan-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="file-text" class="w-3 h-3"></i> Propuesta
+                            </h3>
+                            <div id="col-proposal" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+
+
+                        <!-- PRODUCCIÓN -->
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-indigo-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="clipboard-list" class="w-3 h-3"></i> Briefing
+                            </h3>
+                            <div id="col-briefing" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-amber-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="video" class="w-3 h-3"></i> Edición
+                            </h3>
+                            <div id="col-production" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-violet-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="eye" class="w-3 h-3"></i> QC
+                            </h3>
+                            <div id="col-qc" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-emerald-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="check-circle-2" class="w-3 h-3"></i> Entrega
+                            </h3>
+                            <div id="col-completed" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+
+                        <!-- I+D (Post-Entrega) -->
+                        <div class="flex-shrink-0">
+                            <h3
+                                class="font-bold text-[9px] text-pink-400 px-2 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                <i data-lucide="flask-conical" class="w-3 h-3"></i> I+D
+                            </h3>
+                            <div id="col-rd" class="kanban-column flex flex-col gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Team Availability -->
+                <section class="mb-8" id="section-team">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-white"><i data-lucide="users"
+                            class="w-5 h-5 text-violet-400"></i> Disponibilidad</h2>
+                    <div id="team-grid" class="flex flex-wrap gap-4"></div>
+                </section>
+            </div>
+
+            <!-- View: My Desk (Operator) -->
+            <div id="view-my-desk" class="hidden view-container space-y-8">
+                <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white mb-1">Mi Escritorio 💻</h1>
+                        <p class="text-slate-400">Enfoque total en tus entregas.</p>
+                    </div>
+                    <div class="glass px-6 py-4 rounded-3xl border border-white/10 flex items-center gap-6">
+                        <div class="text-center">
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Saldo</p>
+                            <p class="text-2xl font-bold text-emerald-400" id="my-personal-balance">$0.00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Tareas</p>
+                            <p class="text-2xl font-bold text-violet-400" id="my-active-tasks">0</p>
+                        </div>
+                    </div>
+                </header>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Pull System Pool -->
+                        <section id="task-pool-section" class="hidden">
+                            <h3
+                                class="font-bold text-xs text-amber-500 uppercase tracking-widest mb-4 px-2 flex items-center gap-2">
+                                <i data-lucide="shopping-bag" class="w-4 h-4"></i> Bolsa de Tareas Disponibles
+                            </h3>
+                            <div id="unassigned-projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </section>
+                        <section>
+                            <h3 class="font-bold text-xs text-slate-500 uppercase tracking-widest mb-4 px-2">Mis Tareas
+                            </h3>
+                            <div id="my-projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </section>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="glass p-6 rounded-3xl border border-white/10">
+                            <h3 class="font-bold text-sm text-white mb-4">Notas Rápidas</h3>
+                            <textarea id="personal-notes" placeholder="Escribe aquí tus recordatorios..."
+                                class="w-full h-32 bg-black/20 border-white/10 rounded-xl p-3 text-xs text-slate-300 focus:border-violet-500 outline-none resize-none"
+                                oninput="savePersonalNotes()"></textarea>
+                        </div>
+                        <div class="glass p-6 rounded-3xl border border-white/10">
+                            <h3 class="font-bold text-sm text-white mb-4">SOPs / Ayuda</h3>
+                            <div class="space-y-2">
+                                <button
+                                    class="w-full text-left p-2 rounded-lg hover:bg-white/5 text-[10px] text-slate-400 flex items-center gap-2"><i
+                                        data-lucide="file-text" class="w-3 h-3"></i> Guía Premium</button>
+                                <button
+                                    class="w-full text-left p-2 rounded-lg hover:bg-white/5 text-[10px] text-slate-400 flex items-center gap-2"><i
+                                        data-lucide="check-square" class="w-3 h-3"></i> Checklist QC</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Payments (Financial) -->
+            <div id="view-payments" class="hidden view-container space-y-8">
+                <header class="mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-1">Pagos & Finanzas 💸</h1>
+                    <p class="text-slate-400">Transparencia financiera absoluta.</p>
+                </header>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="lg:col-span-2 glass p-6 rounded-3xl border border-white/10">
+                        <h3 class="text-lg font-bold mb-4 text-white">Historial</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-slate-500 border-b border-white/5">
+                                    <tr>
+                                        <th class="py-3 px-2">Fecha</th>
+                                        <th class="py-3 px-2">Editor</th>
+                                        <th class="py-3 px-2">Monto</th>
+                                        <th class="py-3 px-2">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payments-history" class="text-slate-300"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border border-white/10">
+                        <h3 class="text-lg font-bold mb-4 text-white">Balances Pendientes</h3>
+                        <div id="balances-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Cortex AI -->
+            <div id="view-cortex" class="hidden view-container h-full flex flex-col gap-6">
+                <header class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white mb-1">Cortex Brain 🧠</h1>
+                        <p class="text-slate-400">Inteligencia operativa híbrida.</p>
+                    </div>
+                    <div id="server-status-badge"
+                        class="glass px-4 py-2 rounded-full border border-emerald-500/20 flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Servidor
+                            Activo</span>
+                    </div>
+                </header>
+
+                <div class="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden mb-8">
+                    <!-- Chat Area -->
+                    <div class="flex-1 glass rounded-3xl border border-white/10 flex flex-col overflow-hidden">
+                        <div id="cortex-chat" class="flex-1 p-6 overflow-y-auto flex flex-col gap-4"></div>
+                        <div class="p-4 bg-white/5 border-t border-white/10">
+                            <div class="flex gap-3">
+                                <input type="text" id="cortex-input" placeholder="Pregúntame algo..."
+                                    class="flex-1 rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white focus:border-violet-500 outline-none"
+                                    onkeypress="if(event.key === 'Enter') sendCortex()">
+                                <button onclick="sendCortex()"
+                                    class="p-3 bg-violet-600 hover:bg-violet-500 rounded-xl transition-colors"><i
+                                        data-lucide="send" class="w-5 h-5 text-white"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Feed (Right Side) -->
+                    <div class="hidden lg:flex w-80 flex-col gap-4">
+                        <div class="glass p-6 rounded-3xl border border-white/10 flex-1 flex flex-col overflow-hidden">
+                            <h3
+                                class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i data-lucide="activity" class="w-3 h-3"></i> Registro de Actividad
+                            </h3>
+                            <div id="cortex-activity" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                                <!-- Actividad detectada -->
+                                <div class="text-[10px] text-slate-500 italic p-4 text-center">Escuchando eventos de
+                                    agentes...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-analytics" class="hidden view-container space-y-4">
+                <header class="mb-4">
+                    <h1 class="text-xl font-bold text-white mb-0.5">Métricas de Rendimiento 📊</h1>
+                    <p class="text-[10px] text-slate-400">Análisis operativo en tiempo real.</p>
+                </header>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-emerald-500/10 blur-xl group-hover:bg-emerald-500/20 transition-all">
+                        </div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Presupuesto
+                            Real</p>
+                        <h2 class="text-lg font-black text-white" id="stat-revenue">$0.00</h2>
+                    </div>
+                    <div
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-rose-500/10 blur-xl group-hover:bg-rose-500/20 transition-all">
+                        </div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Gastos
+                            Operativos</p>
+                        <h2 class="text-lg font-black text-rose-400" id="stat-expenses">$0.00</h2>
+                    </div>
+                    <div
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-cyan-500/10 blur-xl group-hover:bg-cyan-500/20 transition-all">
+                        </div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Rentabilidad
+                            Neta</p>
+                        <h2 class="text-lg font-black text-cyan-400" id="stat-profit">0%</h2>
+                    </div>
+                    <div
+                        class="glass p-3 rounded-2xl border border-white/10 text-center relative overflow-hidden group">
+                        <div
+                            class="absolute -right-2 -top-2 w-10 h-10 bg-violet-500/10 blur-xl group-hover:bg-violet-500/20 transition-all">
+                        </div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-0.5">Entregas
+                            Totales</p>
+                        <h2 class="text-lg font-black text-violet-400" id="stat-deliveries">0</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                    <div class="lg:col-span-2 glass p-4 rounded-3xl border border-white/10">
+                        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 px-1">Historial
+                            de Ingresos</h3>
+                        <div class="h-48">
+                            <canvas id="chart-revenue"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass p-4 rounded-3xl border border-white/10">
+                        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3 px-1">Eficiencia
+                            de Entrega</h3>
+                        <div class="h-48">
+                            <canvas id="chart-efficiency"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 💎 WOW FACTOR: TALENT RADAR (Balanced) -->
+                <div class="glass p-5 rounded-[32px] border border-white/10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[100px] -z-10"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
+                                    <i data-lucide="brain-circuit" class="w-6 h-6 text-violet-400"></i>
+                                </div>
+                                <h3 class="text-lg font-black text-white">Radar de Talento IAmazing</h3>
+                            </div>
+                            <p class="text-slate-400 text-xs leading-relaxed">Análisis psicométrico y técnico basado
+                                en el ADN de equipo detectado por Cortex AI.</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <p class="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">
+                                        Cultura Dominante
+                                    </p>
+                                    <p class="text-violet-400 font-black text-sm" id="dominant-culture">Proactividad</p>
+                                </div>
+                                <div class="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <p class="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">Nivel
+                                        Soft Skills
+                                    </p>
+                                    <p class="text-cyan-400 font-black text-sm">92% Optimizado</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="radar-container w-full h-[280px]">
+                            <canvas id="chart-talent-radar"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- View: Team Mgmt (Admin) -->
+    <div id="view-team-mgmt" class="hidden view-container space-y-8">
+        <header class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-1" id="team-title-check">Gestión de Equipo 👥</h1>
+                <p class="text-slate-400">Hub central de colaboración.</p>
+            </div>
+            <!-- Tab Navigation -->
+            <div class="flex p-1 bg-white/5 rounded-xl border border-white/10">
+                <button onclick="switchTeamTab('members')" id="tab-team-members"
+                    class="px-6 py-2 rounded-lg text-sm font-bold text-white bg-violet-600 shadow-lg shadow-violet-600/20 transition-all">
+                    Miembros
+                </button>
+                <button onclick="switchTeamTab('chat')" id="tab-team-chat"
+                    class="px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i> Chat
+                </button>
+            </div>
+        </header>
+
+        <!-- Tab Content: Members -->
+        <div id="team-content-members" class="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-fade-in">
+            <!-- Credential Vault & List -->
+            <div class="xl:col-span-2 space-y-6">
+                <div class="glass p-8 rounded-[40px] border border-white/10 overflow-hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Registro de
+                            Miembros y Accesos
+                        </h3>
+                        <button onclick="toggleVaultVisibility()" id="vault-toggle"
+                            class="px-4 py-2 glass rounded-xl text-[10px] font-bold uppercase tracking-widest text-violet-400 hover:bg-violet-400/10 border border-violet-400/20 transition-all">
+                            Mostrar Bóveda de Claves
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="text-slate-500 border-b border-white/5">
+                                <tr>
+                                    <th class="py-3 px-2">Miembro</th>
+                                    <th class="py-3 px-2 text-center">Estatus</th>
+                                    <th class="py-3 px-2 vault-cell hidden">Contraseña</th>
+                                    <th class="py-3 px-2 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="team-mgmt-body" class="text-slate-300"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organigram / Hierarchy -->
+            <div class="space-y-6">
+                <div class="glass p-8 rounded-[40px] border border-white/10">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
+                        <i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i> Estructura Organizativa
+                    </h3>
+                    <div id="organigram-container" class="relative min-h-[400px] flex items-center justify-center p-4">
+                        <!-- Se llena vía SVG/JS -->
+                        <div class="text-[10px] text-slate-600 uppercase italic">Generando mapa jerárquico...
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
+                        <p class="text-[9px] text-amber-500 font-bold uppercase tracking-widest leading-normal">
+                            <i data-lucide="zap" class="w-3 h-3 inline mr-1"></i> Alarma de Atasco:
+                        </p>
+                        <p id="bottleneck-text" class="text-[10px] text-slate-400 mt-1">Cortex no detecta
+                            cuellos de botella críticos actualmente.</p>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End team-content-members -->
+
+        <!-- Tab Content: Team Chat -->
+        <div id="team-content-chat" class="hidden h-[600px] flex gap-6 animate-fade-in">
+            <!-- Channels Sidebar -->
+            <div class="w-64 glass rounded-3xl border border-white/10 flex flex-col overflow-hidden hidden md:flex">
+                <div class="p-6 border-b border-white/5">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Canales</h3>
+                </div>
+                <div class="flex-1 overflow-y-auto p-3 space-y-1">
+                    <button
+                        class="w-full text-left px-4 py-3 rounded-xl bg-white/5 text-white font-bold text-xs flex items-center gap-2">
+                        <span class="text-violet-400">#</span> general
+                    </button>
+                    <button
+                        class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white text-xs flex items-center gap-2 transition-colors">
+                        <span class="text-slate-600">#</span> producción
+                    </button>
+                    <button
+                        class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white text-xs flex items-center gap-2 transition-colors">
+                        <span class="text-slate-600">#</span> ventas
+                    </button>
+                    <button
+                        class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white text-xs flex items-center gap-2 transition-colors">
+                        <span class="text-slate-600">#</span> anuncios
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Main Area -->
+            <div class="flex-1 glass rounded-3xl border border-white/10 flex flex-col overflow-hidden relative">
+                <div class="p-4 border-b border-white/5 flex justify-between items-center bg-black/20">
+                    <div class="flex items-center gap-2">
+                        <span class="text-violet-400 font-bold text-lg">#</span>
+                        <h3 class="font-bold text-white">general</h3>
+                        <span class="text-[10px] text-slate-500 ml-2">Topic: Coordinación general</span>
+                    </div>
+                    <div class="flex -space-x-2">
+                        <!-- Mock Avatars (Dynamic in V2) -->
+                        <div
+                            class="w-6 h-6 rounded-full bg-slate-700 border border-black flex items-center justify-center text-[8px] text-white">
+                            M</div>
+                        <div
+                            class="w-6 h-6 rounded-full bg-slate-700 border border-black flex items-center justify-center text-[8px] text-white">
+                            A</div>
+                        <div
+                            class="w-6 h-6 rounded-full bg-slate-800 border border-black flex items-center justify-center text-[8px] text-slate-400">
+                            +3</div>
+                    </div>
+                </div>
+
+                <div id="team-chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <!-- Placeholder Welcome -->
+                    <div class="flex flex-col items-center justify-center h-full opacity-50">
+                        <i data-lucide="message-square" class="w-12 h-12 text-slate-600 mb-2"></i>
+                        <p class="text-sm text-slate-500">Comienzo del canal #general</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white/5 border-t border-white/5">
+                    <div class="flex gap-3">
+                        <button
+                            class="p-3 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors"><i
+                                data-lucide="paperclip" class="w-5 h-5"></i></button>
+                        <input type="text" id="team-chat-input" placeholder="Enviar mensaje a #general..."
+                            class="flex-1 bg-black/30 border-white/10 rounded-xl px-4 text-sm focus:border-violet-500 outline-none transition-all"
+                            onkeypress="if(event.key === 'Enter') sendTeamMessage()">
+                        <button onclick="sendTeamMessage()"
+                            class="p-3 bg-violet-600 hover:bg-violet-500 text-white rounded-xl shadow-lg shadow-violet-600/20 transition-all">
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Onboarding Interview -->
+    <div id="view-onboarding" class="hidden h-[80vh] flex flex-col animate-fade-in">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-white mb-1">Entrevista de Vuelo 🚀</h1>
+            <p class="text-slate-400">Queremos conocerte para personalizar tu experiencia en la agencia.</p>
+        </header>
+        <div class="glass flex-1 rounded-[40px] flex flex-col overflow-hidden relative border border-white/5">
+            <div id="onboarding-chat" class="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth pr-4">
+                <!-- La IA inicia la charla -->
+            </div>
+            <div class="p-6 bg-black/20 border-t border-white/5">
+                <div class="relative flex items-center">
+                    <input type="text" id="onboarding-input"
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-white outline-none focus:border-violet-500 transition-all font-medium"
+                        placeholder="Escribe tu respuesta..."
+                        onkeypress="if(event.key === 'Enter') sendOnboardingMessage()">
+                    <button onclick="sendOnboardingMessage()"
+                        class="absolute right-2 p-3 bg-violet-600 rounded-xl hover:bg-violet-700 transition-all active:scale-95 shadow-lg shadow-violet-600/20">
+                        <i data-lucide="send" class="w-5 h-5 text-white"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-3 text-center uppercase tracking-widest">Chat privado •
+                    IA de Reclutamiento IAmazing</p>
+            </div>
+        </div>
+    </div>
+    </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Login & Register Modal -->
+    <div id="login-modal"
+        class="fixed inset-0 bg-black/95 backdrop-blur-md flex items-center justify-center z-[100] p-4">
+        <div class="glass w-full max-w-sm p-8 rounded-[40px] border border-white/10 text-center relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div id="login-initial">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-violet-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-violet-500/20">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-2">Acceso <span class="gradient-text">IAmazing</span></h2>
+                <p class="text-slate-400 text-sm mb-8">Sistema operativo de la agencia.</p>
+                <div class="space-y-3">
+                    <button onclick="showLoginStep('member')"
+                        class="w-full bg-white/5 hover:bg-white/10 py-4 rounded-2xl border border-white/10 transition-all font-medium flex items-center justify-center gap-3">
+                        <i data-lucide="users" class="w-4 h-4 text-violet-400"></i> Soy Miembro
+                    </button>
+                    <button onclick="showLoginStep('register')"
+                        class="w-full bg-violet-600 hover:bg-violet-700 py-4 rounded-2xl transition-all font-medium flex items-center justify-center gap-3">
+                        <i data-lucide="user-plus" class="w-4 h-4 text-white"></i> Unirme al Equipo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login Miembro Existente -->
+            <div id="login-member" class="hidden animate-fade-in">
+                <button onclick="showLoginStep('initial')"
+                    class="text-xs text-slate-500 hover:text-white mb-6 flex items-center gap-2 mx-auto">
+                    <i data-lucide="arrow-left" class="w-3 h-3"></i> Volver
+                </button>
+                <h3 class="text-xl font-bold mb-6">Selecciona Perfil</h3>
+                <div class="space-y-3 max-h-60 overflow-y-auto pr-2 mb-6" id="login-user-list"></div>
+                <div id="member-password-area" class="hidden">
+                    <input type="password" id="login-password" placeholder="••••"
+                        class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl mb-4 text-center text-lg tracking-[0.5em] outline-none focus:border-violet-500">
+                    <button onclick="attemptLogin()"
+                        class="w-full bg-violet-600 py-4 rounded-2xl font-bold">Entrar</button>
+                </div>
+            </div>
+
+            <!-- Registro Nuevo Trabajador -->
+            <div id="login-register" class="hidden animate-fade-in">
+                <button onclick="showLoginStep('initial')"
+                    class="text-xs text-slate-500 hover:text-white mb-6 flex items-center gap-2 mx-auto">
+                    <i data-lucide="arrow-left" class="w-3 h-3"></i> Volver
+                </button>
+                <h3 class="text-xl font-bold mb-2">Nuevo Colaborador</h3>
+                <p class="text-xs text-slate-500 mb-6">Completa tus datos para iniciar la entrevista.</p>
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase ml-2 mb-1 block">Nombre</label>
+                        <input type="text" id="reg-name" placeholder="Tu nombre"
+                            class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm outline-none focus:border-violet-500 text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase ml-2 mb-1 block">Email (Recibirás
+                            notificaciones)</label>
+                        <input type="email" id="reg-email" placeholder="tu@email.com"
+                            class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm outline-none focus:border-violet-500 text-white">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase ml-2 mb-1 block">Tu Especialidad</label>
+                        <select id="reg-role"
+                            class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm outline-none focus:border-violet-500 text-white">
+                            <option value="editor">Editor de Video</option>
+                            <option value="designer">Diseñador Gráfico</option>
+                            <option value="copywriter">Copywriter / Guionista</option>
+                        </select>
+                    </div>
+                    <button onclick="startOnboarding()"
+                        class="w-full bg-violet-600 py-4 rounded-2xl font-bold mt-2 shadow-lg shadow-violet-500/20 active:scale-95 transition-all">Iniciar
+                        Entrevista</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6 text-white">Nuevo Proyecto</h2>
+            <form id="project-form" class="space-y-4">
+                <select id="form-client" required
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white"></select>
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="form-service"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <option value="reel">📱 Reel / Short</option>
+                        <option value="video">🎞️ Video Largo</option>
+                        <option value="thumbnail">🎨 Miniatura</option>
+                        <option value="lead">🤝 Lead / Contacto</option>
+                        <option value="research">🔍 Investigación</option>
+                    </select>
+                    <select id="form-priority"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <option value="1">Baja</option>
+                        <option value="3" selected>Media</option>
+                        <option value="5">Urgente</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="form-stage" class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <optgroup label="Ventas">
+                            <option value="contact">Contacto</option>
+                            <option value="proposal">Propuesta</option>
+                        </optgroup>
+                        <optgroup label="I+D">
+                            <option value="rd">Investigación</option>
+                        </optgroup>
+                        <optgroup label="Producción">
+                            <option value="briefing" selected>Briefing</option>
+                            <option value="production">Edición</option>
+                            <option value="qc">QC</option>
+                        </optgroup>
+                    </select>
+                    <input type="text" id="form-name" placeholder="Nombre: Proyecto / Lead" required
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="form-billing-type"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <option value="fixed">Pago Fijo</option>
+                        <option value="variable">Variable / RevShare</option>
+                    </select>
+                    <input type="number" id="form-rate" placeholder="Tarifa / Presupuesto"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                </div>
+                <button type="submit"
+                    class="w-full py-3 bg-violet-600 rounded-xl font-bold text-white shadow-lg shadow-violet-500/20 active:scale-95 transition-all">Lanzar
+                    al Pipeline</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6">Actualizar Proyecto</h2>
+            <form id="edit-form" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="edit-assign"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white"></select>
+                    <select id="edit-status" class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <optgroup label="Ventas">
+                            <option value="contact">Contacto</option>
+                            <option value="proposal">Propuesta</option>
+                        </optgroup>
+                        <optgroup label="I+D">
+                            <option value="rd">Investigación</option>
+                        </optgroup>
+                        <optgroup label="Producción">
+                            <option value="briefing">Briefing</option>
+                            <option value="production">Edición</option>
+                            <option value="qc">QC</option>
+                            <option value="completed">Entrega</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <input type="url" id="edit-raw"
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white"
+                    placeholder="URL Brutos (Drive/Dropbox)">
+                <input type="url" id="edit-url"
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white"
+                    placeholder="URL Entrega (Editado)">
+                <button type="submit"
+                    class="w-full py-3 bg-cyan-600 rounded-xl font-bold text-white shadow-lg shadow-cyan-500/20 active:scale-95 transition-all">Actualizar
+                    Estado</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="payment-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6">Registrar Pago</h2>
+            <form id="payment-form" class="space-y-4">
+                <input type="hidden" id="pay-project-id">
+                <select id="pay-editor" required class="w-full rounded-xl px-4 py-3"></select>
+                <input type="number" id="pay-amount" step="0.01" required placeholder="0.00 $"
+                    class="w-full rounded-xl px-4 py-3">
+                <button type="submit" class="w-full py-3 bg-emerald-600 rounded-xl font-bold">Pagar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="settings-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6">Ajustes & Finanzas</h2>
+            <form id="settings-form" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Infraestructura</label>
+                    <input type="url" id="setting-webhook" placeholder="WhatsApp Webhook URL"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                    <input type="url" id="setting-backend" placeholder="Railway Backend URL"
+                        class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Control Financiero (Sprint
+                        C)</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="setting-fixed-costs" placeholder="Gastos Fijos $"
+                            class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                        <input type="number" id="setting-investments" placeholder="Inversiones $"
+                            class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full py-4 bg-violet-600 hover:bg-violet-700 rounded-2xl font-bold transition-all shadow-lg shadow-violet-600/20">Guardar
+                    Configuración</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="client-modal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 text-white relative">
+            <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6">Nuevo Cliente</h2>
+            <form id="client-form" class="space-y-4">
+                <input type="text" id="client-name" placeholder="Nombre de la Empresa / Marca" required
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                <input type="text" id="client-whatsapp" placeholder="WhatsApp (ej: 34600000000)"
+                    class="w-full rounded-xl px-4 py-3 bg-black/20 border-white/10 text-white">
+                <button type="submit" class="w-full py-3 bg-violet-600 rounded-xl font-bold">Registrar Cliente</button>
+            </form>
+        </div>
+        <div id="member-profile-modal"
+            class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-[110] p-4">
+            <div class="glass w-full max-w-lg p-8 rounded-[40px] border border-white/10 text-white relative">
+                <button onclick="closeAllModals()" class="absolute top-6 right-6 text-slate-500 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-4 mb-8">
+                    <div id="prof-avatar"
+                        class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-600 flex items-center justify-center text-3xl font-bold">
+                        ?</div>
+                    <div>
+                        <h2 id="prof-name" class="text-2xl font-bold">Nombre del Miembro</h2>
+                        <p id="prof-role" class="text-sm text-slate-400 uppercase tracking-widest">Rol</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xs font-bold text-violet-400 uppercase mb-2 flex items-center gap-2">
+                            <i data-lucide="brain" class="w-3 h-3"></i> ADN Psicológico (Análisis IA)
+                        </h3>
+                        <div id="prof-summary"
+                            class="bg-white/5 p-4 rounded-2xl text-sm leading-relaxed italic text-slate-300">
+                            Cargando resumen de entrevista...
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Rasgos Clave</h3>
+                            <div id="prof-traits" class="flex flex-wrap gap-2"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Preferencia de Feedback</h3>
+                            <div id="prof-feedback"
+                                class="text-xs font-medium text-cyan-400 bg-cyan-400/10 px-3 py-1.5 rounded-lg border border-cyan-400/20 inline-block">
+                                -</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/5 flex justify-end gap-3" id="prof-actions">
+                    <!-- Botón de aprobar si es necesario -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
+            const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
+
+            // 🛡️ DATA SHIELD: Initialize with data so it is NEVER empty
+            let teamData = [
+                { id: 't1', first_name: 'Marco', role: 'pm', password: '123', status: 'active', department: 'admin' },
+                { id: 't2', first_name: 'Pedro', role: 'editor_sr', password: '123', status: 'active', department: 'production' },
+                { id: 't3', first_name: 'Yara', role: 'designer', password: '123', status: 'active', department: 'sales' }
+            ];
+
+            let projectsData = [
+                { id: 'p1', client_id: 'c1', service_type: 'Lead: App Marketing', status: 'contact', priority: 3, clients: { name: 'TechFlow' }, checklist: [] },
+                { id: 'p2', client_id: 'c2', service_type: 'Propuesta: Video Ads', status: 'proposal', priority: 5, clients: { name: 'YogaSarah' }, checklist: [] },
+                { id: 'p3', client_id: 'c1', service_type: 'I+D: IA Automation', status: 'rd', priority: 5, clients: { name: 'TechFlow' }, checklist: [] },
+                { id: 'p4', client_id: 'c1', service_type: 'Video Largo', status: 'production', priority: 5, clients: { name: 'TechFlow' }, team_members: { first_name: 'Pedro' }, assigned_to: 't2', deadline: new Date(Date.now() + 86400000).toISOString() },
+                { id: 'p5', client_id: 'c2', service_type: 'Reel Instagram', status: 'briefing', priority: 3, clients: { name: 'YogaSarah' }, checklist: [] },
+                { id: 'p6', client_id: 'c3', service_type: 'Pack Mensual', status: 'completed', priority: 1, clients: { name: 'UrbanEats' }, checklist: [], delivered_at: new Date().toISOString() },
+                // 10 Proyectos adicionales para Test de Carga
+                { id: 'p7', client_id: 'c1', service_type: 'Video Corporativo', status: 'production', priority: 5, clients: { name: 'TechFlow' }, deadline: new Date(Date.now() + 10000000).toISOString() },
+                { id: 'p8', client_id: 'c2', service_type: 'Short: Testimonial', status: 'qc', priority: 3, clients: { name: 'YogaSarah' } },
+                { id: 'p9', client_id: 'c1', service_type: 'Ads: Facebook', status: 'briefing', priority: 5, clients: { name: 'TechFlow' } },
+                { id: 'p10', client_id: 'c3', service_type: 'Branding Kit', status: 'proposal', priority: 3, clients: { name: 'UrbanEats' } },
+                { id: 'p11', client_id: 'c2', service_type: 'Podcast: Episodio 1', status: 'production', priority: 1, clients: { name: 'YogaSarah' } },
+                { id: 'p12', client_id: 'c1', service_type: 'Landing Page Copy', status: 'rd', priority: 5, clients: { name: 'TechFlow' } },
+                { id: 'p13', client_id: 'c3', service_type: 'Newsletter Mensual', status: 'contact', priority: 1, clients: { name: 'UrbanEats' } },
+                { id: 'p14', client_id: 'c1', service_type: 'Script: YouTube', status: 'production', priority: 5, clients: { name: 'TechFlow' }, deadline: new Date(Date.now() - 3600000).toISOString() }, // Vencido
+                { id: 'p15', client_id: 'c2', service_type: 'Reel: Trend AI', status: 'briefing', priority: 5, clients: { name: 'YogaSarah' } },
+                { id: 'p16', client_id: 'c3', service_type: 'QC Global', status: 'qc', priority: 5, clients: { name: 'UrbanEats' } }
+            ];
+
+            let paymentsData = [
+                { id: 'pay1', amount: 450.00, status: 'paid', editor_id: 't2', created_at: new Date().toISOString() }
+            ];
+
+            let clientsData = [{ id: 'c1', name: 'TechFlow' }, { id: 'c2', name: 'YogaSarah' }];
+            let currentUser = null;
+            let chartInstances = {};
+
+            // 🛡️ LIBRARY SHIELD: Mock loaded libraries if they fail (Network fallback)
+            const safeLucide = { createIcons: () => console.log("Icons fallback") };
+            const safeSupabase = { createClient: () => ({ from: () => ({ select: () => ({ data: [], error: null }), update: () => ({ error: null }), insert: () => ({ error: null }) }), channel: () => ({ on: () => ({ subscribe: () => { } }) }) }) };
+
+            // Use real libs if available, otherwise mocks
+            const _lucide = (typeof lucide !== 'undefined') ? lucide : safeLucide;
+            const _supabase = (typeof supabase !== 'undefined') ? supabase : safeSupabase;
+
+            const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
+            let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "http://localhost:5000";
+
+            // 🛡️ FALLBACK: Load Mock Data if DB fails
+            async function loadMockData() {
+                console.warn("Falling back to MOCK DATA Mode");
+                renderToast("⚠️ Modo Offline / Demo Activado", "warning");
+
+                // Simular carga de Team
+                // teamData is already initialized with mock data, no need to re-assign here unless specific mock is desired
+                // teamData = [
+                //     { id: 'user1', first_name: 'Admin', role: 'pm', password: '123' },
+                //     { id: 'user2', first_name: 'Editor', role: 'editor_sr', password: '123' }
+                // ];
+
+                // Simular carga de Projects
+                return {
+                    projects: projectsData, // Use the pre-initialized mock data
+                    payments: paymentsData  // Use the pre-initialized mock data
+                };
+            }
+
+            async function init() {
+                try {
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                } catch (e) { console.warn("Icons failed to load"); }
+
+                // Try to load real data, but if it fails, we ALREADY have the mock data above
+                await loadConstants(); // Will update teamData/clientsData if connection works
+                checkSession();
+                await loadDashboard(); // Will update projectsData if connection works
+                if (typeof renderOfficeBoard === 'function') renderOfficeBoard();
+                if (typeof renderOrganigram === 'function') renderOrganigram();
+                if (typeof renderAnalytics === 'function') renderAnalytics();
+
+                logActivity(`**${currentUser.first_name}** ha iniciado sesión. Sistema Cortex optimizado.`);
+
+                // 🔐 Initialize Module System (Role-Based Access)
+                if (typeof initModuleSystem === 'function') {
+                    await initModuleSystem();
+                } else {
+                    console.error("Module system not found! Check assets/js/modules-system.js");
+                    renderTeamMgmt(); // Fallback
+                }
+
+                // 🔄 SILENT BACKGROUND SYNC (Fase 4: Pulido)
+                setInterval(() => {
+                    loadDashboard().then(() => console.log("Silent Sync Complete"));
+                }, 30000);
+
+                sb.channel('any').on('postgres_changes', { event: '*', schema: 'public' }, () => loadDashboard()).subscribe();
+                initSortable();
+                renderToast("IAmazing Ready", "success");
+            }
+
+            function initSortable() {
+                const cols = ['col-contact', 'col-proposal', 'col-rd', 'col-briefing', 'col-production', 'col-qc', 'col-completed'];
+                cols.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    new Sortable(el, {
+                        group: 'kanban',
+                        animation: 150,
+                        ghostClass: 'sortable-ghost',
+                        onEnd: async (evt) => {
+                            const pid = evt.item.dataset.id;
+                            const newStatus = evt.to.id.replace('col-', '');
+                            if (newStatus !== evt.from.id.replace('col-', '')) {
+                                const success = await updateStatus(pid, newStatus);
+                                if (!success) loadDashboard(); // Revertir visualmente si falla
+                            }
+                        }
+                    });
+                });
+            }
+
+            function checkSession() {
+                const uid = localStorage.getItem('iamazing_user_id');
+                if (uid) {
+                    // Try to find in local teamData or let init fetch it
+                    currentUser = teamData.find(m => m.id === uid);
+                    if (currentUser) {
+                        updateUserUI();
+                        return;
+                    }
+                }
+
+                // If no user found in localStorage or teamData, go back to landing
+                console.warn("🔐 No session found. Redirecting to Landing Page...");
+                window.location.href = 'index.html';
+            }
+
+            function showLoginStep(step) {
+                console.log("👉 Cambiando a paso de login:", step);
+                ['login-initial', 'login-member', 'login-register'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                    else console.warn(`Elemento ${id} no encontrado`);
+                });
+
+                const targetId = `login-${step}`;
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.classList.remove('hidden');
+                } else {
+                    console.error(`Paso de login ${targetId} no existe`);
+                }
+
+                if (step === 'member') {
+                    console.log("👥 Mostrando lista de miembros. Total:", teamData.length);
+                    const list = document.getElementById('login-user-list');
+                    const activeMembers = teamData.filter(m => m.status === 'active' || !m.status);
+
+                    if (activeMembers.length === 0) {
+                        list.innerHTML = `<p class="text-xs text-slate-500 py-4">No se encontraron miembros activos.</p>`;
+                    } else {
+                        list.innerHTML = activeMembers.map(m => `
+                        <button onclick="selectUserForLogin('${m.id}')" class="w-full flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-left">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-violet-400">${m.first_name[0]}</div>
+                            <div><p class="text-sm font-bold text-white">${m.first_name}</p><p class="text-[10px] text-slate-500 uppercase">${m.role.replace('_', ' ')}</p></div>
+                        </button>
+                    `).join('');
+                    }
+                }
+                lucide.createIcons();
+            }
+
+            function openLogin() {
+                showLoginStep('initial');
+                document.getElementById('login-modal').classList.remove('hidden');
+            }
+
+            let selectedUserTemp = null;
+            window.selectUserForLogin = (uid) => {
+                selectedUserTemp = teamData.find(m => m.id === uid);
+                document.getElementById('member-password-area').classList.remove('hidden');
+                document.getElementById('login-password').focus();
+            };
+
+            // --- SISTEMA DE ONBOARDING ---
+            let onboardingEmployee = null;
+            let interviewLog = [];
+
+            async function startOnboarding() {
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const role = document.getElementById('reg-role').value;
+
+                if (!name || !email) return renderToast("Completa tus datos", "warning");
+
+                renderToast("Registrando perfil...", "info");
+
+                try {
+                    // 1. Crear usuario en tabla team_members (status pending)
+                    const { data, error } = await sb.from('team_members').insert({
+                        first_name: name,
+                        last_name: '',
+                        email: email,
+                        role: role,
+                        status: 'pending_approval' // El usuario propone pending_approval
+                    }).select().single();
+
+                    if (error) throw error;
+                    onboardingEmployee = data;
+
+                    // 2. Cambiar UI a modo Entrevista
+                    document.getElementById('login-modal').classList.add('hidden');
+                    showView('onboarding');
+
+                    // 3. IA inicia entrevista
+                    const welcomeMsg = `Hola **${name}**, qué gusto saludarte. Soy Cortex, la IA de gestión de IAmazing. Marco me ha pedido que te haga una breve entrevista para conocerte mejor y preparar tu espacio de trabajo. \n\nPara empezar: **¿Cuál es tu mayor fortaleza en el área de ${role}?**`;
+                    appendOnboardingChat('bot', welcomeMsg);
+                    interviewLog.push({ role: 'bot', content: welcomeMsg });
+
+                } catch (e) {
+                    console.error(e);
+                    renderToast("Error al registrar: " + e.message, "error");
+                }
+            }
+
+            function appendOnboardingChat(role, text) {
+                const chat = document.getElementById('onboarding-chat');
+                const div = document.createElement('div');
+                div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`;
+                div.innerHTML = `
+                <div class="${role === 'user' ? 'bg-violet-600' : 'bg-white/5 border border-white/10'} p-4 rounded-3xl max-w-[80%] shadow-lg">
+                    <p class="text-xs font-bold mb-1 opacity-50">${role === 'user' ? 'Tú' : 'Cortex'}</p>
+                    <div class="text-sm leading-relaxed">${formatMarkdown(text)}</div>
+                </div>
+            `;
+                chat.appendChild(div);
+                chat.scrollTop = chat.scrollHeight;
+            }
+
+            async function sendOnboardingMessage() {
+                const input = document.getElementById('onboarding-input');
+                const text = input.value.trim();
+                if (!text) return;
+
+                input.value = '';
+                appendOnboardingChat('user', text);
+                interviewLog.push({ role: 'user', content: text });
+
+                // Si es la 4ta interacción, cerramos entrevista (simplificado para demo)
+                if (interviewLog.length >= 6) {
+                    const finalMsg = "¡Muchas gracias! Ya tengo suficiente información para Marco. El sistema analizará tu perfil y recibirás una notificación cuando tu acceso sea activado. ¡Hasta pronto!";
+                    appendOnboardingChat('bot', finalMsg);
+
+                    // Enviar al servidor para análisis
+                    const transcript = interviewLog.map(m => `${m.role}: ${m.content}`).join('\n');
+                    fetch(`${BACKEND_API_URL}/api/onboarding/finish`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ employee_id: onboardingEmployee.id, transcript: transcript })
+                    });
+
+                    setTimeout(() => {
+                        renderToast("Entrevista enviada", "success");
+                        location.reload(); // Volver al inicio
+                    }, 4000);
+                    return;
+                }
+
+                // Simular respuesta inteligente (aquí se podría llamar a un mini-endpoint de chat)
+                setTimeout(() => {
+                    const questions = [
+                        "Interesante. ¿Cómo prefieres que te den feedback sobre tu trabajo?",
+                        "¡Entendido! Una última cosa: ¿Cuál es el proyecto del que más te enorgulleces?",
+                        "Perfecto. Con esto tengo lo que necesito para presentarte a Marco."
+                    ];
+                    const nextQ = questions[Math.floor(interviewLog.length / 2) - 1] || "Cuéntame más sobre eso.";
+                    appendOnboardingChat('bot', nextQ);
+                    interviewLog.push({ role: 'bot', content: nextQ });
+                }, 1000);
+            }
+
+            window.attemptLogin = async () => {
+                const pass = document.getElementById('login-password').value;
+                if (pass === selectedUserTemp.password) {
+                    localStorage.setItem('iamazing_user_id', selectedUserTemp.id);
+                    currentUser = selectedUserTemp;
+                    document.getElementById('login-modal').classList.add('hidden');
+                    updateUserUI();
+                    renderToast(`Hola ${currentUser.first_name}`, "success");
+                    loadDashboard();
+                } else {
+                    renderToast("Contraseña incorrecta", "error");
+                }
+            }
+
+            function updateUserUI() {
+                if (!currentUser) return;
+                document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
+                document.getElementById('user-display-name').textContent = currentUser.first_name;
+                document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
+                const isManager = ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+                // The module system handles sidebar visibility, but we keep this for legacy view switching
+                if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) {
+                    if (typeof showModuleView === 'function') showModuleView('view-production-desk');
+                    else showView('my-desk');
+                }
+                document.getElementById('personal-notes').value = localStorage.getItem(`notes_${currentUser.id}`) || "";
+            }
+
+            function savePersonalNotes() {
+                if (currentUser) localStorage.setItem(`notes_${currentUser.id}`, document.getElementById('personal-notes').value);
+            }
+
+            async function loadConstants() {
+                try {
+                    const { data: team, error: errTeam } = await sb.from('team_members').select('*');
+                    if (errTeam) throw errTeam;
+
+                    const { data: clients, error: errClients } = await sb.from('clients').select('*');
+                    if (errClients) throw errClients;
+
+                    teamData = team || []; clientsData = clients || [];
+                } catch (e) {
+                    console.warn("LoadConstants Failed - Using Rich Mock");
+                    teamData = [
+                        { id: 'user1', first_name: 'Marco', role: 'pm', password: '123', status: 'active', department: 'admin' },
+                        { id: 'user2', first_name: 'Pedro', role: 'editor_sr', password: '123', status: 'active', department: 'production' }
+                    ];
+                    clientsData = [{ id: 'c1', name: 'Demo Client' }];
+                }
+                const populate = (id, options) => { if (document.getElementById(id)) document.getElementById(id).innerHTML = options; };
+                const clientOpts = clientsData.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                populate('form-client', clientOpts);
+                populate('filter-client', '<option value="">Todos</option>' + clientOpts);
+                const editorOpts = teamData.filter(m => m.role.includes('editor')).map(m => `<option value="${m.id}">${m.first_name}</option>`).join('');
+                populate('edit-assign', '<option value="">Desasignar</option>' + editorOpts);
+                populate('pay-editor', editorOpts);
+            }
+
+            async function loadDashboard() {
+                if (!currentUser) return;
+                const isManager = true; // ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+
+                // USE GLOBALS
+                try {
+                    // Check connection first
+                    const { error: ping } = await sb.from('team_members').select('count').limit(1);
+                    if (ping) throw new Error("Connection Timeout");
+
+                    const resProjects = await sb.from('deliveries').select('*, clients(name, whatsapp), team_members(first_name)');
+                    if (resProjects.error) throw resProjects.error;
+                    projectsData = resProjects.data || [];
+
+                    const resPayments = await sb.from('project_payments').select('*');
+                    if (resPayments.error) throw resPayments.error;
+                    paymentsData = resPayments.data || [];
+                } catch (e) {
+                    console.error("Dashboard Load Error - Switching to Mock:", e);
+                    const mocks = await loadMockData();
+                    projectsData = mocks.projects;
+                    paymentsData = mocks.payments;
+
+                    // Force Mock Team if needed
+                    if (teamData.length === 0) {
+                        teamData = [
+                            { id: 'user1', first_name: 'Marco', role: 'pm', password: '123', status: 'active', department: 'admin' },
+                            { id: 'user2', first_name: 'Pedro', role: 'editor_sr', password: '123', status: 'active', department: 'production' }
+                        ];
+                        updateUserUI(); // Update UI if team changed
+                    }
+                }
+
+                // Assign to local variable for legacy code compatibility below if needed
+                const projects = projectsData;
+                const payments = paymentsData;
+
+                if (isManager) renderTeamMgmt();
+
+                // MEJORA 3: Auto-Prioridad
+                const now = new Date();
+                projects?.forEach(p => {
+                    if (p.deadline) {
+                        const diff = (new Date(p.deadline) - now) / (1000 * 3600);
+                        if (diff < 24 && diff > 0 && p.status !== 'completed') p.is_expiring = true;
+                    }
+                });
+
+                const searchTerm = document.getElementById('search-project').value.toLowerCase();
+                const filterClient = document.getElementById('filter-client').value;
+
+                // Render Kanban (Manager)
+                const cols = {
+                    contact: 'col-contact',
+                    proposal: 'col-proposal',
+                    briefing: 'col-briefing',
+                    production: 'col-production',
+                    qc: 'col-qc',
+                    completed: 'col-completed',
+                    rd: 'col-rd'
+                };
+                Object.values(cols).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+
+                projects?.filter(p => (!filterClient || p.client_id === filterClient) && (p.clients.name.toLowerCase().includes(searchTerm) || p.service_type.toLowerCase().includes(searchTerm)))
+                    .sort((a, b) => (b.is_expiring ? 10 : b.priority) - (a.is_expiring ? 10 : a.priority))
+                    .forEach((p, idx) => {
+                        const col = document.getElementById(cols[p.status]);
+                        if (col) {
+                            const card = createCard(p, false, isManager);
+                            card.style.animationDelay = `${idx * 0.05}s`;
+                            card.classList.add('animate-fade-in');
+                            col.appendChild(card);
+                        }
+                    });
+
+                // Empty State Placeholder
+                Object.values(cols).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && el.children.length === 0) {
+                        el.innerHTML = `
+                        <div class="empty-state">
+                            <i data-lucide="inbox" class="w-12 h-12 mb-3 text-slate-600"></i>
+                            <p class="text-sm font-bold text-slate-500">Sin Tareas</p>
+                            <p class="text-[10px] text-slate-600 uppercase tracking-widest mt-1">Listo para operar</p>
+                        </div>
+                    `;
+                    }
+                });
+
+                // MEJORA 1: Pull System (Personal Desk)
+                const myWork = projects?.filter(p => p.assigned_to === currentUser.id && p.status !== 'completed');
+                const pool = projects?.filter(p => !p.assigned_to && p.status === 'briefing');
+
+                const myGrid = document.getElementById('my-projects-grid');
+                if (myGrid) {
+                    myGrid.innerHTML = '';
+                    myWork.forEach(p => myGrid.appendChild(createCard(p, false, isManager)));
+                    document.getElementById('my-active-tasks').textContent = myWork.length;
+                }
+
+                const poolSection = document.getElementById('task-pool-section');
+                const poolGrid = document.getElementById('unassigned-projects-grid');
+                if (pool?.length > 0) {
+                    poolSection.classList.remove('hidden');
+                    poolGrid.innerHTML = '';
+                    pool.forEach(p => poolGrid.appendChild(createCard(p, true, isManager)));
+                } else poolSection.classList.add('hidden');
+
+                const myBal = payments?.filter(p => p.editor_id === currentUser.id).reduce((acc, p) => acc + parseFloat(p.amount), 0) || 0;
+                if (document.getElementById('my-personal-balance')) document.getElementById('my-personal-balance').textContent = `$${myBal.toFixed(2)}`;
+
+                // Team Grid & Payments Info
+                const teamGrid = document.getElementById('team-grid');
+                if (teamGrid) {
+                    teamGrid.innerHTML = teamData.map(m => `
+                        <div class="team-member-chip glass flex items-center gap-2 border-transparent hover:border-primary-500/30 transition-all cursor-pointer" onclick="openMemberProfile('${m.id}')" style="padding: var(--spacing-sm); border-radius: var(--radius-md);">
+                            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10 text-primary-500">
+                                ${m.first_name ? m.first_name[0] : '?'}
+                            </div>
+                            <div>
+                                <p class="text-[11px] font-bold text-white">${m.first_name || 'User'}</p>
+                                <p class="text-[9px] text-slate-500 uppercase tracking-wider">${(m.role || 'op').replace('_', ' ')}</p>
+                            </div>
+                        </div>`).join('');
+                }
+                await loadPaymentsDetails();
+                if (typeof renderAnalytics === 'function') renderAnalytics();
+                lucide.createIcons();
+            }
+
+            async function loadPaymentsDetails() {
+                const { data: pms } = await sb.from('project_payments').select('*, team_members(first_name)');
+                const hist = document.getElementById('payments-history');
+                if (hist) hist.innerHTML = pms?.map(p => `<tr class="border-b border-white/5"><td class="py-3 px-2 text-[11px]">${new Date(p.created_at).toLocaleDateString()}</td><td class="py-3 px-2 text-[11px] font-bold">${p.team_members?.first_name}</td><td class="py-3 px-2 text-[11px] text-emerald-400">$${p.amount}</td><td class="py-3 px-2 text-[9px] uppercase font-bold text-emerald-500">${p.status}</td></tr>`).join('') || '';
+
+                const balList = document.getElementById('balances-list');
+                if (balList) {
+                    const totals = {};
+                    teamData.filter(m => m.role.includes('editor')).forEach(m => totals[m.id] = { name: m.first_name, sum: 0 });
+                    pms?.forEach(p => { if (totals[p.editor_id]) totals[p.editor_id].sum += parseFloat(p.amount); });
+                    balList.innerHTML = Object.values(totals).map(b => `<div class="flex justify-between items-center p-3 bg-white/5 rounded-xl"><span class="text-sm font-medium">${b.name}</span><span class="text-sm font-bold text-emerald-400">$${b.sum.toFixed(2)}</span></div>`).join('');
+                }
+            }
+
+            function createCard(p, isPool = false, isManager = false) {
+                const div = document.createElement('div');
+                const colors = {
+                    1: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+                    3: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
+                    5: "bg-rose-500/20 text-rose-400 border-rose-500/30"
+                };
+                const urgentClass = p.is_expiring ? 'border-rose-500 bg-rose-500/5 shadow-[0_0_15px_rgba(244,63,94,0.1)]' : 'border-white/5';
+
+                div.className = `glass p-3 rounded-lg border ${urgentClass} card-hover hover-scale stagger-1 flex flex-col gap-2 relative overflow-hidden ${p.priority === 5 ? 'priority-5' : ''}`;
+                div.dataset.id = p.id;
+
+                div.innerHTML = `
+                ${p.is_expiring ? '<div class="absolute top-0 left-0 right-0 bg-rose-500 text-[7px] font-black text-white py-0.5 text-center tracking-widest uppercase">Vence Pronto</div>' : ''}
+                
+                <div class="flex justify-between items-start ${p.is_expiring ? 'pt-2' : ''}">
+                    <div class="space-y-0.5">
+                        <p class="text-[9px] uppercase font-bold text-slate-500 tracking-wider">${p.clients?.name || 'IAmazing'}</p>
+                        <h4 class="text-[12px] font-bold text-white leading-tight">${p.service_type}</h4>
+                    </div>
+                    <div class="px-1.5 py-0.5 rounded text-[9px] font-bold border ${colors[p.priority] || colors[1]}">
+                        P${p.priority}
+                    </div>
+                </div>
+
+                ${p.production_url ? `
+                    <div class="flex items-center gap-1 py-1 px-1.5 bg-white/5 rounded-lg border border-white/5 group overflow-hidden">
+                        <i data-lucide="link" class="w-2.5 h-2.5 text-cyan-400 flex-shrink-0"></i>
+                        <a href="${p.production_url}" target="_blank" class="text-[8px] text-slate-400 truncate hover:text-cyan-400 transition-colors">${p.production_url}</a>
+                    </div>
+                ` : ''}
+
+                <!-- Checklist QC (Compact) -->
+                ${p.status === 'qc' || (p.checklist && p.checklist.length > 0) ? `
+                    <div class="space-y-1.5 mt-0.5">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[7px] font-black text-slate-600 uppercase tracking-widest">Post-Producción</p>
+                            <span class="text-[7px] text-slate-500">${(p.checklist || []).filter(i => i.done).length}/${(p.checklist || []).length}</span>
+                        </div>
+                        <div class="space-y-1">
+                            ${(p.checklist || []).map((item, idx) => {
+                    const parts = item.text.split(' ');
+                    const hasTime = /^([0-5][0-9]):([0-5][0-9])$/.test(parts[0]);
+                    const time = hasTime ? parts[0] : null;
+                    const text = hasTime ? parts.slice(1).join(' ') : item.text;
+                    return `
+                                <div class="flex items-start gap-2 group/item">
+                                    <div class="mt-0.5" onclick="event.stopPropagation()">
+                                        <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleCheckItem('${p.id}', ${idx})" class="w-3 h-3 rounded bg-white/5 border-white/10 accent-violet-500 cursor-pointer">
+                                    </div>
+                                    <p class="text-[9px] leading-tight ${item.done ? 'line-through text-slate-600' : 'text-slate-300'}">
+                                        ${time ? `<span class="text-violet-400 font-mono font-bold bg-violet-400/5 px-0.5 rounded mr-0.5">${time}</span>` : ''}
+                                        ${text}
+                                    </p>
+                                </div>`;
+                }).join('')}
+                        </div>
+                        ${p.status === 'qc' ? `
+                            <div class="flex gap-1.5 items-center pt-0.5" onclick="event.stopPropagation()">
+                                <input type="text" id="chk-add-${p.id}" placeholder="Nota (ej: 00:15...)" class="flex-1 bg-black/40 border-white/10 rounded-lg px-2 py-1.5 text-[9px] focus:ring-1 focus:ring-violet-500 outline-none">
+                                <button onclick="addCheckItem('${p.id}')" class="p-1.5 bg-violet-600 hover:bg-violet-500 rounded-lg text-white transition-all transform active:scale-95 shadow-lg shadow-violet-500/20"><i data-lucide="plus" class="w-2.5 h-2.5"></i></button>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+
+                <div class="flex items-center gap-1.5 mt-auto pt-1">
+                    ${isPool ? `
+                        <button onclick="claimProject('${p.id}')" class="w-full py-1 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 rounded-md text-[8px] font-black border border-emerald-500/20 transition-all flex items-center justify-center gap-0.5 active:scale-[0.98]"><i data-lucide="user-plus" class="w-2.5 h-2.5"></i> Tomar</button>
+                    ` : `
+                        <button onclick="openEdit('${p.id}', '${p.assigned_to}', '${p.production_url || ''}', '${p.raw_assets_url || ''}', '${p.status}')" class="flex-1 py-1 bg-white/5 hover:bg-white/10 rounded-md text-[8px] font-bold border border-white/5 text-slate-400 hover:text-white transition-all flex items-center justify-center gap-0.5"><i data-lucide="info" class="w-2.5 h-2.5"></i></button>
+                        ${(isManager && p.status === 'completed') ? `<button onclick="openPayment('${p.id}', '${p.assigned_to}')" class="p-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/20 rounded-md transition-all"><i data-lucide="dollar-sign" class="w-2.5 h-2.5"></i></button>` : ''}
+                        ${p.status !== 'rd' ? `<button onclick="moveToNext('${p.id}', '${p.status}')" class="p-1 bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 border border-violet-500/20 rounded-md transition-all"><i data-lucide="arrow-right-circle" class="w-2.5 h-2.5"></i></button>` : ''}
+                    `}
+                </div>
+            `;
+                lucide.createIcons();
+                return div;
+            }
+
+            // 🧠 CORTEX BRAIN: ACTIVITY FEED & LOGGING
+            window.logActivity = (text) => {
+                const feed = document.getElementById('cortex-activity');
+                if (!feed) return;
+
+                const div = document.createElement('div');
+                div.className = "flex items-start gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 group animate-fade-in";
+                div.innerHTML = `
+                    <div class="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1.5 shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
+                    <div class="flex-1">
+                        <p class="text-[10px] text-slate-200 leading-snug">${text}</p>
+                        <p class="text-[8px] text-slate-500 uppercase mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                `;
+
+                if (feed.children.length === 1 && feed.children[0].classList.contains('text-[10px]')) {
+                    feed.innerHTML = '';
+                }
+
+                feed.prepend(div);
+                if (feed.children.length > 20) feed.lastElementChild.remove();
+            };
+
+            async function toggleCheckItem(pid, idx) {
+                const { data } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
+                const list = data.checklist || []; list[idx].done = !list[idx].done;
+                await sb.from('deliveries').update({ checklist: list }).eq('id', pid);
+                renderToast("Feedback actualizado"); loadDashboard();
+            }
+
+            async function addCheckItem(pid) {
+                const inp = document.getElementById(`chk - add - ${pid} `); const text = inp.value.trim(); if (!text) return;
+                const { data } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
+                const list = data.checklist || []; list.push({ text, done: false });
+                await sb.from('deliveries').update({ checklist: list }).eq('id', pid);
+                inp.value = ''; renderToast("Nota de QC añadida"); loadDashboard();
+            }
+
+            async function claimProject(pid) {
+                await sb.from('deliveries').update({ assigned_to: currentUser.id, status: 'production' }).eq('id', pid);
+                renderToast("Proyecto asignado exitosamente"); loadDashboard();
+            }
+
+            async function moveToNext(pid, current) {
+                const next = {
+                    contact: 'proposal',
+                    proposal: 'briefing',
+                    briefing: 'production',
+                    production: 'qc',
+                    qc: 'completed',
+                    completed: 'rd'
+                }[current];
+                if (next) await updateStatus(pid, next);
+            }
+
+            async function simulatePreQC(pid, url) {
+                renderToast("🧠 Cortex: Iniciando Pre-QC automático...", "info");
+                setTimeout(async () => {
+                    const { data: p } = await sb.from('deliveries').select('checklist').eq('id', pid).single();
+                    const list = p.checklist || [];
+                    list.unshift({ text: "00:00 Cortex: Link validado procedencialmente", done: true });
+                    list.unshift({ text: "00:00 Cortex: Sugerencia: Subir brillo en sombras", done: false });
+                    await sb.from('deliveries').update({ checklist: list }).eq('id', pid);
+                    renderToast("🧠 Cortex: Análisis técnico completado", "success");
+                    loadDashboard();
+                }, 1500);
+            }
+
+            window.updateStatus = async (id, status, silent = false) => {
+                if (status === 'qc') {
+                    const { data: p } = await sb.from('deliveries').select('production_url').eq('id', id).single();
+                    if (!p.production_url) { renderToast("⚠️ Sube el link antes de ir a QC", "error"); return false; }
+                }
+
+                const { data: proj } = await sb.from('deliveries').select('*, clients(*)').eq('id', id).single();
+                const updateData = { status };
+                if (status === 'delivered') updateData.delivered_at = new Date();
+
+                const { error } = await sb.from('deliveries').update(updateData).eq('id', id);
+
+                if (!error) {
+                    if (!silent) renderToast(`${status.toUpperCase()} actualizado`);
+
+                    // Trigger Pre-QC Simulation
+                    if (status === 'qc') simulatePreQC(id, proj.production_url);
+
+                    // Webhook Notification
+                    if (WHATSAPP_WEBHOOK_URL && (status === 'qc' || status === 'completed')) {
+                        fetch(WHATSAPP_WEBHOOK_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                project_id: id,
+                                status,
+                                client: proj.clients?.name,
+                                whatsapp: proj.clients?.whatsapp,
+                                service: proj.service_type,
+                                url: proj.production_url
+                            })
+                        }).catch(e => console.error("Webhook error:", e));
+                    }
+
+                    loadDashboard();
+                    logActivity(`Estatus actualizado: ** ${proj.service_type}** (${proj.clients?.name}) movido a ** ${status.toUpperCase()}** `);
+                    return true;
+                }
+                return false;
+            };
+
+            window.openEdit = (id, assign, url, raw, status) => {
+                document.getElementById('edit-id').value = id;
+                document.getElementById('edit-assign').value = assign || "";
+                document.getElementById('edit-status').value = status || "briefing";
+                document.getElementById('edit-url').value = url;
+                document.getElementById('edit-raw').value = raw || "";
+                document.getElementById('edit-modal').classList.remove('hidden');
+            };
+
+            window.openMemberProfile = (uid) => {
+                const m = teamData.find(x => x.id === uid);
+                if (!m) return;
+
+                document.getElementById('prof-name').textContent = `${m.first_name} ${m.last_name || ''} `;
+                document.getElementById('prof-role').textContent = m.role.replace('_', ' ');
+                document.getElementById('prof-avatar').textContent = m.first_name[0];
+                document.getElementById('prof-summary').textContent = m.interview_summary || "Sin entrevista realizada aún.";
+
+                // Rasgos
+                const traits = document.getElementById('prof-traits');
+                traits.innerHTML = '';
+                const traitsList = (m.personality_traits && m.personality_traits.personality_traits) ? m.personality_traits.personality_traits : [];
+                traitsList.forEach(t => {
+                    const span = document.createElement('span');
+                    span.className = "text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-md text-slate-400";
+                    span.textContent = t;
+                    traits.appendChild(span);
+                });
+
+                document.getElementById('prof-feedback').textContent = (m.personality_traits && m.personality_traits.feedback_preference) ? m.personality_traits.feedback_preference : "-";
+
+                // Acciones
+                const actions = document.getElementById('prof-actions');
+                actions.innerHTML = '';
+                if (m.status === 'pending_approval' || m.status === 'pending') {
+                    actions.innerHTML = `< button onclick = "approveMember('${m.id}')" class="bg-emerald-600 px-6 py-2 rounded-xl font-bold text-sm" > Aprobar Ahora</button > `;
+                }
+
+                document.getElementById('member-profile-modal').classList.remove('hidden');
+                lucide.createIcons();
+            };
+
+            window.openPayment = (pid, eid) => {
+                document.getElementById('pay-project-id').value = pid;
+                document.getElementById('pay-editor').value = eid || "";
+                document.getElementById('payment-modal').classList.remove('hidden');
+            };
+
+            window.showView = (v) => {
+                document.querySelectorAll('[id^="view-"]').forEach(x => x.classList.add('hidden'));
+                const target = document.getElementById(`view - ${v} `);
+                if (target) target.classList.remove('hidden');
+
+                document.querySelectorAll('.sidebar-item').forEach(a => a.classList.remove('active'));
+                document.getElementById(`nav - ${v} `)?.classList.add('active');
+
+                if (v === 'analytics') renderAnalytics();
+                if (v === 'team-mgmt') renderTeamMgmt();
+                if (v === 'cortex') {
+                    const inp = document.getElementById('cortex-input');
+                    if (inp) inp.focus();
+                }
+            };
+
+            window.openSettings = () => {
+                document.getElementById('setting-webhook').value = WHATSAPP_WEBHOOK_URL;
+                document.getElementById('setting-backend').value = BACKEND_API_URL;
+                document.getElementById('settings-modal').classList.remove('hidden');
+            }
+
+            document.getElementById('settings-form').onsubmit = (e) => {
+                e.preventDefault();
+                WHATSAPP_WEBHOOK_URL = document.getElementById('setting-webhook').value;
+                BACKEND_API_URL = document.getElementById('setting-backend').value;
+                localStorage.setItem('iamazing_webhook_url', WHATSAPP_WEBHOOK_URL);
+                localStorage.setItem('iamazing_api_url', BACKEND_API_URL);
+                closeAllModals();
+                renderToast("Ajustes guardados", "success");
+            };
+
+            window.logActivity = (agent, action, type = 'info') => {
+                const feed = document.getElementById('cortex-activity');
+                if (!feed) return;
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const colors = { info: 'text-cyan-400', success: 'text-emerald-400', warning: 'text-amber-400' };
+                const div = document.createElement('div');
+                div.className = "p-3 bg-white/5 rounded-2xl border border-white/5 animate-fade-in mb-3";
+                div.innerHTML = `
+                < div class="flex justify-between items-center mb-1" >
+                    <span class="text-[9px] font-bold uppercase ${colors[type]} tracking-widest">${agent}</span>
+                    <span class="text-[8px] text-slate-500">${time}</span>
+                </div >
+                <p class="text-[10px] text-slate-300 leading-tight">${action}</p>
+            `;
+                feed.prepend(div);
+                if (feed.children.length > 8) feed.lastElementChild.remove();
+            }
+
+            window.formatMarkdown = (text) => {
+                return text
+                    .replace(/^# (.*$)/gm, '<h1 class="text-xl font-bold text-white mb-4 mt-2 border-b border-white/10 pb-2">$1</h1>')
+                    .replace(/^## (.*$)/gm, '<h2 class="text-lg font-bold text-violet-300 mb-2 mt-4">$1</h2>')
+                    .replace(/^### (.*$)/gm, '<h3 class="text-md font-bold text-violet-300/80 mb-2 mt-3">$1</h3>')
+                    .replace(/\*\*(.*?)\*\*/g, '<b class="text-violet-400">$1</b>')
+                    .replace(/^[-*] (.*$)/gm, '<div class="flex gap-2 mb-1 pl-2"><span class="text-violet-500">•</span><span>$1</span></div>')
+                    .replace(/\n/g, '<br>');
+            }
+
+            window.speakResponse = async (text, btn) => {
+                const icon = btn.querySelector('i');
+                const originalIcon = icon.getAttribute('data-lucide');
+
+                try {
+                    icon.setAttribute('data-lucide', 'refresh-cw');
+                    icon.classList.add('animate-spin');
+                    lucide.createIcons();
+
+                    const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+                    const res = await fetch(`${cleanBaseUrl} /api/voice`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text.replace(/[#*]/g, '') })
+                    });
+                    const data = await res.json();
+
+                    if (data.url) {
+                        const audio = new Audio(`${cleanBaseUrl}/${data.url}`);
+                        audio.play();
+                        icon.setAttribute('data-lucide', 'volume-2');
+                        icon.classList.remove('animate-spin');
+                        lucide.createIcons();
+                        audio.onended = () => {
+                            icon.setAttribute('data-lucide', originalIcon);
+                            lucide.createIcons();
+                        };
+                    }
+                } catch (e) {
+                    console.error("Audio error:", e);
+                    renderToast("Error al generar audio", "error");
+                    icon.setAttribute('data-lucide', originalIcon);
+                    icon.classList.remove('animate-spin');
+                    lucide.createIcons();
+                }
+            }
+
+            window.sendCortex = async () => {
+                const input = document.getElementById('cortex-input');
+                const chat = document.getElementById('cortex-chat');
+                const query = input.value.trim();
+                if (!query) return;
+
+                // User message UI
+                const userBox = document.createElement('div');
+                userBox.className = "self-end bg-violet-600/20 text-violet-100 p-4 rounded-3xl rounded-tr-none text-sm max-w-[80%] border border-violet-500/20";
+                userBox.textContent = query;
+                chat.appendChild(userBox);
+                input.value = '';
+                chat.scrollTop = chat.scrollHeight;
+
+                logActivity('Cortex', 'Procesando consulta...', 'info');
+
+                // Bot placeholder UI
+                const botBox = document.createElement('div');
+                botBox.className = "self-start bg-white/5 p-4 rounded-3xl text-slate-300 text-sm border border-white/5 max-w-[80%] whitespace-pre-wrap";
+                botBox.innerHTML = `<span class="italic animate-pulse">Pensando...</span>`;
+                chat.appendChild(botBox);
+
+                try {
+                    const q = query.toLowerCase();
+                    let agentType = 'manager';
+                    let finalResponse = "";
+                    let prefix = "";
+
+                    // 🧠 FILTRO DE INTENCIÓN (Fase 5: Inteligencia Selectiva)
+                    if (q === 'hola' || q === 'buenos dias' || q === 'buenas tardes' || q === 'que tal') {
+                        prefix = "🧠 Cortex";
+                        finalResponse = `¡Hola ${currentUser?.first_name || ''}! Soy Cortex. Estoy monitoreando tus proyectos en tiempo real. 
+
+¿En qué puedo ayudarte hoy? Puedes pedirme:
+- Un **resumen** de prioridades.
+- **Ventas**: Ideas para nuevos clientes.
+- **Producción**: Guiones o ideas para videos.
+- **Investigación**: Tendencias de IA actuales.`;
+                        agentType = 'chat';
+                    } else {
+                        if (q.includes('guion') || q.includes('idea') || q.includes('produccion')) agentType = 'production';
+                        if (q.includes('vender') || q.includes('outreach') || q.includes('propuesta')) agentType = 'sales';
+                        if (q.includes('investiga') || q.includes('tendencia') || q.includes('herramienta') || q.includes('research')) agentType = 'research';
+
+                        const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
+
+                        const response = await fetch(`${cleanBaseUrl}/api/agent`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                agent_type: agentType,
+                                query: query,
+                                topic: query,
+                                client: currentUser?.first_name || 'Prospecto',
+                                niche: 'Contenido Digital',
+                                title: 'Video Solicitado',
+                                idea: query,
+                                projects: projectsData
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || `Error del servidor (${response.status})`);
+                        }
+
+                        const data = await response.json();
+                        prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
+                        finalResponse = data.result || "No recibí una respuesta clara.";
+                    }
+
+                    logActivity(prefix, 'Respuesta generada', 'success');
+
+                    // Typing Effect con Formateo Markdown
+                    const formattedResponse = formatMarkdown(finalResponse);
+                    botBox.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-violet-400 uppercase tracking-widest">${prefix}</span>
+                        <button onclick="speakResponse(\`${finalResponse.replace(/`/g, "'")}\`, this)" class="p-1.5 hover:bg-white/10 rounded-lg transition-all text-slate-500 hover:text-white">
+                            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div class="typing-container"></div>
+                `;
+                    lucide.createIcons();
+
+                    const container = botBox.querySelector('.typing-container');
+                    container.innerHTML = formattedResponse; // Aplicar formato de golpe para evitar problemas con tags rotos durante el tipado
+                    container.style.opacity = '0';
+                    container.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500, fill: 'forwards' });
+                    chat.scrollTop = chat.scrollHeight;
+
+                } catch (e) {
+                    console.error("Cortex Error:", e);
+                    const errorHtml = `
+                        <div class="glass p-4 rounded-xl border border-amber-500/30 bg-amber-900/10">
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400 flex-shrink-0"></i>
+                                <div>
+                                    <p class="text-sm font-bold text-amber-400">Cortex está teniendo dificultades</p>
+                                    <p class="text-xs text-slate-400 mt-1">${e.message.includes('fetch') ? 'Error de conexión. Asegúrate de configurar la URL de tu backend en Ajustes (debe terminar en .up.railway.app)' : 'Error interno en el agente. Asegúrate de que las API Keys estén configuradas en Railway.'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    botBox.innerHTML = errorHtml;
+                    lucide.createIcons();
+                }
+                chat.scrollTop = chat.scrollHeight;
+            };
+
+
+            // 👥 REBUILT: PREMIUM TEAM MGMT
+            BACKEND_API_URL = "https://iamazing-backend-production.up.railway.app"; // Default for Vercel
+
+            let isVaultVisible = false;
+            window.toggleVaultVisibility = () => {
+                isVaultVisible = !isVaultVisible;
+                const btn = document.getElementById('vault-toggle');
+                if (btn) {
+                    btn.textContent = isVaultVisible ? "Bloquear Bóveda" : "Mostrar Bóveda de Claves";
+                    btn.classList.toggle('bg-rose-500/10', isVaultVisible);
+                    btn.classList.toggle('text-rose-400', isVaultVisible);
+                }
+                renderTeamMgmt();
+            };
+
+            window.switchTeamTab = (tab) => {
+                // Buttons
+                document.getElementById('tab-team-members').className = tab === 'members'
+                    ? "px-6 py-2 rounded-lg text-sm font-bold text-white bg-violet-600 shadow-lg shadow-violet-600/20 transition-all"
+                    : "px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-all";
+
+                document.getElementById('tab-team-chat').className = tab === 'chat'
+                    ? "px-6 py-2 rounded-lg text-sm font-bold text-white bg-violet-600 shadow-lg shadow-violet-600/20 transition-all flex items-center gap-2"
+                    : "px-6 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white transition-all flex items-center gap-2";
+
+                // Content
+                const membersContent = document.getElementById('team-content-members');
+                const chatContent = document.getElementById('team-content-chat');
+
+                if (tab === 'members') {
+                    membersContent.classList.remove('hidden');
+                    chatContent.classList.add('hidden');
+                } else {
+                    membersContent.classList.add('hidden');
+                    chatContent.classList.remove('hidden');
+                    // Scroll to bottom when opening chat
+                    const chatMessages = document.getElementById('team-chat-messages');
+                    if (chatMessages) {
+                        setTimeout(() => {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, 50);
+                    }
+                }
+            };
+
+            window.sendTeamMessage = () => {
+                const input = document.getElementById('team-chat-input');
+                const text = input.value.trim();
+                if (!text || !currentUser) return;
+
+                appendTeamMessage(currentUser.first_name, text, true);
+                input.value = '';
+
+                // Simulate response
+                if (text.toLowerCase().includes('hola')) {
+                    setTimeout(() => {
+                        appendTeamMessage('Cortex AI', `¡Hola **${currentUser.first_name}**! Estoy monitoreando este canal.`, false);
+                    }, 800);
+                }
+            };
+
+            function appendTeamMessage(sender, text, isMe) {
+                const container = document.getElementById('team-chat-messages');
+                if (!container) return;
+
+                if (container.querySelector('.opacity-50')) container.innerHTML = '';
+
+                const div = document.createElement('div');
+                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 animate-slide-up`;
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${sender}</span>
+                        <span class="text-[9px] text-slate-600">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <div class="max-w-[80%] p-3 rounded-2xl ${isMe ? 'bg-violet-600 text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-slate-200 rounded-tl-none'} text-sm leading-relaxed">
+                        ${formatMarkdown(text)}
+                    </div>
+                `;
+
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function renderTeamMgmt() {
+                const body = document.getElementById('team-mgmt-body');
+                if (!body) return;
+
+                // Actualizar headers de la tabla según visibilidad de bóveda
+                document.querySelectorAll('.vault-cell').forEach(el => {
+                    if (isVaultVisible) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                });
+
+                body.innerHTML = teamData.map(m => {
+                    const isPending = m.status === 'pending_approval' || m.status === 'pending';
+                    const assignedTasks = projectsData.filter(p => p.assigned_to === m.id && p.status !== 'completed').length;
+                    const isOverloaded = assignedTasks > 3;
+
+                    return `
+                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group ${isPending ? 'bg-violet-500/5' : ''}">
+                    <td class="py-4 px-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-xs font-bold text-violet-400 border border-white/10 relative">
+                                ${m.first_name ? m.first_name[0] : '?'}
+                                ${isOverloaded ? '<span class="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 border-2 border-[#0f172a] rounded-full animate-pulse"></span>' : ''}
+                            </div>
+                            <div>
+                                <span class="font-bold text-slate-200 block text-sm">${m.first_name || 'Usuario'}</span>
+                                <span class="text-[9px] uppercase font-bold text-slate-500 tracking-widest">${(m.role || 'op').replace('_', ' ')}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-2 text-center">
+                        <span class="px-2 py-0.5 rounded-full ${isPending ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'} text-[8px] font-black uppercase border border-current/20">
+                            ${isPending ? 'Pendiente' : 'Activo'}
+                        </span>
+                    </td>
+                    <td class="py-4 px-2 vault-cell ${isVaultVisible ? '' : 'hidden'}">
+                        <div class="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/5 max-w-[120px] mx-auto">
+                            <input type="password" value="${m.password || '123'}" 
+                                onchange="updatePassword('${m.id}', this.value)" 
+                                class="bg-transparent border-none text-[10px] text-center w-full focus:ring-0 text-white font-mono"
+                            >
+                        </div>
+                    </td>
+                    <td class="py-4 px-2 text-right">
+                        <div class="flex justify-end items-center gap-2">
+                            <button onclick="openMemberProfile('${m.id}')" class="p-2 text-violet-400 hover:bg-violet-400/10 rounded-lg transition-all">
+                                <i data-lucide="dna" class="w-4 h-4"></i>
+                            </button>
+                             ${isPending ?
+                            `<button onclick="approveMember('${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all">Aprobar</button>` :
+                            `<button class="p-2 text-slate-500 hover:text-white rounded-lg transition-colors">
+                                    <i data-lucide="settings-2" class="w-4 h-4"></i>
+                                </button>`
+                        }
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+
+                renderOrganigram();
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            }
+
+            function renderOrganigram() {
+                const container = document.getElementById('organigram-container');
+                if (!container) return;
+
+                // Simple hierarchy visualization
+                const levels = {
+                    pm: { name: 'Dirección', color: '#a78bfa' },
+                    sales_head: { name: 'Ventas', color: '#22d3ee' },
+                    coord_prod: { name: 'Producción', color: '#f43f5e' },
+                    editor_sr: { name: 'Equipo', color: '#64748b' },
+                    editor_std: { name: 'Equipo', color: '#64748b' },
+                    designer: { name: 'Equipo', color: '#64748b' }
+                };
+
+                let html = '<div class="flex flex-col items-center gap-8 w-full">';
+
+                // PM at top
+                const admins = teamData.filter(m => m.role === 'pm');
+                html += `<div class="flex gap-4">${admins.map(m => `<div class="text-center group"><div class="w-12 h-12 rounded-2xl bg-violet-600/20 border-2 border-violet-500 flex items-center justify-center font-bold text-white shadow-lg shadow-violet-500/20 mb-1">${m.first_name[0]}</div><p class="text-[9px] font-bold text-white">${m.first_name}</p></div>`).join('')}</div>`;
+
+                // Connection line
+                html += '<div class="w-px h-8 bg-gradient-to-b from-violet-500/50 to-transparent"></div>';
+
+                // Middle Managers & Team
+                html += '<div class="flex flex-wrap justify-center gap-6">';
+                const others = teamData.filter(m => m.role !== 'pm');
+                html += others.map(m => `
+                    <div class="flex flex-col items-center group">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center font-bold text-slate-400 group-hover:border-cyan-500/50 group-hover:text-cyan-400 transition-all mb-1 cursor-pointer">
+                            ${m.first_name[0]}
+                        </div>
+                        <p class="text-[8px] font-medium text-slate-500">${m.first_name}</p>
+                    </div>
+                `).join('');
+                html += '</div></div>';
+
+                container.innerHTML = html;
+
+                // Update bottleneck alarm
+                const problematic = teamData.filter(m => projectsData.filter(p => p.assigned_to === m.id && p.status !== 'completed').length > 3);
+                const bText = document.getElementById('bottleneck-text');
+                if (problematic.length > 0) {
+                    bText.innerHTML = `⚠️ <span class="text-rose-400 font-bold">${problematic[0].first_name}</span> tiene sobrecarga de tareas. Considera re-asignar para fluir el pipeline.`;
+                } else {
+                    bText.textContent = "Cortex no detecta cuellos de botella críticos actualmente.";
+                }
+            }
+
+            window.renderOfficeBoard = () => {
+                const board = document.getElementById('office-board-text');
+                if (!board) return;
+
+                const urgent = projectsData.filter(p => p.priority === 5 && p.status !== 'completed');
+                const waiting = projectsData.filter(p => p.status === 'briefing');
+
+                let msg = "";
+                if (urgent.length > 0) {
+                    msg = `🧠 **Alerta de Prioridad**: Hay ${urgent.length} proyectos urgentes. Sugiero que el equipo de producción se enfoque en **${urgent[0].service_type}** ahora mismo.`;
+                } else if (waiting.length > 5) {
+                    msg = `💼 **Aviso de Venta**: El pipeline de entrada está lleno (${waiting.length}). Marco, necesitamos asignar más recursos al área de Briefing.`;
+                } else {
+                    msg = `✨ **Estado Optimo**: El flujo de trabajo está equilibrado. Buen momento para que I+D investigue nuevas tendencias en Shorts.`;
+                }
+
+                board.innerHTML = formatMarkdown(msg);
+                renderToast("Órdenes de Cortex actualizadas", "info");
+            };
+
+            window.approveMember = async (uid) => {
+                renderToast("Aprobando miembro...", "info");
+                try {
+                    const { error } = await sb.from('team_members').update({
+                        status: 'active',
+                        password: '123'
+                    }).eq('id', uid);
+
+                    if (error) throw error;
+                    renderToast("Miembro aprobado con éxito", "success");
+                    loadConstants(); // Recargar lista
+                } catch (e) {
+                    renderToast("Error al aprobar: " + e.message, "error");
+                }
+            }
+
+            window.updatePassword = async (uid, newPass) => {
+                const { error } = await sb.from('team_members').update({ password: newPass }).eq('id', uid);
+                if (!error) {
+                    renderToast("Contraseña actualizada", "success");
+                    await loadConstants();
+                }
+            }
+
+            // 💰 SPRINT C: FINANCIAL INTELLIGENCE & COCKPIT (Refined)
+            async function renderAnalytics() {
+                const revEl = document.getElementById('stat-revenue');
+                if (!revEl) return;
+
+                const fixedCosts = parseFloat(localStorage.getItem('iam_fixed_costs')) || 0;
+                const investments = parseFloat(localStorage.getItem('iam_investments')) || 0;
+                const totalRevenue = projectsData.reduce((acc, p) => acc + (parseFloat(p.rate_applied) || 0), 0);
+
+                const { data: payments } = await sb.from('project_payments').select('amount');
+                const editorPayments = (payments || []).reduce((acc, p) => acc + parseFloat(p.amount), 0);
+                const totalExpenses = editorPayments + fixedCosts + investments;
+                const profit = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue * 100) : 0;
+
+                revEl.textContent = `$${totalRevenue.toLocaleString()}`;
+                document.getElementById('stat-expenses').textContent = `$${totalExpenses.toLocaleString()}`;
+                document.getElementById('stat-profit').textContent = `${profit.toFixed(1)}%`;
+                document.getElementById('stat-deliveries').textContent = projectsData.filter(p => p.status === 'completed').length;
+
+                // 📊 Global Dashboard Charts
+                renderChart('chart-revenue', 'bar', {
+                    labels: ['Ingresos', 'Costos', 'Inv.', 'Equipo'],
+                    datasets: [{
+                        data: [totalRevenue, fixedCosts, investments, editorPayments],
+                        backgroundColor: ['#10b981', '#f43f5e', '#a78bfa', '#f59e0b'],
+                        borderRadius: 8,
+                        barThickness: 30
+                    }]
+                });
+
+                renderChart('chart-efficiency', 'doughnut', {
+                    labels: ['Completados', 'Proceso', 'Ventas'],
+                    datasets: [{
+                        data: [
+                            projectsData.filter(p => p.status === 'completed').length,
+                            projectsData.filter(p => ['production', 'qc', 'briefing'].includes(p.status)).length,
+                            projectsData.filter(p => ['contact', 'proposal'].includes(p.status)).length
+                        ],
+                        backgroundColor: ['#10b981', '#6366f1', '#22d3ee'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                }, { cutout: '70%', plugins: { legend: { display: false } } });
+
+                // 🧠 Talent Radar (WOW Factor)
+                renderChart('chart-talent-radar', 'radar', {
+                    labels: ['Creatividad', 'Proactividad', 'Técnica', 'Comunicación', 'Soft Skills'],
+                    datasets: [{
+                        label: 'Media Equipo',
+                        data: [88, 92, 85, 90, 94],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: '#8b5cf6',
+                        pointBackgroundColor: '#8b5cf6',
+                        borderWidth: 2
+                    }]
+                }, {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.05)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#94a3b8', font: { size: 9 } },
+                            ticks: { display: false },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    }
+                });
+            }
+
+            function renderChart(id, type, data, extraOptions = {}) {
+                if (chartInstances[id]) chartInstances[id].destroy();
+                const canvas = document.getElementById(id);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                chartInstances[id] = new Chart(ctx, {
+                    type,
+                    data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: type === 'doughnut' || type === 'radar' ? {} : {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: '#64748b', font: { size: 9 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#64748b', font: { size: 9 } }
+                            }
+                        },
+                        ...extraOptions
+                    }
+                });
+            }
+
+            document.getElementById('project-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const billingType = document.getElementById('form-billing-type').value;
+                const rate = parseFloat(document.getElementById('form-rate').value) || 0;
+                const stage = document.getElementById('form-stage').value;
+
+                await sb.from('deliveries').insert([{
+                    client_id: document.getElementById('form-client').value,
+                    name: document.getElementById('form-name').value,
+                    service_type: document.getElementById('form-service').value,
+                    priority: parseInt(document.getElementById('form-priority').value),
+                    status: stage,
+                    billing_type: billingType,
+                    rate_applied: rate
+                }]);
+                closeAllModals(); reloadDashboard();
+            }
+
+            document.getElementById('edit-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('edit-id').value;
+                await sb.from('deliveries').update({
+                    assigned_to: document.getElementById('edit-assign').value || null,
+                    status: document.getElementById('edit-status').value,
+                    production_url: document.getElementById('edit-url').value,
+                    raw_assets_url: document.getElementById('edit-raw').value
+                }).eq('id', id);
+                closeAllModals(); reloadDashboard();
+            }
+
+            document.getElementById('client-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('client-name').value;
+                const whatsapp = document.getElementById('client-whatsapp').value;
+                await sb.from('clients').insert([{ name, whatsapp }]);
+                closeAllModals(); await loadConstants(); await loadDashboard();
+                renderToast("Cliente registrado", "success");
+            }
+
+            document.getElementById('payment-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const project_id = document.getElementById('pay-project-id').value;
+                const editor_id = document.getElementById('pay-editor').value;
+                const amount = document.getElementById('pay-amount').value;
+                await sb.from('project_payments').insert([{ project_id, editor_id, amount, status: 'paid', paid_at: new Date() }]);
+                closeAllModals(); reloadDashboard();
+                renderToast("Pago registrado exitosamente", "success");
+            }
+
+            document.getElementById('settings-form').onsubmit = (e) => {
+                e.preventDefault();
+                const wh = document.getElementById('setting-webhook').value;
+                const be = document.getElementById('setting-backend').value;
+                const fc = document.getElementById('setting-fixed-costs').value;
+                const inv = document.getElementById('setting-investments').value;
+
+                localStorage.setItem('iam_webhook_url', wh);
+                localStorage.setItem('iam_backend_url', be);
+                localStorage.setItem('iam_fixed_costs', fc);
+                localStorage.setItem('iam_investments', inv);
+
+                WHATSAPP_WEBHOOK_URL = wh;
+                BACKEND_API_URL = be;
+
+                renderToast("Configuración Guardada", "success");
+                closeAllModals();
+                if (typeof renderAnalytics === 'function') renderAnalytics();
+            }
+
+            window.renderToast = (msg, type = "info") => {
+                const cont = document.getElementById('toast-container') || (() => { const d = document.createElement('div'); d.id = 'toast-container'; d.className = 'toast-container'; document.body.appendChild(d); return d; })();
+                const t = document.createElement('div'); t.className = `toast glass p-4 rounded-2xl border ${type === 'error' ? 'border-red-500/50 text-red-400' : 'border-violet-500/50 text-violet-400'} text-xs font-bold`;
+                t.textContent = msg; cont.appendChild(t);
+                setTimeout(() => t.remove(), 3000);
+            }
+
+            window.closeAllModals = () => document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden'));
+            window.onload = init;
+        </script>
+
+        <!-- ========================================
+             MÓDULOS DEPARTAMENTALES - CARGA ROBUSTA
+             ======================================== -->
+        <script>
+            /**
+             * Carga un módulo HTML y ejecuta sus scripts
+             */
+            async function loadModule(url) {
+                console.log(`🔍 Intentando cargar módulo: ${url}`);
+                try {
+                    const response = await fetch(url + '?v=' + Date.now());
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const html = await response.text();
+
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+
+                    const main = document.querySelector('main');
+                    if (!main) throw new Error("No se encontró el elemento <main>");
+
+                    const children = Array.from(temp.childNodes);
+                    for (const child of children) {
+                        if (child.nodeType === 1 && child.tagName === 'SCRIPT') {
+                            const newScript = document.createElement('script');
+                            if (child.src) {
+                                newScript.src = child.src;
+                            } else {
+                                newScript.textContent = child.textContent;
+                            }
+                            document.body.appendChild(newScript);
+                        } else {
+                            main.appendChild(child);
+                        }
+                    }
+                    console.log(`✅ Módulo cargado satisfactoriamente: ${url}`);
+                } catch (e) {
+                    console.error(`❌ Error crítico cargando módulo ${url}:`, e);
+                    renderToast(`Error cargando ${url}`, "error");
+                }
+            }
+
+
+            // 🌐 ADAPTIVE ZOOM ENGINE (Sprint Final)
+            window.adjustScale = () => {
+                const width = window.innerWidth;
+                let scale = 1;
+
+                if (width > 2500) scale = 1.1; // Large Displays
+                else if (width < 1600 && width > 1366) scale = 0.75; // All-at-once focus
+                else if (width <= 1366 && width > 1024) scale = 0.68; // Ultra compact
+                else if (width <= 1024 && width > 768) scale = 0.65; // Tablets
+                else scale = 1; // Mobile
+
+                document.documentElement.style.setProperty('--ui-scale', scale);
+            };
+
+            window.toggleSidebar = () => {
+                const aside = document.querySelector('aside');
+                const icon = document.getElementById('sidebar-toggle-icon');
+                if (!aside) return;
+
+                const isCollapsed = aside.classList.toggle('sidebar-collapsed');
+
+                if (icon) {
+                    icon.setAttribute('data-lucide', isCollapsed ? 'chevrons-right' : 'chevrons-left');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
+
+                // Reinicializar gráficas para ajustar al nuevo ancho
+                if (typeof renderAnalytics === 'function') setTimeout(renderAnalytics, 300);
+            };
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeAllModals();
+            });
+
+            window.addEventListener('resize', () => adjustScale());
+
+            // Inicialización optimizada
+            // Inicialización optimizada
+            window.onload = async () => {
+                console.log("🚀 Iniciando IAmazing...");
+
+                // SAFETY: Force loader removal after 5s if anything hangs
+                setTimeout(() => {
+                    const loader = document.getElementById('app-loader');
+                    if (loader && !loader.classList.contains('loader-hidden')) {
+                        console.warn("⚠️ Loader forced removal (Timeout)");
+                        loader.classList.add('loader-hidden');
+                        setTimeout(() => loader.remove(), 800);
+                    }
+                }, 5000);
+
+                try {
+                    // 1. Mostrar login de inmediato si es necesario
+                    await loadConstants(); // Core utils
+                    checkSession();
+
+                    // 2. Cargar módulos en segundo plano
+                    console.log("📦 Cargando módulos en segundo plano...");
+                    await Promise.all([
+                        loadModule('modules/sales-views.html'),
+                        loadModule('modules/production-views.html'),
+                        loadModule('modules/rd-common-views.html'),
+                        loadModule('modules/client-views.html')
+                    ]).then(() => {
+                        console.log("✅ Todos los módulos listos");
+                        // Re-inicializar sistema de módulos por si el usuario ya entró
+                        if (currentUser && typeof initModuleSystem === 'function') {
+                            initModuleSystem();
+                        }
+                    });
+
+                    // 3. Inicializar resto del sistema core
+                    await init();
+                    adjustScale();
+
+                } catch (e) {
+                    console.error("Critical Init Error:", e);
+                } finally {
+                    // 4. Hide Loader
+                    const loader = document.getElementById('app-loader');
+                    if (loader) {
+                        loader.classList.add('loader-hidden');
+                        setTimeout(() => loader.remove(), 800);
+                    }
+                }
+            };
+            adjustScale();
+        </script>
+
+</body>
+
+</html>

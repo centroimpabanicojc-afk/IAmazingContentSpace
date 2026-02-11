@@ -1,0 +1,194 @@
+<!-- 
+    ========================================
+    VISTAS DE CLIENTE (Portal Unificado)
+    ========================================
+-->
+
+<div id="view-client-projects" class="view-section hidden p-8 animate-view-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div>
+            <h1 class="text-4xl font-black text-white tracking-tight mb-2">Mis Proyectos</h1>
+            <p class="text-slate-400 font-medium">Sigue el estado de tus contenidos en tiempo real.</p>
+        </div>
+        <button onclick="showModuleView('view-client-briefing')"
+            class="bg-violet-600 hover:bg-violet-700 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-violet-600/20 transition-all active:scale-95 flex items-center gap-3">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+            Nuevo Pedido
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12" id="client-stats-summary">
+        <!-- Stats cards here -->
+        <div class="glass p-6 rounded-[32px] border border-white/5">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">En Producción</p>
+            <h3 class="text-3xl font-black text-white" id="client-stat-active">0</h3>
+        </div>
+        <div class="glass p-6 rounded-[32px] border border-white/5">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Esperando mi Feedback</p>
+            <h3 class="text-3xl font-black text-violet-400" id="client-stat-feedback">0</h3>
+        </div>
+        <div class="glass p-6 rounded-[32px] border border-white/5">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Completados</p>
+            <h3 class="text-3xl font-black text-emerald-400" id="client-stat-done">0</h3>
+        </div>
+    </div>
+
+    <div class="glass rounded-[40px] border border-white/5 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-white/5">
+                    <th class="py-6 px-8 text-[11px] font-black text-slate-500 uppercase tracking-widest">Proyecto</th>
+                    <th class="py-6 px-4 text-[11px] font-black text-slate-500 uppercase tracking-widest">Estado</th>
+                    <th class="py-6 px-4 text-[11px] font-black text-slate-500 uppercase tracking-widest">Progreso</th>
+                    <th class="py-6 px-8 text-right text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                        Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="client-projects-body" class="divide-y divide-white/5">
+                <!-- Data injected by loadClientDashboard() -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="view-client-billing" class="view-section hidden p-8 animate-view-in">
+    <div class="mb-12">
+        <h1 class="text-4xl font-black text-white tracking-tight mb-2">Mi Facturación</h1>
+        <p class="text-slate-400 font-medium">Historial de pagos y servicios contratados.</p>
+    </div>
+    <div class="glass p-8 rounded-[40px] border border-white/5 text-center py-20">
+        <div class="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <i data-lucide="receipt" class="w-10 h-10 text-slate-500"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Historial de pagos</h3>
+        <p class="text-slate-500 max-w-sm mx-auto">Próximamente podrás descargar tus facturas directamente desde aquí.
+        </p>
+    </div>
+</div>
+
+<div id="view-client-briefing" class="view-section hidden p-8 animate-view-in">
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-12 text-center">
+            <h1 class="text-4xl font-black text-white tracking-tight mb-2">Nuevo Pedido</h1>
+            <p class="text-slate-400 font-medium">Cuéntanos qué necesitas y nuestro equipo de IA y edición se pondrá en
+                marcha.</p>
+        </div>
+
+        <div class="glass p-10 rounded-[48px] border border-white/10">
+            <form id="client-request-form" class="space-y-8">
+                <div class="space-y-3">
+                    <label class="text-xs font-bold text-slate-400 uppercase ml-4">Nombre del Proyecto</label>
+                    <input type="text" placeholder="Ej: Video Podcast Reacción..." required
+                        class="w-full bg-black/20 border-white/10 rounded-2xl px-6 py-4 text-white focus:ring-2 focus:ring-violet-500/50 transition-all outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <label class="text-xs font-bold text-slate-400 uppercase ml-4">Tipo de Servicio</label>
+                        <select
+                            class="w-full bg-black/20 border-white/10 rounded-2xl px-6 py-4 text-white outline-none">
+                            <option value="reel">Reel / TikTok / Short</option>
+                            <option value="video">Video Largo (YouTube)</option>
+                            <option value="thumbnail">Miniatura</option>
+                            <option value="pack">Pack Mensual</option>
+                        </select>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-xs font-bold text-slate-400 uppercase ml-4">Prioridad</label>
+                        <select
+                            class="w-full bg-black/20 border-white/10 rounded-2xl px-6 py-4 text-white outline-none">
+                            <option value="3">Estándar</option>
+                            <option value="5">Urgente 🔥</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-bold text-slate-400 uppercase ml-4">Brief / Instrucciones</label>
+                    <textarea rows="4" placeholder="Describe lo que tienes en mente..."
+                        class="w-full bg-black/20 border-white/10 rounded-3xl px-6 py-4 text-white outline-none"></textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-5 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-3xl font-black text-white shadow-2xl shadow-violet-600/40 hover:scale-[1.02] active:scale-95 transition-all">
+                    Enviar a Producción
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lógica específica para el Dashboard del Cliente
+    async function loadClientDashboard() {
+        console.log("💼 Cargando Dashboard de Cliente...");
+        if (!currentUser) return;
+
+        try {
+            // Filtrar proyectos donde el ID del cliente coincida
+            const myProjects = projectsData.filter(p => p.client_id === currentUser.id);
+
+            // Actualizar stats
+            document.getElementById('client-stat-active').textContent = myProjects.filter(p => ['production', 'briefing'].includes(p.status)).length;
+            document.getElementById('client-stat-feedback').textContent = myProjects.filter(p => p.status === 'qc').length;
+            document.getElementById('client-stat-done').textContent = myProjects.filter(p => p.status === 'completed').length;
+
+            const body = document.getElementById('client-projects-body');
+            if (myProjects.length === 0) {
+                body.innerHTML = `<tr><td colspan="4" class="py-20 text-center text-slate-500 font-medium">No tienes proyectos activos aún.</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = myProjects.map(p => {
+                const statusMap = {
+                    'briefing': { label: 'En Cola', color: 'bg-slate-500/20 text-slate-400', progress: 10 },
+                    'production': { label: 'Editando', color: 'bg-indigo-500/20 text-indigo-400', progress: 45 },
+                    'qc': { label: 'Revisión final', color: 'bg-amber-500/20 text-amber-400', progress: 85 },
+                    'completed': { label: 'Completado', color: 'bg-emerald-500/20 text-emerald-400', progress: 100 }
+                };
+                const st = statusMap[p.status] || { label: p.status, color: 'bg-white/5 text-white', progress: 0 };
+
+                return `
+                    <tr class="group hover:bg-white/[0.02] transition-colors">
+                        <td class="py-6 px-8">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-violet-600/10 flex items-center justify-center border border-violet-500/20">
+                                    <i data-lucide="${p.service_type === 'video' ? 'video' : 'layers'}" class="w-5 h-5 text-violet-400"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-bold text-white text-sm mb-0.5">${p.name || p.service_type}</span>
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">ID: ${p.id.substring(0, 8)}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-6 px-4">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase border border-current/20 ${st.color}">
+                                ${st.label}
+                            </span>
+                        </td>
+                        <td class="py-6 px-4">
+                            <div class="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                <div class="h-full bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full" style="width: ${st.progress}%"></div>
+                            </div>
+                        </td>
+                        <td class="py-6 px-8 text-right">
+                            ${p.status === 'completed' ? `
+                                <a href="${p.production_url || '#'}" target="_blank" class="p-2.5 bg-emerald-600/20 text-emerald-400 rounded-xl hover:bg-emerald-600 hover:text-white transition-all inline-block">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                </a>
+                            ` : `
+                                <button class="p-2.5 bg-white/5 text-slate-500 rounded-xl hover:text-white transition-all">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </button>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        } catch (e) {
+            console.error("Error loading client dashboard:", e);
+        }
+    }
+</script>

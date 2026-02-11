@@ -18,100 +18,123 @@ const DEPARTMENT_MODULES = {
         },
         {
             id: 'sales-clients',
-            name: 'Clientes',
+            name: 'Mis Clientes',
             icon: 'users',
-            view: 'view-sales-clients',
-            description: 'Clientes activos y prospectos'
+            view: 'view-dashboard',
+            description: 'Base de datos de clientes'
         },
         {
             id: 'sales-commissions',
             name: 'Comisiones',
             icon: 'dollar-sign',
-            view: 'view-payments', // Reuse payments view
-            description: 'Tus comisiones ganadas'
+            view: 'view-dashboard',
+            description: 'Control de ganancias'
         }
     ],
     production: [
         {
             id: 'production-desk',
             name: 'Mi Escritorio',
-            icon: 'briefcase',
-            view: 'view-my-desk', // FIXED: Matches index.html ID
+            icon: 'layout',
+            view: 'view-my-desk',
             description: 'Proyectos asignados'
         },
         {
             id: 'production-pool',
             name: 'Tareas Disponibles',
-            icon: 'inbox',
-            view: 'view-my-desk', // Pool is inside My Desk
-            description: 'Toma proyectos del pool'
+            icon: 'briefcase',
+            view: 'view-production-pool',
+            description: 'Pool de proyectos'
         },
         {
             id: 'production-calendar',
             name: 'Calendario',
             icon: 'calendar',
-            view: 'view-dashboard', // Fallback
-            description: 'Deadlines y entregas'
+            view: 'view-production-calendar',
+            description: 'Planificación'
         },
         {
             id: 'production-balance',
             name: 'Mi Balance',
             icon: 'wallet',
-            view: 'view-payments', // Reuse payments
-            description: 'Pagos y finanzas personales'
+            view: 'view-production-balance',
+            description: 'Mis pagos'
         }
     ],
     rd: [
         {
             id: 'rd-experiments',
             name: 'Experimentos',
-            icon: 'flask-conical',
-            view: 'view-dashboard', // Fallback
-            description: 'Proyectos de investigación'
+            icon: 'test-tube',
+            view: 'view-rd-experiments',
+            description: 'Investigación activa'
         },
         {
             id: 'rd-knowledge',
-            name: 'Base de Conocimiento',
+            name: 'Conocimiento',
             icon: 'book-open',
-            view: 'view-cortex', // Using Cortex view for knowledge
-            description: 'Documentación y hallazgos'
+            view: 'view-rd-knowledge',
+            description: 'Documentación y SOPs'
         },
         {
             id: 'rd-metrics',
             name: 'Métricas IA',
             icon: 'activity',
-            view: 'view-analytics', // Reuse analytics
+            view: 'view-rd-metrics',
             description: 'Performance de bots'
+        }
+    ],
+    client: [
+        {
+            id: 'client-projects',
+            name: 'Mis Proyectos',
+            icon: 'video',
+            view: 'view-client-projects',
+            description: 'Estado de mis videos'
+        },
+        {
+            id: 'client-billing',
+            name: 'Facturación',
+            icon: 'receipt',
+            view: 'view-client-billing',
+            description: 'Pagos y facturas'
+        },
+        {
+            id: 'client-briefing',
+            name: 'Nuevo Pedido',
+            icon: 'plus-circle',
+            view: 'view-client-briefing',
+            description: 'Solicitar servicio'
         }
     ],
     admin: [
         {
             id: 'admin-dashboard',
             name: 'Dashboard Global',
-            icon: 'layout-dashboard',
+            icon: 'pie-chart',
             view: 'view-dashboard',
-            description: 'Vista general de la agencia'
+            description: 'Resumen operativo'
         },
         {
             id: 'admin-team',
             name: 'Equipo',
-            icon: 'users-2',
+            icon: 'users',
             view: 'view-team-mgmt',
             description: 'Gestión de miembros'
         },
         {
-            id: 'admin-finances',
-            name: 'Finanzas',
-            icon: 'dollar-sign',
+            id: 'admin-payments',
+            name: 'Pagos',
+            icon: 'credit-card',
             view: 'view-payments',
-            description: 'Pagos y balances globales'
+            description: 'Aprobación de pagos'
         },
         {
             id: 'admin-analytics',
-            name: 'Métricas',
-            icon: 'bar-chart-3',
+            name: 'Analytics',
+            icon: 'bar-chart-2',
             view: 'view-analytics',
-            description: 'Análisis y reportes'
+            description: 'Reportes completos'
         }
     ]
 };
@@ -155,24 +178,36 @@ let currentDepartmentData = null;
  * Obtener departamento del usuario actual
  */
 async function getUserDepartment(userId) {
-    // 🛡️ OFFLINE FALLBACK: Si el usuario ya tiene departamento en sus datos locales (Mock Mode)
+    // 🛡️ OFFLINE FALLBACK: If the user already has a department in their local data (Mock Mode)
     if (currentUser && currentUser.department) {
-        console.log('📦 Usando departamento local (Offline Mode):', currentUser.department);
+        console.log('📦 Using local department (Offline Mode):', currentUser.department);
         return { name: currentUser.department, display_name: currentUser.department.toUpperCase() };
     }
 
     try {
-        const { data, error } = await sb
+        // First try Team Members
+        const { data: teamData, error: teamError } = await sb
             .from('team_members')
             .select('department_id, departments(name, display_name, icon, color)')
             .eq('id', userId)
             .single();
 
-        if (error) throw error;
-        return data?.departments || null;
+        if (!teamError && teamData?.departments) return teamData.departments;
+
+        // If not found or error, try Clients
+        const { data: clientData, error: clientError } = await sb
+            .from('clients')
+            .select('id, name')
+            .eq('id', userId)
+            .single();
+
+        if (clientData) {
+            return { name: 'client', display_name: 'CLIENT PORTAL', color: 'violet' };
+        }
+
+        return null;
     } catch (e) {
-        console.warn('⚠️ Error conectando con Supabase para departamento, usando fallback.');
-        // Fallback final basado en rol si todo falla
+        console.warn('⚠️ Error connecting to Supabase for department, using fallback.');
         if (currentUser?.role === 'pm') return { name: 'admin', display_name: 'MANAGEMENT' };
         return null;
     }
