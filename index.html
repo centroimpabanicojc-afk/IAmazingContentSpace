@@ -333,15 +333,64 @@
                         <h3 class="text-white font-black text-2xl">Future Echoes Podcast</h3>
                     </div>
                 </div>
-                <!-- Project 4 (Ver Todo) -->
-                <div onclick="document.getElementById('contacto').scrollIntoView({behavior: 'smooth'})"
+                <!-- Hidden Projects -->
+                <div onclick="openProjectModal('visual', 'Neon City', 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop')"
+                    class="hidden-project hidden group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-cyan-600/20 transition-all">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Gaming">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-cyan-400 font-bold text-sm tracking-widest mb-2">VISUAL</span>
+                        <h3 class="text-white font-black text-2xl">Neon City</h3>
+                    </div>
+                </div>
+
+                <div onclick="openProjectModal('tech', 'AI Voice Assistant', 'https://images.unsplash.com/photo-1589254065878-42c9da997008?q=80&w=2670&auto=format&fit=crop')"
+                    class="hidden-project hidden group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-emerald-600/20 transition-all">
+                    <img src="https://images.unsplash.com/photo-1589254065878-42c9da997008?q=80&w=2670&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Tech">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-emerald-400 font-bold text-sm tracking-widest mb-2">TECH</span>
+                        <h3 class="text-white font-black text-2xl">AI Voice Assistant</h3>
+                    </div>
+                </div>
+
+                <div onclick="openProjectModal('visual', 'Character Design', 'https://images.unsplash.com/photo-1620641788421-7a1c3b6ea01c?q=80&w=2564&auto=format&fit=crop')"
+                    class="hidden-project hidden group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-violet-600/20 transition-all">
+                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c3b6ea01c?q=80&w=2564&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Character">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-violet-400 font-bold text-sm tracking-widest mb-2">VISUAL</span>
+                        <h3 class="text-white font-black text-2xl">Character Design</h3>
+                    </div>
+                </div>
+
+                <div onclick="openProjectModal('audio', 'Podcast AI Host', 'https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?q=80&w=2676&auto=format&fit=crop')"
+                    class="hidden-project hidden group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer hover:shadow-2xl hover:shadow-violet-600/20 transition-all">
+                    <img src="https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?q=80&w=2676&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt="Audio">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                        <span class="text-violet-400 font-bold text-sm tracking-widest mb-2">AUDIO</span>
+                        <h3 class="text-white font-black text-2xl">Podcast AI Host</h3>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div id="view-all-btn" onclick="loadMoreProjects()"
                     class="group relative aspect-[4/5] rounded-[40px] overflow-hidden cursor-pointer bg-slate-800 hover:bg-slate-700 transition-colors flex items-center justify-center border border-white/5 hover:border-violet-500/50">
                     <div class="text-center">
                         <span
                             class="text-white font-black text-xl mb-2 block group-hover:scale-110 transition-transform">Ver
-                            Todo</span>
-                        <i data-lucide="arrow-right"
-                            class="w-6 h-6 text-violet-400 mx-auto group-hover:translate-x-1 transition-transform"></i>
+                            Más</span>
+                        <i data-lucide="plus"
+                            class="w-6 h-6 text-violet-400 mx-auto group-hover:scale-125 transition-transform"></i>
                     </div>
                 </div>
             </div>
@@ -417,6 +466,17 @@
                     document.body.style.overflow = 'auto';
                 }, 300);
             }
+        }
+        function loadMoreProjects() {
+            const hiddenProjects = document.querySelectorAll('.hidden-project');
+            hiddenProjects.forEach(project => {
+                project.classList.remove('hidden');
+                project.classList.add('animate-fade-in-up');
+            });
+
+            // Hide the 'Ver Todo' button after expanding
+            const viewAllBtn = document.getElementById('view-all-btn');
+            viewAllBtn.style.display = 'none';
         }
     </script>
 
