@@ -383,50 +383,45 @@
                         para retención y conversión.</p>
                 </div>
 
-                <!-- Typewriter Animation -->
-                <div class="rounded-2xl border border-white/5 p-4 mb-6"
-                    style="background: linear-gradient(180deg, #0a0a1a 0%, #0d1117 100%);">
-                    <div class="flex items-center gap-2 mb-3">
-                        <div class="w-2 h-2 rounded-full bg-red-500/60"></div>
-                        <div class="w-2 h-2 rounded-full bg-yellow-500/60"></div>
-                        <div class="w-2 h-2 rounded-full bg-green-500/60"></div>
-                        <span class="text-[10px] font-mono text-slate-500 ml-2">draft_v3.md</span>
-                    </div>
-                    <div class="space-y-2 font-mono text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="text-violet-500/50">01</span>
-                            <div class="h-2 bg-violet-500/20 rounded"
-                                style="width: 85%; animation: typewrite 3s ease-in-out infinite;"></div>
+                <!-- Script/Typewriter Animation -->
+                <div class="rounded-2xl border border-white/5 p-6 mb-6 overflow-hidden relative"
+                    style="background: linear-gradient(135deg, #0f172a 0%, #020617 100%);">
+                    <div
+                        class="absolute top-3 right-4 opacity-20 font-mono text-[10px] uppercase tracking-tighter text-slate-500">
+                        Document_Draft_v4.2</div>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-violet-500/10 flex-shrink-0 flex items-center justify-center text-[10px] font-mono text-violet-400/50">
+                                IA</div>
+                            <div class="text-xs font-mono text-slate-400 leading-relaxed pt-1">
+                                <span class="text-violet-400">Escena 1:</span> El futuro de la producción audiovisual
+                                comienza con una narrativa...
+                                <span
+                                    class="inline-block w-2 h-4 bg-violet-500/80 align-middle ml-1 animate-pulse"></span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-violet-500/50">02</span>
-                            <div class="h-2 bg-violet-500/15 rounded"
-                                style="width: 60%; animation: typewrite 3s ease-in-out infinite 0.3s;"></div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-violet-500/50">03</span>
-                            <div class="h-2 bg-violet-500/10 rounded"
-                                style="width: 75%; animation: typewrite 3s ease-in-out infinite 0.6s;"></div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-violet-500/50">04</span>
-                            <div class="w-px h-3 bg-violet-400" style="animation: blink 1s step-end infinite;"></div>
+                        <!-- Animated secondary lines -->
+                        <div class="w-full h-px bg-white/5 my-4"></div>
+                        <div class="space-y-2 opacity-40">
+                            <div class="h-1.5 bg-slate-700/50 rounded w-[90%]"></div>
+                            <div class="h-1.5 bg-slate-700/50 rounded w-[75%]"></div>
                         </div>
                     </div>
                 </div>
 
                 <ul class="text-slate-400 space-y-3 font-medium text-base border-t border-white/5 pt-8">
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Artículos de Blog & Whitepapers
+                    <li class="flex items-center gap-3 transition-colors hover:text-white">
+                        <div class="w-2 h-2 bg-violet-500 rounded-full shadow-[0_0_8px_rgba(139,92,246,0.6)]"></div>
+                        Artículos & Whitepapers
                     </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Guiones de Video
+                    <li class="flex items-center gap-3 transition-colors hover:text-white">
+                        <div class="w-2 h-2 bg-violet-500 rounded-full shadow-[0_0_8px_rgba(139,92,246,0.6)]"></div>
+                        Guiones de Video (YouTube/Docs)
                     </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Traducción / Transcreación
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Diseño de Personajes (Lore)
+                    <li class="flex items-center gap-3 transition-colors hover:text-white">
+                        <div class="w-2 h-2 bg-violet-500 rounded-full shadow-[0_0_8px_rgba(139,92,246,0.6)]"></div>
+                        Lore & Diseño de Personajes
                     </li>
                 </ul>
             </div>
@@ -486,15 +481,25 @@
             <!-- Audio (Standard - Bottom Right) -->
             <div
                 class="md:col-span-2 glass p-10 rounded-[40px] border border-white/10 hover:border-emerald-500/50 transition-all group hover:-translate-y-1 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div>
-                    <div class="flex items-center gap-4 mb-2">
+                <div class="flex-1 w-full md:w-auto">
+                    <div class="flex items-center gap-4 mb-4">
                         <div
                             class="w-12 h-12 bg-emerald-600/20 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-600/10">
-                            <i data-lucide="mic" class="w-6 h-6 text-emerald-400"></i>
+                            <i data-lucide="mic-2" class="w-6 h-6 text-emerald-400"></i>
                         </div>
                         <h3 class="text-2xl font-black text-white">AUDIO & VOZ</h3>
                     </div>
-                    <p class="text-slate-300 font-medium max-w-sm">Doblaje, Clonación de Voz y Paisajes Sonoros.</p>
+                    <p class="text-slate-400 font-medium mb-6">Inmersión sonora hiperrealista.</p>
+                    <ul class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-500 font-mono">
+                        <li class="flex items-center gap-1.5"><span class="text-emerald-500">●</span> Clonación de Voz
+                            AI</li>
+                        <li class="flex items-center gap-1.5"><span class="text-emerald-500">●</span> Sound Design (SFX)
+                        </li>
+                        <li class="flex items-center gap-1.5"><span class="text-emerald-500">●</span> Mastering Digital
+                        </li>
+                        <li class="flex items-center gap-1.5"><span class="text-emerald-500">●</span> Paisajes Sonoros
+                        </li>
+                    </ul>
                 </div>
                 <!-- Audio Equalizer Visualization -->
                 <div class="rounded-2xl border border-white/5 p-4 flex items-center gap-4"
