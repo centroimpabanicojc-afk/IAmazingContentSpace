@@ -336,6 +336,11 @@
                     <i data-lucide="users-2" class="w-4 h-4"></i>
                     <span class="font-bold text-xs">Equipo</span>
                 </a>
+                <a href="#" onclick="showView('leads')" id="nav-leads"
+                    class="sidebar-item hidden items-center gap-3 px-4 py-2.5 text-slate-400 rounded-xl">
+                    <i data-lucide="contact-2" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs">Leads / Ventas</span>
+                </a>
                 <div class="pt-4 border-t border-white/5 mt-4">
                     <a href="#" onclick="openSettings()"
                         class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-white/5 rounded-xl transition-colors">
@@ -624,6 +629,30 @@
                                     agentes...</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View: Leads Management -->
+            <div id="view-leads" class="hidden view-container space-y-8">
+                <header class="mb-8">
+                    <h1 class="text-3xl font-bold text-white mb-1">Prospectos & Leads 🤝</h1>
+                    <p class="text-slate-400">Mensajes capturados desde el sitio web.</p>
+                </header>
+                <div class="glass p-6 rounded-3xl border border-white/10">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="text-slate-500 border-b border-white/5">
+                                <tr>
+                                    <th class="py-3 px-4">Fecha</th>
+                                    <th class="py-3 px-4">Nombre</th>
+                                    <th class="py-3 px-4">Email</th>
+                                    <th class="py-3 px-4">Interés</th>
+                                    <th class="py-3 px-4">Mensaje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leads-list" class="text-slate-300"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1498,7 +1527,14 @@
                 document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
                 document.getElementById('user-display-name').textContent = currentUser.first_name;
                 document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
-                const isManager = ['pm', 'coord_prod', 'sales_head'].includes(currentUser.role);
+                const isManager = ['pm', 'coord_prod', 'sales_head', 'admin'].includes(currentUser.role);
+
+                const navLeads = document.getElementById('nav-leads');
+                if (navLeads) {
+                    if (isManager) navLeads.classList.replace('hidden', 'flex');
+                    else navLeads.classList.replace('flex', 'hidden');
+                }
+
                 // The module system handles sidebar visibility, but we keep this for legacy view switching
                 if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) {
                     if (typeof showModuleView === 'function') showModuleView('view-production-desk');
@@ -1918,16 +1954,46 @@
                 document.getElementById('payment-modal').classList.remove('hidden');
             };
 
+            async function loadLeads() {
+                const list = document.getElementById('leads-list');
+                if (!list) return;
+
+                try {
+                    const { data, error } = await sb.from('leads').select('*').order('created_at', { ascending: false });
+                    if (error) throw error;
+
+                    if (!data || data.length === 0) {
+                        list.innerHTML = '<tr><td colspan="5" class="py-10 text-center text-slate-500">No hay leads registrados aún.</td></tr>';
+                        return;
+                    }
+
+                    list.innerHTML = data.map(l => `
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-[11px] text-slate-400">${new Date(l.created_at).toLocaleDateString()}</td>
+                            <td class="py-4 px-4 font-bold text-white">${l.name}</td>
+                            <td class="py-4 px-4 text-violet-400">${l.email}</td>
+                            <td class="py-4 px-4 uppercase text-[10px] font-bold text-cyan-400">${l.subject || '-'}</td>
+                            <td class="py-4 px-4 text-xs text-slate-400 max-w-xs truncate" title="${l.message}">${l.message}</td>
+                        </tr>
+                    `).join('');
+                } catch (e) {
+                    console.error("Error loading leads:", e);
+                    list.innerHTML = '<tr><td colspan="5" class="py-10 text-center text-rose-500">Error al cargar leads.</td></tr>';
+                }
+            }
+
             window.showView = (v) => {
                 document.querySelectorAll('[id^="view-"]').forEach(x => x.classList.add('hidden'));
-                const target = document.getElementById(`view - ${v} `);
+                const target = document.getElementById(`view-${v}`);
                 if (target) target.classList.remove('hidden');
 
                 document.querySelectorAll('.sidebar-item').forEach(a => a.classList.remove('active'));
-                document.getElementById(`nav - ${v} `)?.classList.add('active');
+                const navItem = document.getElementById(`nav-${v}`);
+                if (navItem) navItem.classList.add('active');
 
                 if (v === 'analytics') renderAnalytics();
                 if (v === 'team-mgmt') renderTeamMgmt();
+                if (v === 'leads') loadLeads();
                 if (v === 'cortex') {
                     const inp = document.getElementById('cortex-input');
                     if (inp) inp.focus();
