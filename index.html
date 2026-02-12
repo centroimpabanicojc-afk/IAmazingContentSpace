@@ -881,25 +881,26 @@
                     para una propuesta alineada con su ROI.</p>
             </div>
 
-            <form class="space-y-6">
+            <form id="contact-form" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-300 ml-4">Nombre</label>
-                        <input type="text"
+                        <input type="text" name="name" required
                             class="w-full bg-slate-950/50 border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors"
                             placeholder="Su nombre">
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-300 ml-4">Email</label>
-                        <input type="email"
+                        <input type="email" name="email" required
                             class="w-full bg-slate-950/50 border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors"
                             placeholder="nombre@empresa.com">
                     </div>
                 </div>
                 <div class="space-y-2">
                     <label class="text-sm font-bold text-slate-300 ml-4">Interés Principal</label>
-                    <select
+                    <select name="subject" required
                         class="w-full bg-slate-950/50 border border-white/10 rounded-full px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors appearance-none">
+                        <option value="">Seleccione una opción...</option>
                         <option>Estrategia Híbrida (General)</option>
                         <option>Servicios Editoriales</option>
                         <option>Producción Visual</option>
@@ -908,12 +909,17 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-sm font-bold text-slate-300 ml-4">Mensaje</label>
-                    <textarea
+                    <textarea name="message" required
                         class="w-full bg-slate-950/50 border border-white/10 rounded-[30px] px-6 py-4 text-white focus:outline-none focus:border-violet-500 transition-colors h-32 resize-none"
                         placeholder="Cuéntenos sobre su proyecto..."></textarea>
                 </div>
 
-                <button type="button"
+                <div id="form-message"
+                    class="hidden glass p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-center font-bold animate-view-in">
+                    ¡Gracias! Mensaje recibido. Nos contactaremos en menos de 24 horas.
+                </div>
+
+                <button type="submit" id="submit-btn"
                     class="w-full py-5 bg-gradient-to-r from-violet-600 to-cyan-600 rounded-full font-black text-white text-xl tracking-wide shadow-2xl shadow-violet-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
                     SOLICITAR PRESUPUESTO
                 </button>
@@ -1037,6 +1043,30 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         lucide.createIcons();
+
+        // Contact Form Handling
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('submit-btn');
+                const formMsg = document.getElementById('form-message');
+
+                // Simulation state
+                btn.disabled = true;
+                btn.innerHTML = '<span class="flex items-center justify-center gap-2 underline">ENVIANDO <span class="animate-pulse">...</span></span>';
+                btn.style.opacity = "0.7";
+
+                setTimeout(() => {
+                    btn.classList.add('hidden');
+                    formMsg.classList.remove('hidden');
+
+                    // Log data for future backend integration
+                    const formData = Object.fromEntries(new FormData(contactForm));
+                    console.log("Contact Form Submission:", formData);
+                }, 1800);
+            });
+        }
 
         const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMW0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
