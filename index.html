@@ -1047,24 +1047,45 @@
         // Contact Form Handling
         const contactForm = document.getElementById('contact-form');
         if (contactForm) {
-            contactForm.addEventListener('submit', (e) => {
+            contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('submit-btn');
                 const formMsg = document.getElementById('form-message');
 
                 // Simulation state
                 btn.disabled = true;
+                const originalText = btn.innerText;
                 btn.innerHTML = '<span class="flex items-center justify-center gap-2 underline">ENVIANDO <span class="animate-pulse">...</span></span>';
                 btn.style.opacity = "0.7";
 
-                setTimeout(() => {
+                try {
+                    const formData = new FormData(contactForm);
+                    const leadData = Object.fromEntries(formData);
+
+                    const { error } = await sb.from('leads').insert([
+                        {
+                            name: leadData.name,
+                            email: leadData.email,
+                            subject: leadData.subject,
+                            message: leadData.message
+                        }
+                    ]);
+
+                    if (error) throw error;
+
+                    // Success
                     btn.classList.add('hidden');
                     formMsg.classList.remove('hidden');
+                    contactForm.reset();
 
-                    // Log data for future backend integration
-                    const formData = Object.fromEntries(new FormData(contactForm));
-                    console.log("Contact Form Submission:", formData);
-                }, 1800);
+                    console.log("Lead captured successfully in Supabase");
+                } catch (err) {
+                    console.error("Supabase Error:", err);
+                    alert("Error al enviar el mensaje. Por favor, intenta de nuevo o contáctanos por WhatsApp.");
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    btn.style.opacity = "1";
+                }
             });
         }
 
