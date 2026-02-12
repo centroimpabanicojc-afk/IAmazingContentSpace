@@ -199,29 +199,33 @@
     </div>
 
     <!-- Hero Section -->
-    <main class="flex-grow flex flex-col justify-center px-6 py-24 md:py-32 relative overflow-x-clip">
+    <main class="flex-grow flex flex-col justify-center px-6 py-24 md:py-32 relative">
         <!-- Massive Bleeding Gradient -->
         <div
             class="absolute -top-20 -right-20 w-[600px] h-[600px] bg-violet-600/20 blur-[150px] animate-pulse opacity-50 pointer-events-none">
         </div>
         <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-600/10 blur-[150px] pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-            <div class="col-span-12 lg:col-span-8 animate-fade-in space-y-8" style="overflow: visible;">
-                <h1 style="font-size: clamp(4rem, 15vw, 11rem);"
-                    class="font-black tracking-tighter text-white leading-[0.8] glow-text text-left">
+        <div class="max-w-7xl mx-auto w-full relative z-10">
+            <!-- Headline - Full Width -->
+            <div class="animate-fade-in">
+                <h1 style="font-size: clamp(3.5rem, 12vw, 10rem);"
+                    class="font-black tracking-tighter text-white leading-[0.85] glow-text text-left">
                     CONTENIDO <br />
-                    <span style="display: inline-block; transform: translateX(1rem) skewX(-8deg);"
-                        class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">REFINADO</span>
+                    <span style="display: inline-block; transform: skewX(-8deg);"
+                        class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent mt-2">REFINADO</span>
                 </h1>
+            </div>
 
+            <!-- Subtitle & CTAs -->
+            <div class="mt-10 max-w-2xl space-y-8">
                 <p
-                    class="text-xl md:text-3xl text-slate-400 max-w-2xl font-light leading-relaxed text-left pl-2 border-l-4 border-violet-500/50">
+                    class="text-xl md:text-2xl text-slate-400 font-light leading-relaxed text-left pl-2 border-l-4 border-violet-500/50">
                     Producción audiovisual <span class="text-white font-bold">inteligente</span>. <br>
                     Estratégica, escalable y de alto impacto.
                 </p>
 
-                <div class="flex flex-col sm:flex-row items-start gap-6 pt-8 pl-2">
+                <div class="flex flex-col sm:flex-row items-start gap-6 pl-2">
                     <a href="#contacto"
                         class="px-10 py-5 bg-white text-black hover:bg-slate-200 rounded-full font-black transition-all hover:scale-105 text-lg uppercase tracking-wider flex items-center gap-2 group">
                         Inicia Ahora
@@ -234,9 +238,8 @@
                 </div>
             </div>
 
-            <!-- Abstract Visual Element (Right Side) -->
-            <div class="hidden lg:block col-span-4 relative h-[600px]">
-                <!-- Decorative vertical line/element -->
+            <!-- Decorative Elements (Absolute) -->
+            <div class="hidden lg:block absolute right-0 top-0 h-full" style="width: 200px;">
                 <div
                     class="absolute right-0 top-0 w-px h-full bg-gradient-to-b from-transparent via-violet-500/50 to-transparent">
                 </div>
