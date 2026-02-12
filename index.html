@@ -1081,7 +1081,8 @@
                     console.log("Lead captured successfully in Supabase");
                 } catch (err) {
                     console.error("Supabase Error:", err);
-                    alert("Error al enviar el mensaje. Por favor, intenta de nuevo o contáctanos por WhatsApp.");
+                    const errorMsg = err.message || JSON.stringify(err);
+                    alert("Error de Envío: " + errorMsg + "\n\nPor favor, verifica que la tabla 'leads' esté creada en Supabase.");
                     btn.disabled = false;
                     btn.innerText = originalText;
                     btn.style.opacity = "1";
