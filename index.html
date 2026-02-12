@@ -129,6 +129,28 @@
             animation: view-in 0.3s ease-out forwards;
         }
 
+        @keyframes scan {
+            0% {
+                top: 0%;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
         /* Mobile specific adjustments */
         @media (max-width: 640px) {
             h1 {
@@ -338,15 +360,30 @@
                     </div>
                 </div>
 
-                <!-- Visual Demo Area -->
-                <div
-                    class="w-full md:w-1/2 h-48 md:h-full bg-black/40 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden relative">
-                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c3b6ea01c?q=80&w=1000&auto=format&fit=crop"
-                        class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen hover:scale-110 transition-transform duration-700 from-cyan-500/20"
-                        alt="Visual Demo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- Visual Demo Area (Pure CSS) -->
+                <div class="w-full md:w-1/2 h-48 md:h-full rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden relative"
+                    style="background: linear-gradient(180deg, #0a0a1a 0%, #0d1117 100%);">
+                    <!-- Grid Floor -->
+                    <div class="absolute bottom-0 left-0 w-full h-2/3"
+                        style="background: linear-gradient(transparent 0%, rgba(34,211,238,0.03) 100%); background-size: 40px 40px; background-image: linear-gradient(rgba(34,211,238,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.08) 1px, transparent 1px); transform: perspective(300px) rotateX(45deg); transform-origin: bottom;">
+                    </div>
+
+                    <!-- Glowing Orb -->
+                    <div class="absolute"
+                        style="width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, #22d3ee 0%, #818cf8 50%, transparent 70%); box-shadow: 0 0 60px 20px rgba(34,211,238,0.3), 0 0 120px 40px rgba(129,140,248,0.15); animation: float 4s ease-in-out infinite;">
+                    </div>
+
+                    <!-- Scan Line -->
+                    <div class="absolute w-full h-px bg-cyan-400/30" style="animation: scan 3s linear infinite;"></div>
+
+                    <!-- Corner Brackets -->
+                    <div class="absolute top-3 left-3 w-4 h-4 border-t border-l border-cyan-500/40"></div>
+                    <div class="absolute top-3 right-3 w-4 h-4 border-t border-r border-cyan-500/40"></div>
+                    <div class="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-cyan-500/40"></div>
+                    <div class="absolute bottom-3 right-3 w-4 h-4 border-b border-r border-cyan-500/40"></div>
+
                     <span
-                        class="relative z-10 text-xs font-mono text-cyan-400 tracking-widest bg-black/50 px-2 py-1 rounded">RENDER_PREVIEW</span>
+                        class="relative z-10 text-xs font-mono text-cyan-400 tracking-widest bg-black/50 px-3 py-1 rounded mt-20">RENDER_PREVIEW</span>
                 </div>
             </div>
 
