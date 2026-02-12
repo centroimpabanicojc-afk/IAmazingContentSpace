@@ -31,10 +31,27 @@
 
         .glass {
             background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-xl);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .bg-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.07;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
         }
 
         .hero-gradient {
@@ -126,6 +143,7 @@
 </head>
 
 <body class="hero-gradient flex flex-col min-h-screen">
+    <div class="bg-noise"></div>
 
     <!-- Header / Navbar -->
     <nav class="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto w-full relative z-[100]">
@@ -181,95 +199,172 @@
     </div>
 
     <!-- Hero Section -->
-    <main class="flex-grow flex flex-col items-center justify-center px-6 py-12 md:py-24 text-center relative">
-        <!-- Floating Elements -->
-        <div class="absolute top-20 left-10 w-48 h-48 bg-violet-600/10 blur-[120px] animate-pulse"></div>
-        <div class="absolute bottom-20 right-10 w-48 h-48 bg-cyan-600/10 blur-[120px] animate-pulse"></div>
-
-        <div class="max-w-4xl space-y-10 animate-fade-in perspective-1000">
-
-            <h1
-                class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-white leading-[0.85] glow-text py-4">
-                Contenido <br />
-                <span
-                    class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent italic pr-4">Refinado</span>
-            </h1>
-
-            <p class="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed px-4">
-                Contenido estratégico potenciado por IA: eficiente, escalable y de alto impacto.
-            </p>
-
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-10">
-                <a href="#contacto"
-                    class="w-full sm:w-auto px-12 py-6 bg-violet-600 hover:bg-violet-700 text-white rounded-[24px] font-black shadow-2xl shadow-violet-600/40 transition-all hover:scale-105 active:scale-95 text-xl uppercase tracking-wide inline-block text-center">
-                    Agenda una Consulta
-                </a>
-                <button
-                    class="w-full sm:w-auto px-12 py-6 glass hover:bg-white/10 text-white rounded-[24px] font-black border border-white/10 transition-all text-xl">
-                    Ver Portafolio
-                </button>
-            </div>
+    <main class="flex-grow flex flex-col justify-center px-6 py-24 md:py-32 relative overflow-hidden">
+        <!-- Massive Bleeding Gradient -->
+        <div
+            class="absolute -top-20 -right-20 w-[600px] h-[600px] bg-violet-600/20 blur-[150px] animate-pulse opacity-50 pointer-events-none">
         </div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-600/10 blur-[150px] pointer-events-none"></div>
 
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            <div class="col-span-12 lg:col-span-8 animate-fade-in space-y-8">
+                <h1 style="font-size: clamp(4rem, 15vw, 11rem);"
+                    class="font-black tracking-tighter text-white leading-[0.8] glow-text text-left">
+                    CONTENIDO <br />
+                    <span
+                        class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent italic block transform translate-x-4 md:translate-x-12">REFINADO</span>
+                </h1>
+
+                <p
+                    class="text-xl md:text-3xl text-slate-400 max-w-2xl font-light leading-relaxed text-left pl-2 border-l-4 border-violet-500/50">
+                    Producción audiovisual <span class="text-white font-bold">inteligente</span>. <br>
+                    Estratégica, escalable y de alto impacto.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-start gap-6 pt-8 pl-2">
+                    <a href="#contacto"
+                        class="px-10 py-5 bg-white text-black hover:bg-slate-200 rounded-full font-black transition-all hover:scale-105 text-lg uppercase tracking-wider flex items-center gap-2 group">
+                        Inicia Ahora
+                        <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="#portafolio"
+                        class="px-10 py-5 glass text-white hover:bg-white/10 rounded-full font-bold border border-white/10 transition-all text-lg uppercase tracking-wider">
+                        Ver Trabajo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Abstract Visual Element (Right Side) -->
+            <div class="hidden lg:block col-span-4 relative h-[600px]">
+                <!-- Decorative vertical line/element -->
+                <div
+                    class="absolute right-0 top-0 w-px h-full bg-gradient-to-b from-transparent via-violet-500/50 to-transparent">
+                </div>
+                <div class="absolute right-10 top-20 text-right opacity-30 font-mono text-xs tracking-widest space-y-4">
+                    <p>SYS.INIT_v2.0</p>
+                    <p>RENDER_CORE: ACTIVE</p>
+                    <p>AI_MODEL: CORTEX</p>
+                </div>
+            </div>
         </div>
     </main>
 
     <!-- SERVICIOS / SOLUCIONES CLAVE (Expanded) -->
     <section id="servicios" class="py-24 px-6 max-w-7xl mx-auto relative z-10">
-        <h2 class="text-4xl md:text-6xl font-black text-center mb-8 glow-text text-white">SOLUCIONES HÍBRIDAS</h2>
-        <p class="text-xl text-slate-300 text-center max-w-3xl mx-auto mb-16">
-            Estrategias a medida que combinan creatividad humana y velocidad de IA.
-        </p>
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+            <div>
+                <h2 class="text-5xl md:text-7xl font-black text-white glow-text mb-4">SOLUCIONES <br> <span
+                        class="text-violet-500">HÍBRIDAS</span></h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-violet-500 to-cyan-500"></div>
+            </div>
+            <p class="text-xl text-slate-400 max-w-md text-right mt-6 md:mt-0 font-light">
+                Creatividad humana + Velocidad de IA. <br>
+                El nuevo estándar de producción.
+            </p>
+        </div>
 
-        <!-- Service Pillars -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-            <!-- Editorial -->
+        <!-- Service Pillars (Bento Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 mb-24 h-auto md:h-[600px]">
+
+            <!-- Editorial (Tall - Left) -->
             <div
-                class="glass p-8 rounded-[40px] border border-white/10 hover:border-violet-500/50 transition-all group hover:-translate-y-2">
+                class="md:row-span-2 glass p-10 rounded-[40px] border border-white/10 hover:border-violet-500/50 transition-all group hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between">
                 <div
-                    class="w-16 h-16 bg-violet-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-violet-600/10">
-                    <i data-lucide="file-text" class="w-8 h-8 text-violet-400"></i>
+                    class="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 blur-[80px] -mr-16 -mt-16 transition-opacity group-hover:opacity-100 opacity-50">
                 </div>
-                <h3 class="text-2xl font-black mb-4 text-white">EDITORIAL</h3>
-                <p class="text-slate-300 font-medium mb-4">Texto optimizado para SEO y conversión.</p>
-                <ul class="text-slate-400 text-sm space-y-2 font-medium">
-                    <li>• Artículos de Blog & Whitepapers</li>
-                    <li>• Guiones de Video</li>
-                    <li>• Traducción / Transcreación</li>
-                    <li>• Diseño de Personajes (Lore)</li>
+
+                <div>
+                    <div
+                        class="w-20 h-20 bg-violet-600/20 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-violet-600/10">
+                        <i data-lucide="file-text" class="w-10 h-10 text-violet-400"></i>
+                    </div>
+                    <h3 class="text-4xl font-black mb-4 text-white">EDITORIAL</h3>
+                    <p class="text-slate-300 font-medium text-lg leading-relaxed mb-6">Narrativa estratégica optimizada
+                        para retención y conversión.</p>
+                </div>
+
+                <ul class="text-slate-400 space-y-3 font-medium text-base border-t border-white/5 pt-8">
+                    <li class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Artículos de Blog & Whitepapers
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Guiones de Video
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Traducción / Transcreación
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-violet-500 rounded-full"></div> Diseño de Personajes (Lore)
+                    </li>
                 </ul>
             </div>
-            <!-- Visual -->
+
+            <!-- Visual (Wide - Top Right) -->
             <div
-                class="glass p-8 rounded-[40px] border border-white/10 hover:border-cyan-500/50 transition-all group hover:-translate-y-2">
+                class="md:col-span-2 glass p-10 rounded-[40px] border border-white/10 hover:border-cyan-500/50 transition-all group hover:-translate-y-1 relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
                 <div
-                    class="w-16 h-16 bg-cyan-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-cyan-600/10">
-                    <i data-lucide="image" class="w-8 h-8 text-cyan-400"></i>
+                    class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-cyan-900/20 to-transparent pointer-events-none">
                 </div>
-                <h3 class="text-2xl font-black mb-4 text-white">VISUAL</h3>
-                <p class="text-slate-300 font-medium mb-4">Impacto visual con asistencia de IA.</p>
-                <ul class="text-slate-400 text-sm space-y-2 font-medium">
-                    <li>• Artwork & Design</li>
-                    <li>• Clipfounding / Footage</li>
-                    <li>• Edición / Montaje</li>
-                    <li>• Modelado 3D</li>
-                </ul>
+
+                <div class="flex-1 z-10 w-full">
+                    <div
+                        class="w-16 h-16 bg-cyan-600/20 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-cyan-600/10">
+                        <i data-lucide="image" class="w-8 h-8 text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-3xl font-black mb-2 text-white">VISUAL & 3D</h3>
+                    <p class="text-slate-300 font-medium mb-4">Impacto visual cinematográfico generado a escala.</p>
+                    <div class="flex flex-wrap gap-3">
+                        <span
+                            class="px-3 py-1 rounded-full bg-cyan-900/30 text-cyan-300 text-xs font-bold border border-cyan-500/20">Midjourney
+                            v6</span>
+                        <span
+                            class="px-3 py-1 rounded-full bg-cyan-900/30 text-cyan-300 text-xs font-bold border border-cyan-500/20">Flux</span>
+                        <span
+                            class="px-3 py-1 rounded-full bg-cyan-900/30 text-cyan-300 text-xs font-bold border border-cyan-500/20">Blender</span>
+                    </div>
+                </div>
+
+                <!-- Visual Demo Area -->
+                <div
+                    class="w-full md:w-1/2 h-48 md:h-full bg-black/40 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1620641788421-7a1c3b6ea01c?q=80&w=1000&auto=format&fit=crop"
+                        class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen hover:scale-110 transition-transform duration-700 from-cyan-500/20"
+                        alt="Visual Demo">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <span
+                        class="relative z-10 text-xs font-mono text-cyan-400 tracking-widest bg-black/50 px-2 py-1 rounded">RENDER_PREVIEW</span>
+                </div>
             </div>
-            <!-- Audio -->
+
+            <!-- Audio (Standard - Bottom Right) -->
             <div
-                class="glass p-8 rounded-[40px] border border-white/10 hover:border-emerald-500/50 transition-all group hover:-translate-y-2">
-                <div
-                    class="w-16 h-16 bg-emerald-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-emerald-600/10">
-                    <i data-lucide="mic" class="w-8 h-8 text-emerald-400"></i>
+                class="md:col-span-2 glass p-10 rounded-[40px] border border-white/10 hover:border-emerald-500/50 transition-all group hover:-translate-y-1 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-4 mb-2">
+                        <div
+                            class="w-12 h-12 bg-emerald-600/20 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-600/10">
+                            <i data-lucide="mic" class="w-6 h-6 text-emerald-400"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white">AUDIO & VOZ</h3>
+                    </div>
+                    <p class="text-slate-300 font-medium max-w-sm">Doblaje, Clonación de Voz y Paisajes Sonoros.</p>
                 </div>
-                <h3 class="text-2xl font-black mb-4 text-white">AUDIO</h3>
-                <p class="text-slate-300 font-medium mb-4">Experiencias sonoras inmersivas.</p>
-                <ul class="text-slate-400 text-sm space-y-2 font-medium">
-                    <li>• Locuciones Narradas</li>
-                    <li>• Mezcla & Master</li>
-                    <li>• Voiceovers / Podcast AI</li>
-                    <li>• Producción Musical</li>
-                </ul>
+                <!-- Fake Audio Waveform -->
+                <div class="flex items-center gap-1 h-12 px-4">
+                    <div class="w-1.5 bg-emerald-500/50 rounded-full h-4 animate-pulse"></div>
+                    <div class="w-1.5 bg-emerald-500/80 rounded-full h-8 animate-pulse" style="animation-delay: 0.1s">
+                    </div>
+                    <div class="w-1.5 bg-emerald-500/40 rounded-full h-6 animate-pulse" style="animation-delay: 0.2s">
+                    </div>
+                    <div class="w-1.5 bg-emerald-500/90 rounded-full h-10 animate-pulse" style="animation-delay: 0.3s">
+                    </div>
+                    <div class="w-1.5 bg-emerald-500/50 rounded-full h-5 animate-pulse" style="animation-delay: 0.4s">
+                    </div>
+                    <div class="w-1.5 bg-emerald-500/80 rounded-full h-9 animate-pulse" style="animation-delay: 0.5s">
+                    </div>
+                    <div class="w-1.5 bg-emerald-500/40 rounded-full h-4 animate-pulse" style="animation-delay: 0.6s">
+                    </div>
+                </div>
             </div>
         </div>
 
