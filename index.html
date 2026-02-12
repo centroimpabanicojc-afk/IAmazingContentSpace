@@ -211,10 +211,21 @@
             <div class="animate-fade-in">
                 <h1 style="font-size: clamp(3.5rem, 12vw, 10rem);"
                     class="font-black tracking-tighter text-white leading-[0.85] glow-text text-left">
-                    CONTENIDO <br />
-                    <span style="display: inline-block; transform: skewX(-8deg);"
-                        class="bg-gradient-to-r from-violet-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent mt-2">REFINADO</span>
+                    CONTENIDO
                 </h1>
+                <svg viewBox="0 0 600 100"
+                    style="width: clamp(280px, 80vw, 900px); display: block; margin-top: -0.1em; transform: skewX(-8deg);"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#a78bfa" />
+                            <stop offset="50%" stop-color="#818cf8" />
+                            <stop offset="100%" stop-color="#22d3ee" />
+                        </linearGradient>
+                    </defs>
+                    <text x="0" y="82" font-family="inherit" font-weight="900" font-size="100" letter-spacing="-5"
+                        fill="url(#heroGrad)">REFINADO</text>
+                </svg>
             </div>
 
             <!-- Subtitle & CTAs -->
