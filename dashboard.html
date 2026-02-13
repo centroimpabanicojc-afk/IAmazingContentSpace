@@ -1280,11 +1280,38 @@
             // 🚀 STABILITY: Reset Backend URL if it's old/wrong/missing
             const STABLE_BACKEND = "https://ia-content-production.up.railway.app";
             let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || STABLE_BACKEND;
-            if (!BACKEND_API_URL.includes('.up.railway.app')) {
-                console.log("🔄 Resetting Backend URL to Stable Production");
+
+            // 🚀 STABILITY: Allow localhost/railway, reset only if completely unknown
+            const isLocal = BACKEND_API_URL.includes('localhost') || BACKEND_API_URL.includes('127.0.0.1');
+            const isRailway = BACKEND_API_URL.includes('.up.railway.app');
+
+            if (!isLocal && !isRailway) {
+                console.log("🔄 Unknown Backend URL. Resetting to Stable Production.");
                 BACKEND_API_URL = STABLE_BACKEND;
                 localStorage.setItem('iamazing_api_url', STABLE_BACKEND);
             }
+
+            window.updateServerStatus = (isOnline) => {
+                const badge = document.getElementById('server-status-badge');
+                if (!badge) return;
+                const dot = badge.querySelector('.bg-emerald-500, .bg-rose-500, .bg-amber-500');
+                const ping = badge.querySelector('.bg-emerald-400, .bg-rose-400, .bg-amber-400');
+                const text = badge.querySelector('span:last-child');
+
+                if (isOnline) {
+                    badge.classList.remove('border-rose-500/50');
+                    badge.classList.add('border-emerald-500/20');
+                    if (dot) { dot.classList.remove('bg-rose-500'); dot.classList.add('bg-emerald-500'); }
+                    if (ping) { ping.classList.remove('bg-rose-400'); ping.classList.add('bg-emerald-400', 'animate-ping'); }
+                    if (text) { text.textContent = "Servidor Activo"; text.classList.remove('text-rose-400'); text.classList.add('text-emerald-400'); }
+                } else {
+                    badge.classList.remove('border-emerald-500/20');
+                    badge.classList.add('border-rose-500/50');
+                    if (dot) { dot.classList.remove('bg-emerald-500'); dot.classList.add('bg-rose-500'); }
+                    if (ping) { ping.classList.remove('bg-emerald-400', 'animate-ping'); ping.classList.add('bg-rose-400'); }
+                    if (text) { text.textContent = "Servidor Offline"; text.classList.remove('text-emerald-400'); text.classList.add('text-rose-400'); }
+                }
+            };
 
             // 🛡️ FALLBACK: Load Mock Data if DB fails
             async function loadMockData() {
@@ -2077,7 +2104,7 @@
                     lucide.createIcons();
 
                     const cleanBaseUrl = BACKEND_API_URL.replace(/\/+$/, "");
-                    const res = await fetch(`${cleanBaseUrl} /api/voice`, {
+                    const res = await fetch(`${cleanBaseUrl}/api/voice`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ text: text.replace(/[#*]/g, '') })
@@ -2171,6 +2198,7 @@
                         }
 
                         const data = await response.json();
+                        updateServerStatus(true);
                         prefix = { manager: '👔 Manager', sales: '💰 Ventas', production: '🎬 Producción', research: '🔍 I+D' }[agentType];
                         finalResponse = data.result || "No recibí una respuesta clara.";
                     }
@@ -2198,6 +2226,7 @@
 
                 } catch (e) {
                     console.error("Cortex Error:", e);
+                    updateServerStatus(false);
                     const errorHtml = `
                         <div class="glass p-4 rounded-xl border border-amber-500/30 bg-amber-900/10">
                             <div class="flex items-start gap-3">
@@ -2608,7 +2637,7 @@
                 const inv = document.getElementById('setting-investments').value;
 
                 localStorage.setItem('iam_webhook_url', wh);
-                localStorage.setItem('iam_backend_url', be);
+                localStorage.setItem('iamazing_api_url', be);
                 localStorage.setItem('iam_fixed_costs', fc);
                 localStorage.setItem('iam_investments', inv);
 
