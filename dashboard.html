@@ -1605,7 +1605,7 @@
                     const { error: ping } = await sb.from('team_members').select('*', { count: 'exact', head: true }).limit(1);
                     if (ping) throw new Error("Connection Timeout");
 
-                    const resProjects = await sb.from('deliveries').select('*, clients(name, whatsapp), team_members(first_name)');
+                    const resProjects = await sb.from('deliveries').select('*, clients(name, whatsapp), team_members!assigned_to(first_name)');
                     if (resProjects.error) throw resProjects.error;
                     projectsData = resProjects.data || [];
 
