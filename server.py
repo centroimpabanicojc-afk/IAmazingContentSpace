@@ -16,7 +16,8 @@ from tools.voice_engine import generate_voice
 from tools.agent_interviewer import analyze_interview_transcript
 
 app = Flask(__name__)
-CORS(app)
+# Permitir específicamente los dominios de Vercel y Railway
+CORS(app, resources={r"/api/*": {"origins": ["*", "https://i-amazing-content-space.vercel.app", "https://i-amazing-content-space-d10c53zc6.vercel.app"]}})
 
 # Servir el frontend
 @app.route('/')

@@ -1602,7 +1602,7 @@
                 // USE GLOBALS
                 try {
                     // Check connection first
-                    const { error: ping } = await sb.from('team_members').select('count').limit(1);
+                    const { error: ping } = await sb.from('team_members').select('*', { count: 'exact', head: true }).limit(1);
                     if (ping) throw new Error("Connection Timeout");
 
                     const resProjects = await sb.from('deliveries').select('*, clients(name, whatsapp), team_members(first_name)');
