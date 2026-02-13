@@ -16,8 +16,8 @@ from tools.voice_engine import generate_voice
 from tools.agent_interviewer import analyze_interview_transcript
 
 app = Flask(__name__)
-# Permitir cualquier origen de Vercel y locales para evitar bloqueos de CORS
-CORS(app, resources={r"/*": {"origins": ["*", "https://i-amazing-content-space.vercel.app", "https://i-amazing-content-space-junta-de-cond-cias-projects.vercel.app"]}})
+# Permitir absolutamente todo para depurar bloqueos en producción
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["*"]}})
 
 # Servir el frontend
 @app.route('/')
