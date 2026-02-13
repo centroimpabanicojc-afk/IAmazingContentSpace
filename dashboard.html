@@ -1276,7 +1276,15 @@
 
             const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
-            let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "https://iamazing-backend-production.up.railway.app";
+
+            // 🚀 STABILITY: Reset Backend URL if it's old/wrong/missing
+            const STABLE_BACKEND = "https://iamazing-backend-production.up.railway.app";
+            let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || STABLE_BACKEND;
+            if (BACKEND_API_URL.includes('ia-content-production') || !BACKEND_API_URL.includes('.up.railway.app')) {
+                console.log("🔄 Resetting Backend URL to Stable Production");
+                BACKEND_API_URL = STABLE_BACKEND;
+                localStorage.setItem('iamazing_api_url', STABLE_BACKEND);
+            }
 
             // 🛡️ FALLBACK: Load Mock Data if DB fails
             async function loadMockData() {
@@ -1812,23 +1820,39 @@
             }
 
             // 🧠 CORTEX BRAIN: ACTIVITY FEED & LOGGING
-            window.logActivity = (text) => {
+            window.logActivity = (agent, action, type = 'info') => {
                 const feed = document.getElementById('cortex-activity');
                 if (!feed) return;
 
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const colors = {
+                    info: 'text-violet-400',
+                    success: 'text-emerald-400',
+                    warning: 'text-amber-400',
+                    Cortex: 'text-violet-400',
+                    '🧠 Cortex': 'text-violet-400',
+                    '👔 Manager': 'text-cyan-400',
+                    '💰 Ventas': 'text-emerald-400',
+                    '🎬 Producción': 'text-amber-400',
+                    '🔍 I+D': 'text-rose-400'
+                };
+
                 const div = document.createElement('div');
-                div.className = "flex items-start gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 group animate-fade-in";
+                div.className = "flex items-start gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 group animate-fade-in mb-3";
+
+                // Color selection based on agent or type
+                const colorClass = colors[agent] || colors[type] || 'text-slate-400';
+
                 div.innerHTML = `
-                    <div class="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1.5 shadow-[0_0_8px_rgba(139,92,246,0.5)]"></div>
+                    <div class="w-1.5 h-1.5 rounded-full ${colorClass.replace('text-', 'bg-')} mt-1.5 shadow-[0_0_8px_currentColor]"></div>
                     <div class="flex-1">
-                        <p class="text-[10px] text-slate-200 leading-snug">${text}</p>
-                        <p class="text-[8px] text-slate-500 uppercase mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                        <div class="flex justify-between items-center mb-0.5">
+                            <span class="text-[9px] font-black uppercase ${colorClass} tracking-widest">${agent}</span>
+                            <span class="text-[8px] text-slate-500">${time}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-300 leading-snug">${action}</p>
                     </div>
                 `;
-
-                if (feed.children.length === 1 && feed.children[0].classList.contains('text-[10px]')) {
-                    feed.innerHTML = '';
-                }
 
                 feed.prepend(div);
                 if (feed.children.length > 20) feed.lastElementChild.remove();
@@ -2030,23 +2054,7 @@
                 renderToast("Ajustes guardados", "success");
             };
 
-            window.logActivity = (agent, action, type = 'info') => {
-                const feed = document.getElementById('cortex-activity');
-                if (!feed) return;
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const colors = { info: 'text-cyan-400', success: 'text-emerald-400', warning: 'text-amber-400' };
-                const div = document.createElement('div');
-                div.className = "p-3 bg-white/5 rounded-2xl border border-white/5 animate-fade-in mb-3";
-                div.innerHTML = `
-                < div class="flex justify-between items-center mb-1" >
-                    <span class="text-[9px] font-bold uppercase ${colors[type]} tracking-widest">${agent}</span>
-                    <span class="text-[8px] text-slate-500">${time}</span>
-                </div >
-                <p class="text-[10px] text-slate-300 leading-tight">${action}</p>
-            `;
-                feed.prepend(div);
-                if (feed.children.length > 8) feed.lastElementChild.remove();
-            }
+
 
             window.formatMarkdown = (text) => {
                 return text
