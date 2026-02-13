@@ -1614,6 +1614,7 @@
                     paymentsData = resPayments.data || [];
                 } catch (e) {
                     console.error("Dashboard Load Error - Switching to Mock:", e);
+                    renderToast(`⚠️ Error de DB: ${e.message}`, "error");
                     const mocks = await loadMockData();
                     projectsData = mocks.projects;
                     paymentsData = mocks.payments;
