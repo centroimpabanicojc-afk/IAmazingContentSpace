@@ -15,18 +15,38 @@ from tools.agent_researcher import run_research
 from tools.voice_engine import generate_voice
 from tools.agent_interviewer import analyze_interview_transcript
 
-app = Flask(__name__)
-# Permitir absolutamente todo para depurar bloqueos en producción
-CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["*"]}})
+# Definir el directorio base de forma absoluta para evitar 404s en Railway
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Servir el frontend
+app = Flask(__name__)
+
+# Configuración de CORS lo más permisiva posible
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+# Endpoint de Salud para diagnósticos rápidos
+@app.route('/api/health', methods=['GET', 'OPTIONS'])
+def health():
+    return jsonify({
+        "status": "online", 
+        "message": "Cortex Backend is running",
+        "version": "1.0.2-robust-cors"
+    })
+
+# Servir el frontend desde la ruta absoluta
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(BASE_DIR, 'index.html', mimetype='text/html')
 
 @app.route('/assets/<path:path>')
 def send_assets(path):
-    return send_from_directory('assets', path)
+    return send_from_directory(os.path.join(BASE_DIR, 'assets'), path)
 
 # Endpoint unificado para Agentes
 @app.route('/api/agent', methods=['POST'])
