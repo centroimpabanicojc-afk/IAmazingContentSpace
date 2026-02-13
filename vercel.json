@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "index.html",
+            "src": "*.html",
             "use": "@vercel/static"
         },
         {
@@ -11,10 +11,6 @@
         },
         {
             "src": "modules/**",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "dashboard_standalone.html",
             "use": "@vercel/static"
         }
     ],
@@ -26,6 +22,14 @@
         {
             "src": "/modules/(.*)",
             "dest": "/modules/$1"
+        },
+        {
+            "src": "/dashboard.html",
+            "dest": "/dashboard.html"
+        },
+        {
+            "src": "/index.html",
+            "dest": "/index.html"
         },
         {
             "src": "/(.*)",
