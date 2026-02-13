@@ -1278,9 +1278,9 @@
             let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
 
             // 🚀 STABILITY: Reset Backend URL if it's old/wrong/missing
-            const STABLE_BACKEND = "https://iamazing-backend-production.up.railway.app";
+            const STABLE_BACKEND = "https://ia-content-production.up.railway.app";
             let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || STABLE_BACKEND;
-            if (BACKEND_API_URL.includes('ia-content-production') || !BACKEND_API_URL.includes('.up.railway.app')) {
+            if (!BACKEND_API_URL.includes('.up.railway.app')) {
                 console.log("🔄 Resetting Backend URL to Stable Production");
                 BACKEND_API_URL = STABLE_BACKEND;
                 localStorage.setItem('iamazing_api_url', STABLE_BACKEND);
@@ -1318,7 +1318,7 @@
                 if (typeof renderOrganigram === 'function') renderOrganigram();
                 if (typeof renderAnalytics === 'function') renderAnalytics();
 
-                logActivity(`**${currentUser.first_name}** ha iniciado sesión. Sistema Cortex optimizado.`);
+                logActivity('Cortex', `**${currentUser.first_name}** ha iniciado sesión. Sistema Cortex optimizado.`, 'success');
 
                 // 🔐 Initialize Module System (Role-Based Access)
                 if (typeof initModuleSystem === 'function') {
@@ -1938,7 +1938,7 @@
                     }
 
                     loadDashboard();
-                    logActivity(`Estatus actualizado: ** ${proj.service_type}** (${proj.clients?.name}) movido a ** ${status.toUpperCase()}** `);
+                    logActivity('Sistema', `Estatus actualizado: ** ${proj.service_type}** (${proj.clients?.name}) movido a ** ${status.toUpperCase()}** `);
                     return true;
                 }
                 return false;
