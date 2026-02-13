@@ -938,7 +938,7 @@
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div
                         class="w-24 h-24 bg-violet-600/90 rounded-full flex items-center justify-center text-white shadow-2xl shadow-violet-600/50 cursor-pointer transform transition-all hover:scale-125">
-                        <i data-lucide="play" class="w-10 h-10 fill-current"></i>
+                        <i data-lucide="play" onclick="showView('dashboard')" class="w-10 h-10 fill-current"></i>
                     </div>
                 </div>
                 <!-- Label Overlay -->
@@ -1149,7 +1149,7 @@
                         .select('*')
                         .ilike('first_name', idValue)
                         .eq('password', passValue)
-                        .eq('active', true)
+                        .eq('status', 'active')
                         .single();
                     if (data) user = data;
                 } else {
