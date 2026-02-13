@@ -1273,7 +1273,7 @@
 
             const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             let WHATSAPP_WEBHOOK_URL = localStorage.getItem('iamazing_webhook_url') || "";
-            let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "http://localhost:5000";
+            let BACKEND_API_URL = localStorage.getItem('iamazing_api_url') || "https://ia-content-production.up.railway.app";
 
             // 🛡️ FALLBACK: Load Mock Data if DB fails
             async function loadMockData() {
@@ -1348,19 +1348,35 @@
                 });
             }
 
-            function checkSession() {
+            async function checkSession() {
                 const uid = localStorage.getItem('iamazing_user_id');
-                if (uid) {
-                    // Try to find in local teamData or let init fetch it
+                if (!uid) {
+                    console.warn("🔐 No user ID found in localStorage. Redirecting...");
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                try {
+                    // Try to find in team members first (Real DB)
+                    const { data: user, error } = await sb.from('team_members').select('*').eq('id', uid).single();
+
+                    if (user) {
+                        currentUser = user;
+                        updateUserUI();
+                        return;
+                    }
+
+                    // Fallback to local teamData if DB check fails or user not found
                     currentUser = teamData.find(m => m.id === uid);
                     if (currentUser) {
                         updateUserUI();
                         return;
                     }
+                } catch (e) {
+                    console.error("Session check error:", e);
                 }
 
-                // If no user found in localStorage or teamData, go back to landing
-                console.warn("🔐 No session found. Redirecting to Landing Page...");
+                console.warn("🔐 Session invalid or user not found. Redirecting...");
                 window.location.href = 'index.html';
             }
 

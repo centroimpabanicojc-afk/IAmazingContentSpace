@@ -203,11 +203,20 @@ async function getUserDepartment(userId) {
         // First try Team Members
         const { data: teamData, error: teamError } = await sb
             .from('team_members')
-            .select('department_id, departments(name, display_name, icon, color)')
+            .select('department_id, departments(name, display_name, icon, color), role')
             .eq('id', userId)
             .single();
 
         if (!teamError && teamData?.departments) return teamData.departments;
+
+        // 🛡️ ROLE FALLBACK: If department is missing in DB, assign by role
+        const role = teamData?.role || (currentUser?.id === userId ? currentUser.role : null);
+        if (role === 'pm' || role === 'admin' || role === 'sales_head') {
+            return { name: 'admin', display_name: 'MANAGEMENT', icon: 'shield-check', color: '#8b5cf6' };
+        }
+        if (role?.includes('editor') || role === 'designer') {
+            return { name: 'production', display_name: 'PRODUCTION', icon: 'play-circle', color: '#10b981' };
+        }
 
         // If not found or error, try Clients
         const { data: clientData, error: clientError } = await sb
@@ -223,7 +232,8 @@ async function getUserDepartment(userId) {
         return null;
     } catch (e) {
         console.warn('⚠️ Error connecting to Supabase for department, using fallback.');
-        if (currentUser?.role === 'pm') return { name: 'admin', display_name: 'MANAGEMENT' };
+        const role = currentUser?.role;
+        if (role === 'pm') return { name: 'admin', display_name: 'MANAGEMENT', icon: 'shield-check', color: '#8b5cf6' };
         return null;
     }
 }
