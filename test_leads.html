@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>IAmazing | Test de Leads</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: scale 0.2s;
+        }
+
+        .btn:active {
+            scale: 0.95;
+        }
+
+        #status {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .error {
+            color: #f87171;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Test de Conexión Leads</h2>
+        <p style="color: #94a3b8; font-size: 0.8rem;">Este test insertará un lead de prueba en la tabla 'leads'.</p>
+        <button class="btn" id="run-test">Enviar Lead de Prueba</button>
+        <div id="status">Esperando...</div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://crisfmzsxqonuxkbguur.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyaXNmbXpzeHFvbnV4a2JndXVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MjIxMjEsImV4cCI6MjA4NTM5ODEyMX0.Doe3FWroDTMoISY-ZnVOcPwUPk7ZzEeYaIiJhDjbQko";
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('run-test').onclick = async () => {
+            const status = document.getElementById('status');
+            const btn = document.getElementById('run-test');
+
+            status.innerHTML = "Enviando...";
+            status.className = "";
+            btn.disabled = true;
+
+            try {
+                const { error } = await sb.from('leads').insert([
+                    {
+                        name: "Test User",
+                        email: "test@example.com",
+                        subject: "Test Automatizado",
+                        message: "Si ves esto, la conexión desde el frontend funciona 🚀"
+                    }
+                ]);
+
+                if (error) throw error;
+
+                status.innerHTML = "✅ ¡ÉXITO! Registro insertado.";
+                status.className = "success";
+            } catch (err) {
+                console.error(err);
+                status.innerHTML = "❌ ERROR: " + err.message;
+                status.className = "error";
+            } finally {
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+
+</html>

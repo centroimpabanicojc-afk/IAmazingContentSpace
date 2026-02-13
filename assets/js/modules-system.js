@@ -29,6 +29,13 @@ const DEPARTMENT_MODULES = {
             icon: 'dollar-sign',
             view: 'view-dashboard',
             description: 'Control de ganancias'
+        },
+        {
+            id: 'sales-leads',
+            name: 'Leads / Prospectos',
+            icon: 'user-plus',
+            view: 'view-leads',
+            description: 'Prospectos de la web'
         }
     ],
     production: [
@@ -135,6 +142,13 @@ const DEPARTMENT_MODULES = {
             icon: 'bar-chart-2',
             view: 'view-analytics',
             description: 'Reportes completos'
+        },
+        {
+            id: 'admin-leads',
+            name: 'Leads / Ventas',
+            icon: 'contact',
+            view: 'view-leads',
+            description: 'Gestión de prospectos'
         }
     ]
 };
@@ -164,6 +178,7 @@ const VIEW_LOADERS = {
     'view-payments': 'loadPaymentsDetails',
     'view-analytics': 'renderAnalytics',
     'view-team-mgmt': 'renderTeamMgmt',
+    'view-leads': 'loadLeads',
     'view-cortex': 'renderOfficeBoard' // Or generic init
 };
 

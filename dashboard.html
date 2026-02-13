@@ -1527,16 +1527,11 @@
                 document.getElementById('user-avatar-initials').textContent = currentUser.first_name[0];
                 document.getElementById('user-display-name').textContent = currentUser.first_name;
                 document.getElementById('user-display-role').textContent = currentUser.role.replace('_', ' ');
-                const isManager = ['pm', 'coord_prod', 'sales_head', 'admin'].includes(currentUser.role);
 
-                const navLeads = document.getElementById('nav-leads');
-                if (navLeads) {
-                    if (isManager) navLeads.classList.replace('hidden', 'flex');
-                    else navLeads.classList.replace('flex', 'hidden');
-                }
+                // The module system now handles sidebar visibility dynamically.
+                // We no longer need to manually toggle nav-leads here.
 
-                // The module system handles sidebar visibility, but we keep this for legacy view switching
-                if (!document.getElementById('view-dashboard').classList.contains('hidden') && !isManager) {
+                if (!document.getElementById('view-dashboard').classList.contains('hidden')) {
                     if (typeof showModuleView === 'function') showModuleView('view-production-desk');
                     else showView('my-desk');
                 }
