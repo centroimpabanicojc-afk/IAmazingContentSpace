@@ -20,14 +20,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 
-# Configuración de CORS lo más permisiva posible
+# Configuración de CORS manual y automática
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        res = make_response()
+        res.headers.add("Access-Control-Allow-Origin", "*")
+        res.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+        res.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With")
+        return res
+
 @app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+def add_cors_headers(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 # Endpoint de Salud para diagnósticos rápidos
@@ -36,7 +43,7 @@ def health():
     return jsonify({
         "status": "online", 
         "message": "Cortex Backend is running",
-        "version": "1.0.2-robust-cors"
+        "version": "1.0.3-manual-cors"
     })
 
 # Servir el frontend desde la ruta absoluta

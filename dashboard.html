@@ -590,12 +590,15 @@
                     </div>
                     <div id="server-status-badge"
                         class="glass px-4 py-2 rounded-full border border-emerald-500/20 flex items-center gap-2">
-                        <span class="relative flex h-2 w-2">
+                        <!-- Dot Container -->
+                        <span id="server-status-dot-container" class="relative flex h-2 w-2">
                             <span
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
-                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Servidor
+                        <!-- Single Text Element -->
+                        <span id="server-status-text"
+                            class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Servidor
                             Activo</span>
                     </div>
                 </header>
@@ -1299,27 +1302,25 @@
 
             window.updateServerStatus = async (isOnline) => {
                 const badge = document.getElementById('server-status-badge');
-                if (!badge) return;
-                const dot = badge.querySelector('.bg-emerald-500, .bg-rose-500, .bg-amber-500');
-                const ping = badge.querySelector('.bg-emerald-400, .bg-rose-400, .bg-amber-400');
-                const textSpan = badge.querySelector('span:last-child');
+                const dotContainer = document.getElementById('server-status-dot-container');
+                const textSpan = document.getElementById('server-status-text');
+                if (!badge || !dotContainer || !textSpan) return;
 
                 if (isOnline) {
-                    badge.classList.replace('border-rose-500/50', 'border-emerald-500/20');
-                    if (dot) { dot.classList.replace('bg-rose-500', 'bg-emerald-500'); }
-                    if (ping) { ping.classList.replace('bg-rose-400', 'bg-emerald-400'); ping.classList.add('animate-ping'); }
-                    if (textSpan) {
-                        textSpan.textContent = "Servidor Activo";
-                        textSpan.className = "text-[10px] font-bold text-emerald-400 uppercase tracking-tighter";
-                    }
+                    badge.className = "glass px-4 py-2 rounded-full border border-emerald-500/20 flex items-center gap-2";
+                    dotContainer.innerHTML = `
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    `;
+                    textSpan.textContent = "Servidor Activo";
+                    textSpan.className = "text-[10px] font-bold text-emerald-400 uppercase tracking-tighter";
                 } else {
-                    badge.classList.replace('border-emerald-500/20', 'border-rose-500/50');
-                    if (dot) { dot.classList.replace('bg-emerald-500', 'bg-rose-500'); }
-                    if (ping) { ping.classList.replace('bg-emerald-400', 'bg-rose-400'); ping.classList.remove('animate-ping'); }
-                    if (textSpan) {
-                        textSpan.textContent = "Servidor Offline";
-                        textSpan.className = "text-[10px] font-bold text-rose-400 uppercase tracking-tighter";
-                    }
+                    badge.className = "glass px-4 py-2 rounded-full border border-rose-500/50 flex items-center gap-2";
+                    dotContainer.innerHTML = `
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
+                    `;
+                    textSpan.textContent = "Servidor Offline";
+                    textSpan.className = "text-[10px] font-bold text-rose-400 uppercase tracking-tighter";
                 }
             };
 
