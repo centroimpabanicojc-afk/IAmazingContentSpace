@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, jsonify, request
+from flask import Flask, send_from_directory, jsonify, request, make_response
 from flask_cors import CORS
 import os
 import sys
@@ -15,41 +15,41 @@ from tools.agent_researcher import run_research
 from tools.voice_engine import generate_voice
 from tools.agent_interviewer import analyze_interview_transcript
 
-# Definir el directorio base de forma absoluta para evitar 404s en Railway
+# Definir el directorio base de forma absoluta
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+print(f"🚀 Iniciando Cortex Backend en {BASE_DIR}")
+print(f"📁 Directorio actual: {os.getcwd()}")
+print(f"📂 Archivos en el directorio: {os.listdir(BASE_DIR)}")
 
 app = Flask(__name__)
 
-# Configuración de CORS manual y automática
+# Configuración de CORS ultra-permisiva
 CORS(app, resources={r"/*": {"origins": "*"}})
-
-@app.before_request
-def handle_preflight():
-    if request.method == "OPTIONS":
-        res = make_response()
-        res.headers.add("Access-Control-Allow-Origin", "*")
-        res.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-        res.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With")
-        return res
 
 @app.after_request
 def add_cors_headers(response):
     response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
     return response
 
-# Endpoint de Salud para diagnósticos rápidos
-@app.route('/api/health', methods=['GET', 'OPTIONS'])
+# Endpoint de Salud simplificado
+@app.route('/api/health')
 def health():
     return jsonify({
         "status": "online", 
-        "message": "Cortex Backend is running",
-        "version": "1.0.3-manual-cors"
+        "backend": "active",
+        "version": "1.0.4-stable"
     })
 
-# Servir el frontend desde la ruta absoluta
+# Servir el frontend de forma segura
 @app.route('/')
-def index():
-    return send_from_directory(BASE_DIR, 'index.html', mimetype='text/html')
+def home():
+    try:
+        return send_from_directory(BASE_DIR, 'index.html')
+    except Exception as e:
+        return f"Cortex Backend is running, but index.html was not found in {BASE_DIR}. Error: {str(e)}", 200
 
 @app.route('/assets/<path:path>')
 def send_assets(path):
