@@ -588,18 +588,25 @@
                         <h1 class="text-3xl font-bold text-white mb-1">Cortex Brain 🧠</h1>
                         <p class="text-slate-400">Inteligencia operativa híbrida.</p>
                     </div>
-                    <div id="server-status-badge"
-                        class="glass px-4 py-2 rounded-full border border-emerald-500/20 flex items-center gap-2">
-                        <!-- Dot Container -->
-                        <span id="server-status-dot-container" class="relative flex h-2 w-2">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        <!-- Single Text Element -->
-                        <span id="server-status-text"
-                            class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Servidor
-                            Activo</span>
+                    <div class="flex items-center gap-3">
+                        <!-- Settings Icon for easy access -->
+                        <button onclick="openSettings()"
+                            class="p-2 hover:bg-white/10 rounded-xl text-slate-400 hover:text-white transition-all">
+                            <i data-lucide="settings" class="w-5 h-5"></i>
+                        </button>
+                        <div id="server-status-badge"
+                            class="glass px-4 py-2 rounded-full border border-emerald-500/20 flex items-center gap-2">
+                            <!-- Dot Container -->
+                            <span id="server-status-dot-container" class="relative flex h-2 w-2">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <!-- Single Text Element -->
+                            <span id="server-status-text"
+                                class="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Servidor
+                                Activo</span>
+                        </div>
                     </div>
                 </header>
 
