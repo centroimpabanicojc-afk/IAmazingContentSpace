@@ -1,7 +1,7 @@
 import os
+from dotenv import load_dotenv
 import json
 from crewai import Agent, Task, Crew, Process, LLM
-from dotenv import load_dotenv
 
 load_dotenv()
 
