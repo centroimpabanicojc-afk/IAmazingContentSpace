@@ -1,8 +1,9 @@
+duckduckgo-search
+python-dotenv
 flask
 flask-cors
 crewai
 langchain-groq
-python-dotenv
 edge-tts
 litellm
 playwright
@@ -10,4 +11,3 @@ supabase
 moviepy
 gunicorn
 langchain-community
-duckduckgo-search
