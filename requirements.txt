@@ -1,9 +1,9 @@
-duckduckgo-search
-python-dotenv
+duckduckgo-search>=6.2.4
 flask
 flask-cors
 crewai
 langchain-groq
+python-dotenv
 edge-tts
 litellm
 playwright
