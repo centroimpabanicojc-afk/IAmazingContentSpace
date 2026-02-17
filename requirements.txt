@@ -6,8 +6,6 @@ langchain-groq
 python-dotenv
 edge-tts
 litellm
-playwright
 supabase
-moviepy
 gunicorn
 langchain-community
